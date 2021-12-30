@@ -8,6 +8,7 @@ import './index.css'
 import  VueHtmlToPaper from './components/other/VueHtmlToPaper'
 
 axios.interceptors.request.use((config) => {
+    console.log(process.env.VUE_APP_BACKEND_CONNECTION_URI)
     let split_url = config.url.split('/')
     if (split_url[0] + "//" + split_url[2] == process.env.VUE_APP_BACKEND_CONNECTION_URI){
     // Do something before request is sent
