@@ -100,6 +100,14 @@ export default {
 };
 </script>
 <style scoped>
+button{
+  margin-left:0.1rem;
+  margin-right:0.1rem;
+  font-size: 0.45rem;
+  margin-bottom:0.2rem;
+  padding-left:0.15rem;
+  padding-right:0.15rem;
+}
 div.route-stop {
     font-size:0.65rem;
     text-align: left;

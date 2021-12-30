@@ -12,7 +12,7 @@
       </template>
       </Popper>
     </div>
-    <div>
+    <div v-if="$store.state.activeRoute != null">
       <Popper :interactive="false" :hover="true">
       <button @click="copyToReverse">Copy  To Reverse</button>
       <template #content>

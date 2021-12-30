@@ -12,12 +12,9 @@ import  VueHtmlToPaper from './components/other/VueHtmlToPaper'
 axios.interceptors.request.use((config) => {
     // console.log(process.env.VUE_APP_BACKEND_CONNECTION_URI)
     let split_url = config.url.split('/')
-    console.log(split_url)
-    console.log(process.env.VUE_APP_BACKEND_CONNECTION_URI)
     if (split_url[0] + "//" + split_url[2] == process.env.VUE_APP_BACKEND_CONNECTION_URI){
-        const https = require('https')
-        console.log("setting rejectUnauthorized to false")
-        config.httpsAgent = new https.Agent({rejectUnauthorized:false})
+        // const https = require('https')
+        // config.httpsAgent = new https.Agent({rejectUnauthorized:false})
     // Do something before request is sent
         let token = localStorage.getItem('user-token');
         if (token) {
