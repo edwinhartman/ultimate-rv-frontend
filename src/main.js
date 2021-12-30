@@ -1,3 +1,5 @@
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 require('dotenv').config();
 import { createApp } from 'vue'
 import App from './App.vue'
