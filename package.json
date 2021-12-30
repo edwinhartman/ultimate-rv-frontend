@@ -5,7 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve --mode netlify --https true",
     "dev": "vue-cli-service serve --mode development --https true",
-    "build": "vue-cli-service build",
+    "build": "vue-cli-service build --mode netlify",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
