@@ -1,0 +1,127 @@
+html,body{
+    margin:0;
+    max-height: 100vh;
+    height:100vh;
+    overflow: hidden;
+}
+div.main_window{
+    display:flex;
+    margin:0;
+    padding:0;
+    width:100%;
+}
+img.icon {
+    width:0.75rem;
+    max-width: .75rem;
+    margin-left: 0.1rem;
+    display:inline;
+    align-self: flex-start;
+}
+.clickable{
+    cursor: pointer;
+}
+
+input {
+    border-radius: 0.25rem;
+}
+.secondary-color {
+    background-color: rgb(224, 224, 224);
+}
+.font-bold {
+    font-weight:900;
+}
+.font-normal{
+    font-weight:400;
+}
+.tooltip-popup {
+    background-color: rgb(245, 245, 245);
+    z-index: 99;
+    box-shadow: 0.1em 0.1em rgba(110, 110, 110,.5);
+    padding:0.3rem;
+    border-radius: 0.25rem;
+    font-size: 0.7rem;
+}
+.tooltip-popup button {
+    font-size:0.65rem;
+}
+.shadow-right{
+    box-shadow: 0.1em 0.1em rgba(110, 110, 110,.5);
+}
+.shadow-left{
+    box-shadow: -0.1em 0.1em rgba(110, 110, 110,.5);
+}
+.bg-red{
+    background-color: red;
+}
+.bg-green{
+    background-color: green;
+}
+.bg-blue{
+    background-color: blue;
+}
+.fg-white{
+    color:white;
+}
+.fg-yellow{
+    color:yellow;
+}
+button{
+    border-radius: 0.25rem;
+    font-weight: 700;
+}
+.float-left{
+    float:left;
+}
+.float-right{
+    float:right;
+}
+.inline{
+    display: inline;
+}
+.annotation-detail{
+    background-color: white;
+    border-radius: 0.25rem;
+    box-shadow: 0.1em 0.1em rgba(110, 110, 110,.5);
+    padding-left:0.2rem;
+    padding-right:0.2rem;
+    padding-bottom:0.1rem;
+    min-width:10rem;
+    max-width:20rem;
+    font-size:0.7rem;
+}
+.annotation-detail button {
+    font-size:0.65rem;
+}
+.mr-1{
+    margin-right:0.1rem;
+}
+.w-full{
+    width:100%;
+}
+.list-none {
+    list-style: none;
+    margin:0;
+    padding:0;
+}
+.text-left{
+    text-align: left;
+}
+.mb-1 {
+    margin-bottom: 0.15rem;
+}
+.relative{
+    position: relative;
+}
+.min-max-button{
+    position:absolute;
+    right:2px;
+    top:-2px;
+}
+.min-max-button2{
+    position:absolute;
+    right:2px;
+    top:5px;
+}
+.cursor-not-allowed{
+    cursor:not-allowed;
+}
