@@ -34,7 +34,8 @@ export default createStore({
     showAnnotationDetails: null,
     showAnnotationDetailsAvailable:0,
     editStopDateActive:false,
-    editStopDateStop:null
+    editStopDateStop:null,
+    defaultOriginType:"current"
   },
   mutations: {
     resetAllHungupValues(state) {
@@ -213,6 +214,9 @@ export default createStore({
     setShowRouteTolls(state, show) {
       state.showRouteTolls = show
     },
+    setDefaultOriginType(state,value){
+      state.defaultOriginType = value
+    },
     setRouteCalculateInProcess(state, active) {
       state.routeCalculateInProcess = active
     },
@@ -318,7 +322,7 @@ export default createStore({
         method: 'post',
         url: process.env.VUE_APP_BACKEND_CONNECTION_URI + '/updateRoute',
         data: {
-          route: route.route
+          route: payload.route.route
         }
       }).then((res) => {
         commit('loadRoutes', res.data.routes)

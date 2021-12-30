@@ -56,7 +56,7 @@ export function calculateRouteHERE(state, callback) {
     url += '&spans=speedLimit'
     url += '&apiKey=' + process.env.VUE_APP_HERE_API
 
-    console.log(url)
+    // console.log(url)
     axios({
         method: 'GET',
         url: url

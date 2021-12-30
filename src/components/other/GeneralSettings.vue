@@ -32,6 +32,15 @@
         <input type="checkbox" id="ShowYelpDetails" value="true" v-model="showYelpDetails" />
         <label for="ShowYelpDetails">Show Yelp Details</label>
         </li>
+        <li>
+            Default Origin: <select name="" id="" v-model="defaultOriginType">
+                <option value="current">Current Location</option>
+                <option value="home">Home Location</option>
+            </select>
+        </li>
+        <li v-if="defaultOriginType=='home'">
+            Home Address: <input type="text">
+        </li>
         </ul>
         </div>
     </div>
@@ -44,13 +53,15 @@ export default{
             preventTollroads:false,
             alwaysShowRouteSummary:false,
             expanded:false,
-            showYelpDetails:false
+            showYelpDetails:false,
+            defaultOriginType:"current"
         }
     },
     mounted(){
         this.preventTollroads = this.$store.state.preventTollroads
         this.alwaysShowRouteSummary = this.$store.state.alwaysShowRouteSummary
         this.showYelpDetails = this.$store.state.showYelpDetails
+        this.defaultOriginType = this.$store.state.defaultOriginType
     },
     watch:{
         preventTollroads:function(){
@@ -64,6 +75,9 @@ export default{
         },
         showYelpDetails:function(){
             this.$store.commit("setShowYelpDetails",this.showYelpDetails)
+        },
+        defaultOriginType:function(){
+            this.$store.commit("setDefaultOriginType",this.defaultOriginType)
         }
     }
 }
@@ -81,5 +95,7 @@ export default{
     padding-left:0.1rem;
     padding-bottom:0.1rem;
 }
-
+select,input{
+    font-size:0.65rem;
+}
 </style>
