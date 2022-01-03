@@ -71,6 +71,22 @@ export default {
         this.map_height = (h-33)
         document.getElementById("main_map_view_123").style.width = (w - 445) + "px";
         document.getElementById("main_map_view_123").style.height = (h) + "px";
+    },
+    created(){
+        window.addEventListener("resize",this.handleResize)
+    },
+    unmounted(){
+        window.removeEventListener("resize",this.handleResize)
+    },
+    methods:{
+        handleResize(e){
+            var w = window.innerWidth;
+        var h = window.innerHeight;
+        this.map_width = (w - 445)
+        this.map_height = (h-33)
+        document.getElementById("main_map_view_123").style.width = (w - 445) + "px";
+        document.getElementById("main_map_view_123").style.height = (h) + "px";
+        }
     }
 }
 </script>
