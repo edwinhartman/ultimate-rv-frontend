@@ -27,6 +27,7 @@ import { getOvernightParking } from "../../business_logic/OvernightParking";
 import ModalPopup from "../templates/ModalPopup.vue";
 import RouteSummary2 from '../route/RouteSummary2.vue'
 import SearchAlongRoute from '../route/SearchAlongRoute.vue'
+import {toRad,toDeg} from '../../business_logic/HelperLogic'
 
 export default {
   name: "MapView",
@@ -242,7 +243,13 @@ export default {
     areasToAvoid(newValue,oldValue){
       this.loadAreasToAvoid()
     },
-    "$store.state.activeRoute": function () {
+    "$store.state.activeRoute": function (newValue,oldValue) {
+      
+      if (this.map != null && this.map.overlays != null && newValue == null){
+        this.map.removeOverlays(this.map.overlays)
+        this.map.removeAnnotations(this.map.annotations)
+
+      }
       this.loadStops();
       this.loadPolyline();
     },
@@ -590,6 +597,7 @@ export default {
         }
         this.markedAreas.splice(0, this.markedAreas.length);
       }
+
       if (
         this.$store.state.activeRoute.areasToAvoid != null &&
         this.$store.state.activeRoute.areasToAvoid.length > 0
@@ -614,6 +622,16 @@ export default {
           var rectangle = new mapkit.PolygonOverlay(points, { style: style });
           this.markedAreas.push(points)
           this.map.addOverlay(rectangle);
+
+          var annotationOptions = {
+            title:"Avoid",
+            subtitle:"",
+            url: { 1: "/static/avoid_area.png"},
+            anchorOffset:new DOMPoint(0,-6),
+            size:{height:8,width:60}
+          }
+          var annotation = new mapkit.ImageAnnotation(this.getCenterCoord(points),annotationOptions)
+          this.map.addAnnotation(annotation)
         }
       }
     },
@@ -759,6 +777,28 @@ export default {
     },
     removeAnnotationDetails(){
       this.$store.commit("setShowAnnotationDetails",null)
+    },
+    getCenterCoord(locPoints){
+      var x = 0.0
+      var y = 0.0
+      var z = 0.0
+      for (let i=0;i<locPoints.length;i++){
+        let lat = toRad(locPoints[i].latitude)
+        let lon = toRad(locPoints[i].longitude)
+
+        x += Math.cos(lat) * Math.cos(lon)
+        y += Math.cos(lat) * Math.sin(lon)
+        z += Math.sin(lat)
+      }
+      x = x / locPoints.length
+      y = y / locPoints.length
+      z = z / locPoints.length
+
+      let resultLon = Math.atan2(y,x)
+      let resultHyp = Math.sqrt(x * x + y * y)
+      let resultLat = Math.atan2(z,resultHyp)
+      let result = new mapkit.Coordinate(toDeg(resultLat),toDeg(resultLon))
+      return result
     }
   },
 };

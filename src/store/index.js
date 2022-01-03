@@ -542,6 +542,7 @@ export default createStore({
       })
     },
     activateRoute({ commit }, id) {
+      return new Promise((resolve,reject)=>{
       commit('resetValues')
       axios({
         method: 'post',
@@ -551,7 +552,10 @@ export default createStore({
         }
       }).then((res) => {
         commit('loadRoutes', res.data.routes)
+          resolve()
+        
       })
+    })
     },
     copyActiveRouteToReverse({ commit }) {
       axios({

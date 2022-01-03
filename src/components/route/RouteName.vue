@@ -180,7 +180,9 @@ export default {
   },
   methods: {
     setRouteActive(id) {
-      this.$store.dispatch("activateRoute", id);
+      this.$store.dispatch("activateRoute", id).then(()=>{
+        this.zoomToActiveRoute()
+      });
     },
     updateRouteName(oldValue, newRouteName, identifier) {
       let payload = {
@@ -223,7 +225,7 @@ export default {
       var highestLat = -9999999;
       var highestLon = -9999999;
       let stopStartIdx = 0;
-      if (this.$store.state.activeRoute.searchPredefined) {
+      if (this.$store.state.activeRoute.searchPredefined != null && this.$store.state.activeRoute.searchPredefined) {
         lowestLat = this.$store.state.activeRoute.stops[0].coordinate.latitude;
         highestLat = this.$store.state.activeRoute.stops[0].coordinate.latitude;
         lowestLon = this.$store.state.activeRoute.stops[0].coordinate.longitude;
@@ -273,8 +275,8 @@ export default {
 
       var centerLat = (highestLat - lowestLat) / 2 + lowestLat;
       var centerLon = (highestLon - lowestLon) / 2 + lowestLon;
-      var diffLat = highestLat - lowestLat;
-      var diffLon = highestLon - lowestLon;
+      var diffLat = (highestLat - lowestLat) * 1.1;
+      var diffLon = (highestLon - lowestLon) * 1.1;
       this.$store.commit("setNewMapRegion", {
         centerLat: centerLat,
         centerLon: centerLon,
