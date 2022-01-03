@@ -460,6 +460,8 @@ export default createStore({
               this.state.showArchivedRoutes = res.data.settings.filter((e)=>{ return Object.keys(e)[0] == "showArchivedRoutes"})[0].showArchivedRoutes
               this.state.hideAdminFunctions = res.data.settings.filter((e)=>{ return Object.keys(e)[0] == "hideAdminFunctions"})[0].hideAdminFunctions
               this.state.showSystemRoutes = res.data.settings.filter((e)=>{ return Object.keys(e)[0] == "showSystemRoutes"})[0].showSystemRoutes
+              this.state.defaultOriginType = res.data.settings.filter((e)=>{ return Object.keys(e)[0] == "defaultOriginType"})[0].defaultOriginType
+              
             }
             // axios.defaults.headers.common['Authorization'] = resp.token
             commit('authenticationSuccess', res);
@@ -636,7 +638,8 @@ export default createStore({
         {"autoPreventBigCities":this.state.autoPreventBigCities},
         {"showArchivedRoutes":this.state.showArchivedRoutes},
         {"hideAdminFunctions":this.state.hideAdminFunctions},
-        {"showSystemRoutes":this.state.showSystemRoutes}
+        {"showSystemRoutes":this.state.showSystemRoutes},
+        {"defaultOriginType":this.state.defaultOriginType}
       ]
       
       axios({

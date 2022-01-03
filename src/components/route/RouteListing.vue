@@ -40,13 +40,13 @@ export default {
   },
   computed:{
     activeRoutes(){
-      return this.routes.filter(r => (r.archived == null || !r.archived) && !r.system )
+      return this.routes.filter(r => (r.archived == null || !r.archived) && !r.system ).sort((a,b)=>{if (a.active == b.active) { return a.name < b.name ? 1 : -1 }return a.active - b.active}).reverse()
     },
     archivedRoutes(){
-      return this.routes.filter(r => (r.archived != null && r.archived) && !r.system )
+      return this.routes.filter(r => (r.archived != null && r.archived) && !r.system ).sort((a,b)=>{if (a.active == b.active) { return a.name < b.name ? 1 : -1 }return a.active - b.active}).reverse()
     },
     systemRoutes(){
-      return this.routes.filter(r => r.system )
+      return this.routes.filter(r => r.system ).sort((a,b)=>{if (a.active == b.active) { return a.name < b.name ? 1 : -1 }return a.active - b.active}).reverse()
 
     },
     expandCollapseValue(){
