@@ -6,7 +6,7 @@
       $store.state.activeRoute.polyline.length > 0
     "
   >
-  <div class="search-along-route-banner secondary-color-70">
+  <div class="search-along-route-banner secondary-color-70" :class="{ 'shift-right':routeSummaryShown,'shift-left':!routeSummaryShown}">
     <div @click="expanded = !expanded">Search Along Route</div>
       <img v-if="!expanded"
       @click="expanded = true" src="/static/arrow-down-icon.png" class="icon clickable" />
@@ -141,10 +141,17 @@ export default {
       searchBeforeAfterAround: "",
       predefinedSearchTypes: [],
       expanded: false,
+      routeSummaryShown:false
     };
   },
   created() {
     this.predefinedSearchTypes = getPredefinedSearchTypes();
+    this.routeSummaryShown = this.$store.state.alwaysShowRouteSummary
+  },
+  watch:{
+    "$store.state.alwaysShowRouteSummary":function(){
+      this.routeSummaryShown = this.$store.state.alwaysShowRouteSummary
+    }
   },
   methods: {
     trimStopName(stopName) {
@@ -284,7 +291,7 @@ button{
   z-index: 1000;
   font-size:0.6rem;
   position: absolute;
-  left:32rem;
+  
   top:2rem;
   display: flex;
   margin-left:0.2rem;
@@ -296,6 +303,12 @@ button{
   margin-bottom:0.1rem;
   margin-right:0.1rem;
   margin-left:0.1rem;
+}
+.shift-left{
+  left:15.5rem;
+}
+.shift-right{
+  left:32rem;
 }
 .search-along-route-banner img {
   height: 0.45rem;

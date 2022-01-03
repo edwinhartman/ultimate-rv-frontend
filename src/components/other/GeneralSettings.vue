@@ -99,32 +99,56 @@ export default{
         this.hideAdminFunctions = this.$store.state.hideAdminFunctions
     },
     watch:{
-        preventTollroads:function(){
-            this.$store.commit("setPreventTollroads",this.preventTollroads)
+        preventTollroads:function(newValue,oldValue){
+            this.$store.commit("setPreventTollroads",newValue)
+            if (newValue != oldValue){
+                this.$store.dispatch("saveUserSettings")
+            }
         },
         "$store.state.preventTollroads":function(){
             this.preventTollroads = this.$store.state.preventTollroads
         },
-        alwaysShowRouteSummary:function(){
-            this.$store.commit("setAlwaysShowRouteSummary",this.alwaysShowRouteSummary)
+        alwaysShowRouteSummary:function(newValue,oldValue){
+            this.$store.commit("setAlwaysShowRouteSummary",newValue)
+            if (newValue != oldValue){
+                this.$store.dispatch("saveUserSettings")
+            }
         },
-        showYelpDetails:function(){
-            this.$store.commit("setShowYelpDetails",this.showYelpDetails)
+        showYelpDetails:function(newValue,oldValue){
+            this.$store.commit("setShowYelpDetails",newValue)
+            if (newValue != oldValue){
+                this.$store.dispatch("saveUserSettings")
+            }
         },
-        defaultOriginType:function(){
-            this.$store.commit("setDefaultOriginType",this.defaultOriginType)
+        defaultOriginType:function(newValue,oldValue){
+            this.$store.commit("setDefaultOriginType",newValue)
+            if (newValue != oldValue){
+                this.$store.dispatch("saveUserSettings")
+            }
         },
-        autoPreventBigCities:function(){
-            this.$store.commit("setAutoPreventBigCities",this.autoPreventBigCities)
+        autoPreventBigCities:function(newValue,oldValue){
+            this.$store.commit("setAutoPreventBigCities",newValue)
+            if (newValue != oldValue){
+                this.$store.dispatch("saveUserSettings")
+            }
         },
-        showArchivedRoutes:function(){
-            this.$store.commit("setShowArchivedRoutes",this.showArchivedRoutes)
+        showArchivedRoutes:function(newValue,oldValue){
+            this.$store.commit("setShowArchivedRoutes",newValue)
+            if (newValue != oldValue){
+                this.$store.dispatch("saveUserSettings")
+            }
         },
-        showSystemRoutes:function(){
-            this.$store.commit("setShowSystemRoutes",this.showSystemRoutes)
+        showSystemRoutes:function(newValue,oldValue){
+            this.$store.commit("setShowSystemRoutes",newValue)
+            if (newValue != oldValue){
+                this.$store.dispatch("saveUserSettings")
+            }
         },
-        hideAdminFunctions:function(){
-            this.$store.commit("setHideAdminFunctions",this.hideAdminFunctions)
+        hideAdminFunctions:function(newValue,oldValue){
+            this.$store.commit("setHideAdminFunctions",newValue)
+            if (newValue != oldValue){
+                this.$store.dispatch("saveUserSettings")
+            }
         }
     }
 }

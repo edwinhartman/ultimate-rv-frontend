@@ -10,7 +10,7 @@
     <div>
       {{ $store.state.activeRoute.name }}
     </div>
-   
+    
     <div class="font-bold">Total: {{ getTotalDistance() }} miles</div>
       </div>
   </div>

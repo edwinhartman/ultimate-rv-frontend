@@ -3,6 +3,7 @@ import axios from 'axios'
 import VuexPersistence from 'vuex-persist'
 import flexible_polyline from '../helpers/flexible_polyline'
 import { calculateRouteHERE } from '../business_logic/RoutingCalculator'
+import router from '../router/index'
 
 const vuexLocal = new VuexPersistence({
   storage: window.localStorage
@@ -286,6 +287,7 @@ export default createStore({
       state.editStopDateStop = null
       state.defaultOriginType = "current"
       state.autoPreventBigCities = false
+      
     }
 
   },
@@ -294,6 +296,7 @@ export default createStore({
       commit("logoutUser")
       localStorage.removeItem("user-token");
       localStorage.removeItem("user-token-admin");
+      router.go()
     },
     setSharedSearchMarkers({ commit }, markers) {
       commit('clearSharedSearchMarkers')
@@ -448,9 +451,20 @@ export default createStore({
             if (res.data.adminToken) {
               localStorage.setItem("user-token-admin", res.data.adminToken);
             }
+            if (res.data.settings != null && res.data.settings.length > 0){
+
+              this.state.preventTollroads = res.data.settings.filter(e => { return Object.keys(e)[0] === "preventTollroads"})[0].preventTollroads
+              this.state.alwaysShowRouteSummary = res.data.settings.filter((e)=>{ return Object.keys(e)[0] == "alwaysShowRouteSummary" })[0].alwaysShowRouteSummary
+              this.state.showYelpDetails = res.data.settings.filter((e)=>{ return Object.keys(e)[0] == "showYelpDetails"})[0].showYelpDetails
+              this.state.autoPreventBigCities = res.data.settings.filter((e)=>{ return Object.keys(e)[0] == "autoPreventBigCities"})[0].autoPreventBigCities
+              this.state.showArchivedRoutes = res.data.settings.filter((e)=>{ return Object.keys(e)[0] == "showArchivedRoutes"})[0].showArchivedRoutes
+              this.state.hideAdminFunctions = res.data.settings.filter((e)=>{ return Object.keys(e)[0] == "hideAdminFunctions"})[0].hideAdminFunctions
+              this.state.showSystemRoutes = res.data.settings.filter((e)=>{ return Object.keys(e)[0] == "showSystemRoutes"})[0].showSystemRoutes
+            }
             // axios.defaults.headers.common['Authorization'] = resp.token
             commit('authenticationSuccess', res);
             resolve(res);
+            // router.go()
             //console.log(localStorage.getItem("user-token"));
           } else {
             // commit(AUTH_ERROR, "Authentication failed");
@@ -604,7 +618,6 @@ export default createStore({
       })
     },
     setRouteAsSystemRoute({commit},payload){
-      console.log("setRouteAsSystemRoute")
       axios({
         method:'post',
         url:process.env.VUE_APP_BACKEND_CONNECTION_URI + "/updateRouteToSystemRoute",
@@ -613,6 +626,27 @@ export default createStore({
         }
       }).then((res)=>{
         commit('loadRoutes',res.data.routes)
+      })
+    },
+    saveUserSettings({commit}){
+      let settings = [
+        {"preventTollroads":this.state.preventTollroads},
+        {"alwaysShowRouteSummary":this.state.alwaysShowRouteSummary},
+        {"showYelpDetails":this.state.showYelpDetails},
+        {"autoPreventBigCities":this.state.autoPreventBigCities},
+        {"showArchivedRoutes":this.state.showArchivedRoutes},
+        {"hideAdminFunctions":this.state.hideAdminFunctions},
+        {"showSystemRoutes":this.state.showSystemRoutes}
+      ]
+      
+      axios({
+        method:'post',
+        url:process.env.VUE_APP_BACKEND_CONNECTION_URI + "/saveUserSettings",
+        data:{
+          settings:settings
+        }
+      }).then((res)=>{
+        
       })
     }
 

@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="activeRoute != null && !activeRoute.system && summaries != null && summaries.length > 0"
+    v-if="$store.state.alwaysShowRouteSummary && activeRoute != null && !activeRoute.system && summaries != null && summaries.length > 0"
     class="route-summary2 secondary-color-70"
   >
     <div class="font-bold">
