@@ -3,12 +3,13 @@
     <ModalPopup :yesNoOption="true" v-if="showRemoveAvoidAreaPopup" @yesAnswer="removeAvoidArea(true)" @noAnswer="removeAvoidArea(false)">
       <div>You are about to remove an avoid area. Are you sure?</div>
     </ModalPopup>
-    
+    <RouteSummary2 />
     <div
       id="map"
       v-bind:style="{ width: map_width + 'px', height: map_height + 'px' }"
       class="z-0"
     ></div>
+  
   </div>
 </template>
 <script>
@@ -23,7 +24,7 @@ import { getCampgrounds } from "../../business_logic/Campgrounds";
 import { getOvernightParking } from "../../business_logic/OvernightParking";
 
 import ModalPopup from "../templates/ModalPopup.vue";
-
+import RouteSummary2 from '../route/RouteSummary2.vue'
 export default {
   name: "MapView",
   props: {
@@ -37,7 +38,8 @@ export default {
     },
   },
   components: {
-    ModalPopup
+    ModalPopup,
+    RouteSummary2
   },
   data() {
     return {
@@ -287,7 +289,7 @@ export default {
                     zip,
                     country,
                     (annotations,markers) => {
-                      console.log(annotations)
+                      // console.log(annotations)
                       for (let i = 0; i < annotations.length; i++) {
                         this.predefinedSearchMarkers.push(
                           annotations[i].coordinate

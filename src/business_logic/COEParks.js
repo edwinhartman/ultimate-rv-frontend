@@ -4,10 +4,10 @@ export function getCOEParks(region, callback) {
     var annotations = []
     var markers = []
 
-    let lowLatitude = region.center.latitude - region.span.latitudeDelta
-    let highLatitude = region.center.latitude + region.span.latitudeDelta
-    let lowLongitude = region.center.longitude - region.span.longitudeDelta
-    let highLongitude = region.center.longitude + region.span.longitudeDelta
+    let lowLatitude = region.center.latitude - (region.span.latitudeDelta / 2)
+    let highLatitude = region.center.latitude + (region.span.latitudeDelta / 2)
+    let lowLongitude = region.center.longitude - (region.span.longitudeDelta / 2)
+    let highLongitude = region.center.longitude + (region.span.longitudeDelta / 2)
     let url = process.env.VUE_APP_BACKEND_CONNECTION_URI + "/getCOEParks"
     axios({
         method: "post",

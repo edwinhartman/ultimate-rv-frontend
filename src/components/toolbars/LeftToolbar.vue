@@ -1,43 +1,51 @@
 <template>
   <div class="secondary-color left-toolbar shadow-right">
     <LocationSearch />
-    <RouteListing />
-    <RouteSummary  />
     <div class="toolbar-buttons">
-    <div>
-      <Popper :interactive="false" :hover="true">
-      <button @click="addNewRoute">Add New Route</button>
-      <template #content>
-        <div class="tooltip-popup">This will create a new blank route</div>
-      </template>
-      </Popper>
+      <div>
+        <Popper :interactive="false" :hover="true">
+          <button @click="addNewRoute">Add New Route</button>
+          <template #content>
+            <div class="tooltip-popup">This will create a new blank route</div>
+          </template>
+        </Popper>
+      </div>
+      <div
+        v-if="
+          $store.state.activeRoute != null &&
+          $store.state.activeRoute.stops.length > 0
+        "
+      >
+        <Popper :interactive="false" :hover="true">
+          <button @click="copyToReverse">Copy To Reverse</button>
+          <template #content>
+            <div class="tooltip-popup">
+              This will create a new route that is the reverse of the active
+              route
+            </div>
+          </template>
+        </Popper>
+      </div>
     </div>
-    <div v-if="$store.state.activeRoute != null && $store.state.activeRoute.stops.length > 0">
-      <Popper :interactive="false" :hover="true">
-      <button @click="copyToReverse">Copy  To Reverse</button>
-      <template #content>
-        <div class="tooltip-popup">This will create a new route that is the reverse of the active route</div>
-      </template>
-      </Popper>
-    </div>
-    </div>
+    <RouteListing />
+    <!-- <RouteSummary /> -->
   </div>
 </template>
 <script>
-import LocationSearch from '../search/LocationSearch.vue'
-import RouteListing from '../route/RouteListing.vue'
-import RouteSummary from "../route/RouteSummary.vue";
-import Popper from 'vue3-popper'
+import LocationSearch from "../search/LocationSearch.vue";
+import RouteListing from "../route/RouteListing.vue";
+// import RouteSummary from "../route/RouteSummary.vue";
+import Popper from "vue3-popper";
 
 export default {
   name: "LeftToolbar",
   components: {
     LocationSearch,
     RouteListing,
-    RouteSummary,
-    Popper
+    // RouteSummary,
+    Popper,
   },
-  
+
   computed: {
     stopList: {
       get() {
@@ -54,7 +62,7 @@ export default {
       },
     },
   },
-  
+
   methods: {
     deleteStop(route_info, stop_info) {
       this.$store.dispatch("removeStopFromRoute", {
@@ -62,13 +70,13 @@ export default {
         stop_id: stop_info.element._id,
       });
     },
-    
+
     addNewRoute() {
       this.$store.dispatch("addBlankRoute");
     },
-    copyToReverse(){
-      this.$store.dispatch("copyActiveRouteToReverse")
-    }
+    copyToReverse() {
+      this.$store.dispatch("copyActiveRouteToReverse");
+    },
   },
   created() {
     this.$axios
@@ -98,32 +106,33 @@ export default {
 };
 </script>
 <style scoped>
-div.left-toolbar{
-  min-width:12rem;
+div.left-toolbar {
+  min-width: 12rem;
   max-width: 16rem;
-  padding-left:0.1rem;
-  padding-right:0.1rem;
-  z-index:80;
+  padding-left: 0.1rem;
+  padding-right: 0.1rem;
+  z-index: 80;
   max-height: 97vh;
-  overflow:hidden;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   position: relative;
 }
-div.toolbar-buttons{
-  width:15vw;
-  display:flex;
+div.toolbar-buttons {
+  width: 15vw;
+  display: flex;
   flex-direction: row;
   justify-content: space-around;
-  margin-left:0.1rem;
-  position: absolute;
-  bottom:0.2rem;
-  min-width:12rem;
-  max-width:15rem;
+  margin-left: 0.1rem;
+  /* position: absolute; */
+  /* bottom: 0.2rem; */
+  min-width: 12rem;
+  max-width: 15rem;
+  margin-bottom:0.2rem;
 }
-div.toolbar-buttons button{
+div.toolbar-buttons button {
   font-size: 0.6rem;
-  margin-right:0.1rem;
+  margin-right: 0.1rem;
   cursor: pointer;
 }
 </style>

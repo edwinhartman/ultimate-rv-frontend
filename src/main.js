@@ -20,6 +20,10 @@ axios.interceptors.request.use((config) => {
         if (token) {
             config.headers['Authorization'] = token; //`Bearer ${ token }`;
         }
+        let adminToken = localStorage.getItem('user-token-admin');
+        if (adminToken) {
+            config.headers['X-Admin-Authorization'] = adminToken;
+        }
     }
     //config.baseURL = process.env.VUE_APP_BACKEND_CONNECTION_URI;
     //    config.headers['Access-Control-Allow-Origin'] = process.env.VUE_APP_BACKEND_CONNECTION_URI;

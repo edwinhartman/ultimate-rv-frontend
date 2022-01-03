@@ -3,10 +3,10 @@ import axios from 'axios'
 export function searchGasStations(region,store, city,state,zipcode,country,callback){
     var annotations = []
     var markers = []
-    let lowLatitude = region.center.latitude - region.span.latitudeDelta
-    let highLatitude = region.center.latitude + region.span.latitudeDelta
-    let lowLongitude = region.center.longitude - region.span.longitudeDelta
-    let highLongitude = region.center.longitude + region.span.longitudeDelta
+    let lowLatitude = region.center.latitude - (region.span.latitudeDelta / 2)
+    let highLatitude = region.center.latitude + (region.span.latitudeDelta / 2)
+    let lowLongitude = region.center.longitude - (region.span.longitudeDelta / 2)
+    let highLongitude = region.center.longitude + (region.span.longitudeDelta / 2)
 
     axios({
       method: "post",
@@ -25,7 +25,7 @@ export function searchGasStations(region,store, city,state,zipcode,country,callb
       },
     })
       .then((res) => {
-        console.log(res)
+        // console.log(res)
         for (let i = 0; i < res.data.data.length; i++) {
           for (let j = 1; j < res.data.data[i].length; j++) {
             var calloutDelegate = {

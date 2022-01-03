@@ -33,6 +33,25 @@
         <label for="ShowYelpDetails">Show Yelp Details</label>
         </li>
         <li>
+            <Popper :interactive="false" :hover="true">
+                <div>
+        <input type="checkbox" id="AutoPreventBigCities" value="true" v-model="autoPreventBigCities" />
+        <label for="AutoPreventBigCities">Automatically Prevent Big Cities</label>
+                </div>
+        <template #content>
+            <div class="tooltip-popup2">This will automatically bring in areas to avoid surrounding major cities when creating a new route</div>
+          </template>
+        </Popper>
+        </li>
+        <li>
+            <input type="checkbox" id="ShowArchivedRoutes" value="true" v-model="showArchivedRoutes" />
+        <label for="ShowArchivedRoutes">Show Archived Routes section</label>
+        </li>
+        <li v-if="$store.state.adminToken != null">
+            <input type="checkbox" id="ShowSystemRoutes" value="true" v-model="showSystemRoutes" />
+            <label for="ShowSystemRoutes">Show System Routes section</label>
+        </li>
+        <li>
             Default Origin: <select name="" id="" v-model="defaultOriginType">
                 <option value="current">Current Location</option>
                 <option value="home">Home Location</option>
@@ -46,15 +65,22 @@
     </div>
 </template>
 <script>
+import Popper from "vue3-popper";
 export default{
     name:"GeneralSettings",
+    components:{
+        Popper
+    },
     data(){
         return {
             preventTollroads:false,
             alwaysShowRouteSummary:false,
             expanded:false,
             showYelpDetails:false,
-            defaultOriginType:"current"
+            defaultOriginType:"current",
+            autoPreventBigCities:false,
+            showArchivedRoutes:false,
+            showSystemRoutes:false
         }
     },
     mounted(){
@@ -62,6 +88,9 @@ export default{
         this.alwaysShowRouteSummary = this.$store.state.alwaysShowRouteSummary
         this.showYelpDetails = this.$store.state.showYelpDetails
         this.defaultOriginType = this.$store.state.defaultOriginType
+        this.autoPreventBigCities = this.$store.state.autoPreventBigCities
+        this.showArchivedRoutes = this.$store.state.showArchivedRoutes
+        this.showSystemRoutes = this.$store.state.showSystemRoutes
     },
     watch:{
         preventTollroads:function(){
@@ -78,6 +107,15 @@ export default{
         },
         defaultOriginType:function(){
             this.$store.commit("setDefaultOriginType",this.defaultOriginType)
+        },
+        autoPreventBigCities:function(){
+            this.$store.commit("setAutoPreventBigCities",this.autoPreventBigCities)
+        },
+        showArchivedRoutes:function(){
+            this.$store.commit("setShowArchivedRoutes",this.showArchivedRoutes)
+        },
+        showSystemRoutes:function(){
+            this.$store.commit("setShowSystemRoutes",this.showSystemRoutes)
         }
     }
 }

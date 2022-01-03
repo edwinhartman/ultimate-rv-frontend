@@ -165,7 +165,7 @@ export default {
         this.searchBeforeAfterAround == "before"
       ) {
         let sectionIdx = -1;
-        let searchLength = this.searchDistance * 1609;
+        let searchLength = this.searchDistance * 1600;
         var currentDistance = 0;
         let offset = -1;
 

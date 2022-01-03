@@ -4,6 +4,7 @@
                 <ul class="list-none">
                 <li class="cursor-pointer">General</li>
                 <li class="cursor-pointer">Payment</li>
+                <li><button @click="logoutUser">Logout</button></li>
                 </ul>
             </div>
             <div class="col-span-3 text-left">
@@ -29,6 +30,11 @@ export default{
     },
     components:{
         AccountGeneral
+    },
+    methods:{
+        logoutUser(){
+            this.$store.dispatch("logoutUser")
+        }
     }
 }
 </script>

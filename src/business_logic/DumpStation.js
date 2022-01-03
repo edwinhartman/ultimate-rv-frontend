@@ -3,10 +3,10 @@ import axios from 'axios'
 export function searchDumpStations(region,store, zipcode, callback) {
     var annotations = []
     var markers = []
-    let lowLatitude = region.center.latitude - region.span.latitudeDelta
-    let highLatitude = region.center.latitude + region.span.latitudeDelta
-    let lowLongitude = region.center.longitude - region.span.longitudeDelta
-    let highLongitude = region.center.longitude + region.span.longitudeDelta
+    let lowLatitude = region.center.latitude - (region.span.latitudeDelta / 2)
+    let highLatitude = region.center.latitude + (region.span.latitudeDelta / 2)
+    let lowLongitude = region.center.longitude - (region.span.longitudeDelta / 2)
+    let highLongitude = region.center.longitude + (region.span.longitudeDelta / 2)
 
     axios({
         method: "post",

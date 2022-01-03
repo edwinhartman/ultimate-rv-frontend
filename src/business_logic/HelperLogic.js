@@ -1,8 +1,8 @@
 export function determineDistance(region,lat,lon){
-    let lowLatitude = region.center.latitude - region.span.latitudeDelta
-    let highLatitude = region.center.latitude + region.span.latitudeDelta
-    let lowLongitude = region.center.longitude - region.span.longitudeDelta
-    let highLongitude = region.center.longitude + region.span.longitudeDelta
+    let lowLatitude = region.center.latitude - (region.span.latitudeDelta / 2)
+    let highLatitude = region.center.latitude + (region.span.latitudeDelta / 2)
+    let lowLongitude = region.center.longitude - (region.span.longitudeDelta / 2)
+    let highLongitude = region.center.longitude + (region.span.longitudeDelta / 2)
     var centerLatitude = ((highLatitude - lowLatitude) / 2.0) + lowLatitude
     var centerLongitude = ((highLongitude - lowLongitude) / 2.0) + lowLongitude
     let distance = calcCrow(centerLatitude,centerLongitude,lat,lon)

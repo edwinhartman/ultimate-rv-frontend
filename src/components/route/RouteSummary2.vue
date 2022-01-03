@@ -1,7 +1,7 @@
 <template>
   <div
-    v-if="summaries != null && summaries.length > 0"
-    class="route-summary"
+    v-if="activeRoute != null && !activeRoute.system && summaries != null && summaries.length > 0"
+    class="route-summary2 secondary-color-70"
   >
     <div class="font-bold">
       <div class="clickable" @click="$store.commit('setShowRouteSummary',!$store.state.showRouteSummary)">Route Summary</div>
@@ -17,18 +17,23 @@
 </template>
 <script>
 export default {
-  name: "RouteSummary",
+  name: "RouteSummary2",
   data(){
       return {
-          summaries:[]
+          summaries:[],
+          activeRoute:null
       }
   },
   mounted(){
     this.summaries = this.$store.state.summaries
+    this.activeRoute = this.$store.state.activeRoute
   },
   watch: {
     "$store.state.summaries":function(){
       this.summaries = this.$store.state.summaries
+    },
+    "$store.state.activeRoute":function(){
+      this.activeRoute = this.$store.state.activeRoute
     }
   },
   methods: {
@@ -64,11 +69,12 @@ export default {
 };
 </script>
 <style scoped>
-.route-summary{
-  bottom:1.25rem;
-  left:0;
+.route-summary2{
+  /* bottom:1.25rem; */
+  top:2rem;
+  left:15.5rem;
   font-size:0.6rem;
-  width: 98%;
+  width: 16rem;
   z-index: 1000;
   position: absolute;
   border:solid rgb(80,80,80) 1px;
