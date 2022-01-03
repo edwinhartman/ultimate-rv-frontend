@@ -15,6 +15,7 @@ export default createStore({
     activeRoute: null,
     currentLocation: null,
     token: localStorage.getItem("user-token") || "",
+    adminToken: localStorage.getItem("user-token-admin") || null,
     rvs: [],
     activeRV: null,
     summaries: [],
@@ -35,7 +36,10 @@ export default createStore({
     showAnnotationDetailsAvailable:0,
     editStopDateActive:false,
     editStopDateStop:null,
-    defaultOriginType:"current"
+    defaultOriginType:"current",
+    autoPreventBigCities:false,
+    showArchivedRoutes:false,
+    showSystemRoutes:false
   },
   mutations: {
     resetAllHungupValues(state) {
@@ -74,6 +78,15 @@ export default createStore({
     },
     setShowYelpDetails(state, val) {
       state.showYelpDetails = val
+    },
+    setAutoPreventBigCities(state,val){
+      state.autoPreventBigCities = val
+    },
+    setShowArchivedRoutes(state,val){
+      state.showArchivedRoutes = val
+    },
+    setShowSystemRoutes(state,val){
+      state.showSystemRoutes = val
     },
     resetValues(state) {
       state.searchKeywords = ""
@@ -161,6 +174,11 @@ export default createStore({
     authenticationSuccess(state, resp) {
       //state.status = "success";
       state.token = resp.data.token;
+      if (resp.data.adminToken != null){
+        state.adminToken = resp.data.adminToken
+      }else{
+        state.adminToken = null
+      }
     },
     loadRVs(state, value) {
       state.rvs = value
@@ -233,10 +251,46 @@ export default createStore({
     clearEditStopDateStop(state){
       state.editStopDateStop = null
       state.editStopDateActive = false
+    },
+    logoutUser(state){
+      state.token = ""
+      state.adminToken = null
+      
+      state.searchKeywords = ""
+      state.routes = []
+      state.activeRoute = null
+      state.currentLocation = null
+      state.rvs = []
+      state.activeRV = null
+      state.summaries = []
+      state.searchPredefined = "none"
+      state.mapRegion = null
+      state.showRouteDirections = false
+      state.showAbout = false
+      state.preventTollroads = false
+      state.showRouteTolls = false
+      state.routeCalculateInProcess = false
+      state.alwaysShowRouteSummary = false
+      state.showRouteSummary = false
+      state.sharedSearchMarkers = []
+      state.showPicture = null
+      state.showYelpDetails = false
+      state.accountMaintenanceActive = false
+      state.showAnnotationDetails = null
+      state.showAnnotationDetailsAvailable = 0
+      state.editStopDateActive = false
+      state.editStopDateStop = null
+      state.defaultOriginType = "current"
+      state.autoPreventBigCities = false
     }
 
   },
   actions: {
+    logoutUser({commit}){
+      commit("logoutUser")
+      localStorage.removeItem("user-token");
+      localStorage.removeItem("user-token-admin");
+    },
     setSharedSearchMarkers({ commit }, markers) {
       commit('clearSharedSearchMarkers')
       commit('setSharedSearchMarkers', markers)
@@ -420,7 +474,6 @@ export default createStore({
       }).catch((err) => { console.log(err) })
     },
     addRV({ commit }, payload) {
-      console.log(payload)
       axios({
         method: 'post',
         url: process.env.VUE_APP_BACKEND_CONNECTION_URI + '/addRV',
@@ -456,7 +509,7 @@ export default createStore({
     addBlankRoute({ commit }) {
       axios({
         method: 'get',
-        url: process.env.VUE_APP_BACKEND_CONNECTION_URI + '/addBlankRoute'
+        url: process.env.VUE_APP_BACKEND_CONNECTION_URI + '/addBlankRoute?addBigCities=' + this.state.autoPreventBigCities
       }).then((res) => {
         commit('loadRoutes', res.data.routes)
       })
@@ -543,6 +596,18 @@ export default createStore({
         }
       }).then((res)=>{
         commit('clearEditStopDateStop')
+        commit('loadRoutes',res.data.routes)
+      })
+    },
+    setRouteAsSystemRoute({commit},payload){
+      console.log("setRouteAsSystemRoute")
+      axios({
+        method:'post',
+        url:process.env.VUE_APP_BACKEND_CONNECTION_URI + "/updateRouteToSystemRoute",
+        data:{
+          route_id:payload.route_id
+        }
+      }).then((res)=>{
         commit('loadRoutes',res.data.routes)
       })
     }

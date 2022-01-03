@@ -75,7 +75,6 @@ export default{
         }
     },
     mounted(){
-        console.log("mounted")
         if (this.edit_rv != null){
             this.name = this.edit_rv.name
             this.length = this.edit_rv.length
