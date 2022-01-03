@@ -12,7 +12,7 @@
     <ArchivedRoutes v-for="route in archivedRoutes" :key="route._id" :route_prop="route" />
       </div>
     </div>
-    <div v-if="adminToken != null && $store.state.showSystemRoutes" class="system-routes-div">
+    <div v-if="adminToken != null && $store.state.showSystemRoutes && !$store.state.hideAdminFunctions" class="system-routes-div">
       <div class="font-bold relative">System Routes <img v-if="!showSystemRoutes" src="/static/arrow-down-icon.png" class="icon min-max-button2 clickable" @click="toggleShowSystemRoutes()"><img v-if="showSystemRoutes" src="/static/arrow-up-icon.png" class="icon min-max-button2 clickable" @click="toggleShowSystemRoutes()"></div>
       <div v-if="showSystemRoutes">
       <RouteOverview v-for="route in systemRoutes" :key="route._id" :route_prop="route" />

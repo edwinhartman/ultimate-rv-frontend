@@ -48,6 +48,10 @@
         <label for="ShowArchivedRoutes">Show Archived Routes section</label>
         </li>
         <li v-if="$store.state.adminToken != null">
+            <input type="checkbox" id="HideAdminFunctions" value="true" v-model="hideAdminFunctions" />
+            <label for="HideAdminFunctions">Hide Admin Functions</label>
+        </li>
+        <li v-if="$store.state.adminToken != null && !$store.state.hideAdminFunctions">
             <input type="checkbox" id="ShowSystemRoutes" value="true" v-model="showSystemRoutes" />
             <label for="ShowSystemRoutes">Show System Routes section</label>
         </li>
@@ -80,7 +84,8 @@ export default{
             defaultOriginType:"current",
             autoPreventBigCities:false,
             showArchivedRoutes:false,
-            showSystemRoutes:false
+            showSystemRoutes:false,
+            hideAdminFunctions:false
         }
     },
     mounted(){
@@ -91,6 +96,7 @@ export default{
         this.autoPreventBigCities = this.$store.state.autoPreventBigCities
         this.showArchivedRoutes = this.$store.state.showArchivedRoutes
         this.showSystemRoutes = this.$store.state.showSystemRoutes
+        this.hideAdminFunctions = this.$store.state.hideAdminFunctions
     },
     watch:{
         preventTollroads:function(){
@@ -116,6 +122,9 @@ export default{
         },
         showSystemRoutes:function(){
             this.$store.commit("setShowSystemRoutes",this.showSystemRoutes)
+        },
+        hideAdminFunctions:function(){
+            this.$store.commit("setHideAdminFunctions",this.hideAdminFunctions)
         }
     }
 }

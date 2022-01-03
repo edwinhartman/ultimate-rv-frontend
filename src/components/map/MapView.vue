@@ -4,6 +4,7 @@
       <div>You are about to remove an avoid area. Are you sure?</div>
     </ModalPopup>
     <RouteSummary2 />
+    <SearchAlongRoute />
     <div
       id="map"
       v-bind:style="{ width: map_width + 'px', height: map_height + 'px' }"
@@ -25,6 +26,8 @@ import { getOvernightParking } from "../../business_logic/OvernightParking";
 
 import ModalPopup from "../templates/ModalPopup.vue";
 import RouteSummary2 from '../route/RouteSummary2.vue'
+import SearchAlongRoute from '../route/SearchAlongRoute.vue'
+
 export default {
   name: "MapView",
   props: {
@@ -39,7 +42,8 @@ export default {
   },
   components: {
     ModalPopup,
-    RouteSummary2
+    RouteSummary2,
+    SearchAlongRoute
   },
   data() {
     return {

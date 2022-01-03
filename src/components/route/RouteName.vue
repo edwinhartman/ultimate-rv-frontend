@@ -117,7 +117,7 @@
       </template>
     </Popper>
     <button
-      v-if="$store.state.adminToken != null && !route_prop.system"
+      v-if="$store.state.adminToken != null && !route_prop.system && !$store.state.hideAdminFunctions"
       @click="setRouteAsSystemRoute(route._id)"
     >
       System

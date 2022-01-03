@@ -39,7 +39,8 @@ export default createStore({
     defaultOriginType:"current",
     autoPreventBigCities:false,
     showArchivedRoutes:false,
-    showSystemRoutes:false
+    showSystemRoutes:false,
+    hideAdminFunctions:false
   },
   mutations: {
     resetAllHungupValues(state) {
@@ -87,6 +88,9 @@ export default createStore({
     },
     setShowSystemRoutes(state,val){
       state.showSystemRoutes = val
+    },
+    setHideAdminFunctions(state,val){
+      state.hideAdminFunctions = val
     },
     resetValues(state) {
       state.searchKeywords = ""

@@ -2,15 +2,15 @@
   <div class="route-overview">
     <RouteName :route_prop="route" />
     <RouteStops :route_prop="route" />
-    <div v-if="route.active">
+    <!-- <div v-if="route.active">
         <SearchAlongRoute :route_prop="route" />
-    </div>
+    </div> -->
   </div>
 </template>
 <script>
 import RouteName from "./RouteName.vue";
 import RouteStops from "./RouteStops.vue";
-import SearchAlongRoute from './SearchAlongRoute.vue'
+// import SearchAlongRoute from './SearchAlongRoute.vue'
 
 export default{
     name:"RouteOverview",
@@ -23,7 +23,7 @@ export default{
     components:{
         RouteName,
         RouteStops,
-        SearchAlongRoute
+        // SearchAlongRoute
     },
     data(){
         return{

@@ -6,7 +6,7 @@
       $store.state.activeRoute.polyline.length > 0
     "
   >
-  <div class="search-along-route-banner">
+  <div class="search-along-route-banner secondary-color-70">
     <div @click="expanded = !expanded">Search Along Route</div>
       <img v-if="!expanded"
       @click="expanded = true" src="/static/arrow-down-icon.png" class="icon clickable" />
@@ -14,8 +14,7 @@
     
       <img v-if="expanded"
       @click="expanded = false" src="/static/arrow-up-icon.png" class="icon clickable" />
-  </div>
-    <div v-if="expanded">
+      <div v-if="expanded">
       <select name="" id="" v-model="searchTerm">
         <option
           v-for="opt in predefinedSearchTypes"
@@ -113,6 +112,8 @@
         </button>
       </div>
     </div>
+  </div>
+    
   </div>
 </template>
 <script>
@@ -271,7 +272,7 @@ export default {
 </script>
 <style scoped>
 div {
-  font-size:0.7rem;
+  font-size:0.6rem;
 }
 button{
   font-size:0.6rem;
@@ -280,8 +281,21 @@ button{
   margin-bottom:0.1rem;
 }
 .search-along-route-banner{
+  z-index: 1000;
+  font-size:0.6rem;
+  position: absolute;
+  left:32rem;
+  top:2rem;
   display: flex;
   margin-left:0.2rem;
+  padding-left:0.5rem;
+  padding-right:0.5rem;
+  border:solid rgb(80,80,80) 1px;
+  border-radius: 0.25rem;
+   margin-top:0.1rem;
+  margin-bottom:0.1rem;
+  margin-right:0.1rem;
+  margin-left:0.1rem;
 }
 .search-along-route-banner img {
   height: 0.45rem;
