@@ -3,7 +3,7 @@
     <SearchPredefined />
     <GeneralSettings />
     <RVListing 
-      v-if="$store.state.rvs.length > 0" 
+      v-if="$store.state.rvs.length > 0 && $store.state.showRVSettings" 
       @add_new="openRVEditPanel" 
       @edit_active_rv="editActiveRV" 
       :edit_active="addNewRV || editRV != null"

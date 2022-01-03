@@ -33,6 +33,10 @@
         <label for="ShowYelpDetails">Show Yelp Details</label>
         </li>
         <li>
+        <input type="checkbox" id="ShowRVSettings" value="true" v-model="showRVSettings" />
+        <label for="ShowRVSettings">Show RV Settings Section</label>
+        </li>
+        <li>
             <Popper :interactive="false" :hover="true">
                 <div>
         <input type="checkbox" id="AutoPreventBigCities" value="true" v-model="autoPreventBigCities" />
@@ -85,7 +89,8 @@ export default{
             autoPreventBigCities:false,
             showArchivedRoutes:false,
             showSystemRoutes:false,
-            hideAdminFunctions:false
+            hideAdminFunctions:false,
+            showRVSettings:false
         }
     },
     mounted(){
@@ -97,6 +102,7 @@ export default{
         this.showArchivedRoutes = this.$store.state.showArchivedRoutes
         this.showSystemRoutes = this.$store.state.showSystemRoutes
         this.hideAdminFunctions = this.$store.state.hideAdminFunctions
+        this.showRVSettings = this.$store.state.showRVSettings
     },
     watch:{
         preventTollroads:function(newValue,oldValue){
@@ -146,6 +152,12 @@ export default{
         },
         hideAdminFunctions:function(newValue,oldValue){
             this.$store.commit("setHideAdminFunctions",newValue)
+            if (newValue != oldValue){
+                this.$store.dispatch("saveUserSettings")
+            }
+        },
+        showRVSettings:function(newValue,oldValue){
+            this.$store.commit("setShowRVSettings",newValue)
             if (newValue != oldValue){
                 this.$store.dispatch("saveUserSettings")
             }

@@ -41,7 +41,8 @@ export default createStore({
     autoPreventBigCities:false,
     showArchivedRoutes:false,
     showSystemRoutes:false,
-    hideAdminFunctions:false
+    hideAdminFunctions:false,
+    showRVSettings:false
   },
   mutations: {
     resetAllHungupValues(state) {
@@ -92,6 +93,9 @@ export default createStore({
     },
     setHideAdminFunctions(state,val){
       state.hideAdminFunctions = val
+    },
+    setShowRVSettings(state,val){
+      state.showRVSettings = val
     },
     resetValues(state) {
       state.searchKeywords = ""
@@ -461,6 +465,9 @@ export default createStore({
               this.state.hideAdminFunctions = res.data.settings.filter((e)=>{ return Object.keys(e)[0] == "hideAdminFunctions"})[0].hideAdminFunctions
               this.state.showSystemRoutes = res.data.settings.filter((e)=>{ return Object.keys(e)[0] == "showSystemRoutes"})[0].showSystemRoutes
               this.state.defaultOriginType = res.data.settings.filter((e)=>{ return Object.keys(e)[0] == "defaultOriginType"})[0].defaultOriginType
+              if (res.data.settings.filter((e)=>{ return Object.keys(e)[0] == "showRVSettings"})){
+                this.state.showRVSettings = res.data.settings.filter((e)=>{ return Object.keys(e)[0] == "showRVSettings"})[0].showRVSettings
+              }
               
             }
             // axios.defaults.headers.common['Authorization'] = resp.token
@@ -639,7 +646,8 @@ export default createStore({
         {"showArchivedRoutes":this.state.showArchivedRoutes},
         {"hideAdminFunctions":this.state.hideAdminFunctions},
         {"showSystemRoutes":this.state.showSystemRoutes},
-        {"defaultOriginType":this.state.defaultOriginType}
+        {"defaultOriginType":this.state.defaultOriginType},
+        {"showRVSettings":this.state.showRVSettings}
       ]
       
       axios({
