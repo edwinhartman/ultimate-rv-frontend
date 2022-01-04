@@ -24,7 +24,22 @@ const ifAuthenticated = (to, from, next) => {
         }).catch(() => {});
     }
 };
+const ifAuthenticatedAdmin = (to, from, next) => {
+    if (store.getters.isAuthenticatedAdmin) {
+        next();
+        return;
+    }
+    //next("/login");
 
+    if (to.name === "Logout" && (from.name === "Login" || from.name === null)) {
+        next("/");
+    } else {
+        router.replace({
+            path: "/login",
+            query: { next_step: to.path }
+        }).catch(() => {});
+    }
+};
 const routes = [
     {
         path:'/',
@@ -54,7 +69,17 @@ const routes = [
         },
         component:()=>
             import( /* webpackChunkName: "admin" */ '../views/NewAccount.vue')
-    }
+    },
+    {
+        path: '/admin',
+        name: 'Admin',
+        meta: {
+            title: 'Admin'
+        },
+        component: () =>
+            import ( /* webpackChunkName: "admin" */ '../admin/views/AdminMain.vue'),
+        beforeEnter: ifAuthenticatedAdmin
+    },
 ]
 const router = new createRouter({
     history:createWebHistory(),

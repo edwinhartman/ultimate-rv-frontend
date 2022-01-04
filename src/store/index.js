@@ -671,6 +671,9 @@ export default createStore({
   getters: {
     isAuthenticated: (state) => {
       return !!state.token
+    },
+    isAuthenticatedAdmin: (state)=>{
+      return !!state.adminToken
     }
   },
   plugins: [vuexLocal.plugin, store => { store.dispatch('resetValues') }]

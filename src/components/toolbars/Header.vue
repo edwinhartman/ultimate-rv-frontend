@@ -4,6 +4,9 @@
       <li><a href="#home">Home</a></li>
       <li><a href="#account" @click="activateAccountMaintenance">Account</a></li>
       <li><a href="#about" @click="showAbout">About</a></li>
+      <li v-if="$store.state.adminToken != null && !$store.state.hideAdminFunctions">
+        <a href="/admin">Admin</a>
+      </li>
     </ul>
     <div class="reset-button" @click="xClicked()">X</div>
   </div>
