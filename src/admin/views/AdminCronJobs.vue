@@ -139,9 +139,13 @@ export default{
             })
         },
         getDateTimeFormatted(dateTime){
+            if (dateTime == ""){
+                return "Job has not run yet"
+            }else{
             let d = new Date(dateTime)
             
             return d.toLocaleDateString() + " " + d.toLocaleTimeString()
+            }
         }
     }
 }
