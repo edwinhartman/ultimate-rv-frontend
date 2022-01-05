@@ -72,7 +72,8 @@ export default {
                     executes:this.selectedFunction
                 }
             }).then((res)=>{
-                console.log(res)
+                // console.log(res)
+                this.tasks = res.data.tasks
             })
         },
         cancel(){
