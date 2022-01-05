@@ -73,7 +73,11 @@ export default {
         editUser(user){
             this.currentUser = user
             this.showAddEditForm = true
+            if (user.settings == ""){
+                this.userSettings = "{}"
+            }else{
             this.userSettings = JSON.stringify(JSON.parse( user.settings),null,2)
+            }
             this.firstName = user.firstName
             this.lastName = user.lastName
             this.email = user.email
