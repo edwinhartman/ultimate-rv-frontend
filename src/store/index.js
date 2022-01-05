@@ -633,7 +633,7 @@ export default createStore({
     setRouteAsSystemRoute({commit},payload){
       axios({
         method:'post',
-        url:process.env.VUE_APP_BACKEND_CONNECTION_URI + "/updateRouteToSystemRoute",
+        url:process.env.VUE_APP_BACKEND_CONNECTION_URI + "/admin/updateRouteToSystemRoute",
         data:{
           route_id:payload.route_id
         }

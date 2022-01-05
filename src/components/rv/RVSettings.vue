@@ -13,6 +13,7 @@ export default{
         }
         
     },
+    emits:["close_panel"],
     computed:{
         editRV(){
             return this.edit_rv

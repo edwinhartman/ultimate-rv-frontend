@@ -24,7 +24,8 @@ export default{
         login(){
             const { username, password } = this;
             this.$store.dispatch('authenticateUser', { username, password }).then(() => {
-                this.$router.push(this.$router.currentRoute.query.next_step);
+                this.$router.push({name:"Home"})
+                // this.$router.push(this.$router.currentRoute.query.next_step);
             }).catch((err)=>{
                 if (err === "Authentication failed"){
                 this.password = "";

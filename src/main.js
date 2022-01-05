@@ -34,6 +34,19 @@ axios.interceptors.request.use((config) => {
     return Promise.reject(error);
 });
 
+axios.interceptors.response.use(function (response) {
+    // Any status code within the range of 2xx cause this function to trigger
+    // Do something with response data
+    return response;
+}, function (error) {
+    if (error.response.status === 401){
+        store.dispatch("logoutUser")
+    }
+    // Any status codes outside the range of 2xx cause this function to trigger
+    // Do something with response error
+    return Promise.reject(error);
+});
+
 const app = createApp(App)
 
 app.config.globalProperties.$axios = axios
