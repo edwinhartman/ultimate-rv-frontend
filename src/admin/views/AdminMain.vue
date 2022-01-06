@@ -4,7 +4,9 @@
             <AdminTab title="Users">
                 <AdminUsers />
             </AdminTab>
-            <AdminTab title="Tab 2">Tab 2 contents</AdminTab>
+            <AdminTab title="Plans">
+                <AdminAccountPlans />
+            </AdminTab>
             <AdminTab title="CRON Tasks">
                 <AdminCronTasks />
             </AdminTab>
@@ -23,6 +25,7 @@ import AdminTabs from '../components/AdminTabs.vue'
 import AdminUsers from './AdminUsers.vue'
 import AdminCronJobs from './AdminCronJobs.vue'
 import AdminCronTasks from './AdminCronTasks.vue'
+import AdminAccountPlans from './AdminAccountPlans.vue'
 
 export default{
     name:"AdminMain",
@@ -31,7 +34,8 @@ export default{
         AdminTabs,
         AdminUsers,
         AdminCronJobs,
-        AdminCronTasks
+        AdminCronTasks,
+        AdminAccountPlans
     },
     setup() {
         const active = ref(0);

@@ -8,6 +8,9 @@ import router from './router/index';
 import axios from 'axios'
 import './index.css'
 import  VueHtmlToPaper from './components/other/VueHtmlToPaper'
+import LoadScript from 'vue-plugin-load-script';
+
+import AllStates from './definitions/AllStates'
 
 axios.interceptors.request.use((config) => {
     // console.log(process.env.VUE_APP_BACKEND_CONNECTION_URI)
@@ -49,6 +52,8 @@ axios.interceptors.response.use(function (response) {
 
 const app = createApp(App)
 
+app.config.globalProperties.allStates = AllStates.AllStates
+
 app.config.globalProperties.$axios = axios
 
-app.use(store).use(router).use(VueHtmlToPaper).mount('#app')
+app.use(store).use(router).use(VueHtmlToPaper).use(LoadScript).mount('#app')

@@ -4,6 +4,7 @@
       <tr>
         <td>Name</td>
         <td>Email</td>
+        <td>Plan</td>
       </tr>
       <tr
         v-for="user in users"
@@ -13,6 +14,7 @@
       >
         <td>{{ user.firstName }} {{ user.lastName }}</td>
         <td>{{ user.email }}</td>
+        <td>{{ user.account.account.plan.name }}</td>
       </tr>
     </table>
     <div v-if="showAddEditForm && currentUser != null">
@@ -66,6 +68,11 @@
               Initialize Account
             </button>
             <div v-if="currentUser.account && currentUser.account.account">
+              <div>Plan:
+                <select name="" id="" v-model="userPlan">
+                  <option v-for="plan in allPlans" :key="plan._id" :value="plan._id">{{ plan.name }}</option>
+                </select>
+              </div>
                 <div>
                     Owner: <input type="checkbox" name="" id="" v-model="currentUser.account.owner">
                 </div>
@@ -116,6 +123,8 @@ export default {
       lastName: "",
       email: "",
       userActive: false,
+      allPlans:[],
+      userPlan:null
     };
   },
   mounted() {
@@ -125,9 +134,15 @@ export default {
         "/admin/getAllUserAccounts",
       method: "get",
     }).then((res) => {
-      // console.log(res)
+      console.log(res)
       this.users = res.data.users;
     });
+    axios({
+      url:process.env.VUE_APP_BACKEND_CONNECTION_URI + "/admin/getAccountPlans",
+      method:'get'
+    }).then((res)=>{
+      this.allPlans = res.data.plans
+    })
   },
   methods: {
     editUser(user) {
@@ -144,6 +159,7 @@ export default {
       this.lastName = user.lastName;
       this.email = user.email;
       this.userActive = user.active;
+      this.userPlan = user.account.account.plan._id
     },
     save() {
       let settings = JSON.stringify(
@@ -165,7 +181,8 @@ export default {
           email: this.email,
           active: this.userActive,
           settings: settings,
-          account:accnt
+          account:accnt,
+          plan:this.userPlan
         },
       }).then((res) => {
         this.users = res.data.users;
@@ -220,6 +237,9 @@ table td:nth-child(1) {
 }
 table td:nth-child(2) {
   width: 15rem;
+}
+table td:nth-child(3) {
+  width:15rem;
   border-right: solid black 1px;
 }
 table tr:not(:first-child) {

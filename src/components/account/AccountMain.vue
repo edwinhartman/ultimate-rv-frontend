@@ -1,16 +1,20 @@
 <template>
-        <div class="grid grid-cols-5 w-144 h-144">
-            <div class="flex flex-col text-left col-span-1">
-                <ul class="list-none">
-                <li class="cursor-pointer">General</li>
-                <li class="cursor-pointer">Payment</li>
-                <li><button @click="logoutUser">Logout</button></li>
-                </ul>
-            </div>
-            <div class="col-span-3 text-left">
-                <AccountGeneral v-if="accountScreen=='general'" />
-            </div>
-            <div class="col-span-1">
+        <div class="main">
+            <Tabs v-model="active">
+                <Tab title="General">
+                    <AccountGeneral />
+                </Tab>
+                <Tab title="Address">
+                    <AccountAddress />
+                </Tab>
+                <Tab title="Plan Info">
+                    <AccountPlan />
+                </Tab>
+                <Tab title="Payment">
+                    <AccountPayment />
+                </Tab>
+            </Tabs>
+            <div class="buttons">
                 <button 
                     @click="$store.commit('setShowAccountMaintenance',!$store.state.accountMaintenanceActive)"
                     class="shadow-md pl-3 pr-3"
@@ -19,17 +23,30 @@
         </div>
 </template>
 <script>
+import Tabs from '../common/Tabs.vue'
+import Tab from '../common/Tab.vue'
+
 import AccountGeneral from './AccountGeneral.vue'
+import AccountPayment from './AccountPayment.vue'
+import AccountAddress from './AccountAddress.vue'
+import AccountPlan from './AccountPlan.vue'
+
+import { ref } from '@vue/reactivity'
 
 export default{
     name:"AccountMain",
-    data(){
-        return {
-            accountScreen:"general"
-        }
+    setup() {
+        const active = ref(0);
+
+        return { active };
     },
     components:{
-        AccountGeneral
+        Tabs,
+        Tab,
+        AccountGeneral,
+        AccountPayment,
+        AccountAddress,
+        AccountPlan
     },
     methods:{
         logoutUser(){
@@ -38,3 +55,23 @@ export default{
     }
 }
 </script>
+<style scoped>
+* {
+    font-size:0.8rem;
+}
+div.main{
+    text-align: left;
+    width:35rem;
+    min-height:10rem;
+    max-height:36rem;
+}
+div.buttons{
+    display:flex;
+    justify-content: flex-end;
+}
+button{
+    margin-top:0.5rem;
+    cursor: pointer;
+}
+
+</style>
