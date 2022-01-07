@@ -7,13 +7,13 @@
                 <td>Requires</td>
                 <td>Executes</td>
             </tr>
-            <tr v-for="task in tasks" :key="task._id">
+            <tr v-for="task in tasks" :key="task._id" @click="editTask(task)">
                 <td>{{ task.name }}</td>
                 <td>{{ task.requires }}</td>
                 <td>{{ task.executes }}</td>
             </tr>
         </table>
-        <button @click="showAddEditForm=true">Add New CRON Task</button>
+        <button @click="addNewTask">Add New CRON Task</button>
         <div v-if="showAddEditForm" class="form">
             <div>Name: <input type="text" name="" id="" style="width:15rem;" v-model="taskName" required></div>
             <div>Requires: <select name="" id="" v-model="selectedHandler">
@@ -60,6 +60,21 @@ export default {
         })
     },
     methods:{
+        addNewTask(){
+            this.id = null
+            this.taskName = ""
+            this.requires = ""
+            this.executes = ""
+            this.showAddEditForm = true
+        },
+        editTask(task){
+            console.log(task)
+            this.id = task._id
+            this.taskName = task.name
+            this.selectedHandler = this.handlers.filter((h)=>{ return h.fileName == task.requires})[0]
+            this.selectedFunction = this.selectedHandler.methods.filter((m)=>{return m == task.executes})[0]
+            this.showAddEditForm = true
+        },
         saveTask(){
             console.log("saveTask")
             axios({
@@ -121,5 +136,8 @@ table td:nth-child(3){
 table td{
     border-top: solid black 1px;
     border-bottom:solid black 1px;
+}
+button{
+    cursor: pointer;
 }
 </style>

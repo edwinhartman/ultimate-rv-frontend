@@ -1,7 +1,7 @@
 <template>
     <div>
         <button v-if="!showPaymentMethodDialog" @click="addNewPaymentMethod">Add New Method</button>
-        <table v-if="!showPaymentMethodDialog">
+        <table v-if="!showPaymentMethodDialog" class="cards">
             <tr>
                 <td>
                     Card
@@ -28,6 +28,22 @@
                 </td>
             </tr>
         </table>
+
+        <div v-show="!showPaymentMethodDialog && payments.length > 0" class="payments">
+            <strong>Payments:</strong>
+        <table class="payments">
+            <tr>
+                <td>Date</td>
+                <td>Card Info</td>
+                <td>Amount</td>
+            </tr>
+            <tr v-for="payment in payments" :key="payment._id" :class="payment.failed?'failed':''">
+                <td>{{ getDateTimeFormatted(payment.date) }}</td>
+                <td>{{ payment.card_info }}</td>
+                <td>{{ formatAmount(payment.amount) }}</td>
+            </tr>
+        </table>
+        </div>
         <NewPaymentMethod v-if="showPaymentMethodDialog" @updateParent="finishedAddingPaymentMethod" />
     </div>
 </template>
@@ -43,11 +59,13 @@ export default {
     data(){
         return {
             showPaymentMethodDialog:false,
-            payment_methods:[]
+            payment_methods:[],
+            payments:[]
         }
     },
     mounted(){
         this.loadPaymentMethods()
+        this.loadPaymentHistory()
     },
     methods:{
         addNewPaymentMethod(){
@@ -60,6 +78,15 @@ export default {
             }).then((res)=>{
                 // console.log(res)
                 this.payment_methods = res.data.payment_methods
+            })
+        },
+        loadPaymentHistory(){
+            axios({
+                url:process.env.VUE_APP_BACKEND_CONNECTION_URI + "/account/getUserAccountPayments",
+                method:'get'
+            }).then((res)=>{
+                // console.log(res)
+                this.payments = res.data.payments
             })
         },
         finishedAddingPaymentMethod(data){
@@ -77,7 +104,7 @@ export default {
 table tr:first-child {
     font-weight: bold;
 }
-table tr td:nth-child(1){
+table.cards tr td:nth-child(1){
     width:20rem;
 }
 tr.active-card{
@@ -91,5 +118,17 @@ tr.primary-card{
 }
 button {
     cursor: pointer;
+}
+div.payments{
+    margin-top:1rem;
+}
+table.payments tr td:nth-child(1){
+    width:8rem;
+}
+table.payments tr td:nth-child(2){
+    width:12rem;
+}
+table.payments tr.failed {
+    color:red;
 }
 </style>

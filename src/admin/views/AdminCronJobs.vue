@@ -19,7 +19,7 @@
         <td>{{ job.task.name }}</td>
         <td>{{ job.cronTime }}</td>
         <td>{{ job.enabled }}</td>
-        <td>{{ getDateTimeFormatted(job.updated_dttm) }}</td>
+        <td>{{ getDateTimeFormatted(job.updated_dttm,"Job Not Executed") }}</td>
       </tr>
     </table>
     <button @click="addNewCronJob">Add New CRON Job</button>
@@ -44,6 +44,7 @@
       <div>
         <button class="save-button" @click="saveJob">Save</button>
         <button class="cancel-button" @click="cancel">Cancel</button>
+        <button v-if="id != null" class="execute-button" @click="executeJob">Execute Job Now</button>
       </div>
     </div>
   </div>
@@ -69,10 +70,17 @@ export default {
       title: "",
       enabled: true,
       selectedTask: null,
+      timer:null
     };
   },
   mounted() {
     this.getData();
+    this.timer = setInterval(this.getData,5000)
+  },
+  beforeUnmount(){
+    if (this.timer){
+      clearInterval(this.timer)
+    }
   },
   methods: {
     getData() {
@@ -152,15 +160,18 @@ export default {
         }).then((res) => {});
       });
     },
-    getDateTimeFormatted(dateTime) {
-      if (!dateTime) {
-        return "Job has not run yet";
-      } else {
-        let d = new Date(dateTime);
-
-        return d.toLocaleDateString() + " " + d.toLocaleTimeString();
-      }
-    },
+    
+    executeJob(){
+      axios({
+        url:process.env.VUE_APP_BACKEND_CONNECTION_URI + "/admin/manuallyExecuteCronJob",
+        method:'post',
+        data:{
+          job_id:this.id
+        }
+      }).then((res)=>{
+        this.getData()
+      })
+    }
   },
 };
 </script>
@@ -185,10 +196,17 @@ button {
   margin-bottom: 0.1rem;
 }
 .save-button,
-.cancel-button {
-  width: 5rem;
-  margin-left: 2rem;
+.cancel-button,
+.execute-button {
+  width: 7rem;
   margin-top: 0.5rem;
+}
+.save-button {
+    margin-left: 2rem;
+}
+.cancel-button,
+.execute-button {
+  margin-left:0.5rem;
 }
 table tr:not(:first-child) {
   cursor: pointer;
@@ -224,5 +242,8 @@ td:nth-child(3) {
 td:nth-child(4) {
   width: 2rem;
   border-right: solid 1px black;
+}
+button{
+  cursor: pointer;
 }
 </style>

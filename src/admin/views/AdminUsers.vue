@@ -211,15 +211,6 @@ export default {
         this.editUser(usr[0]);
       });
     },
-    getDateTimeFormatted(dateTime) {
-      if (!dateTime) {
-        return "No Date Set";
-      } else {
-        let d = new Date(dateTime);
-
-        return d.toLocaleDateString() + " " + d.toLocaleTimeString();
-      }
-    },
   },
 };
 </script>

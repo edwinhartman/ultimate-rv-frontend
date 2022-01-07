@@ -1,7 +1,15 @@
 <template>
     <div class="main">
         <table v-if="allPlans.length > 0">
-            <tr v-for="plan in allPlans" :key="plan._id" :class="plan.active?'active':'inactive'">
+            <tr>
+                <td>Name</td>
+                <td>Auto Pay</td>
+                <td>Demo</td>
+                <td>Expires</td>
+                <td>Price</td>
+                <td>Active</td>
+            </tr>
+            <tr v-for="plan in allPlans" :key="plan._id" :class="plan.active?'active':'inactive'" @click="editAccountPlan(plan)">
                 <td>{{ plan.name }}</td>
                 <td>{{ plan.auto_payment }}</td>
                 <td>{{ plan.demo }}</td>
@@ -73,6 +81,18 @@ export default {
             this.plan_active = true
             this.showAddEditAcountDialog = true
         },
+        editAccountPlan(plan){
+            this.plan_id = plan._id
+            this.plan_name = plan.name
+            this.plan_description = plan.description
+            this.plan_interval = plan.interval
+            this.plan_autopay = plan.auto_payment
+            this.plan_demo = plan.demo
+            this.plan_expires = plan.expires
+            this.plan_price = plan.price
+            this.plan_active = plan.active
+            this.showAddEditAcountDialog = true
+        },
         updateAccountPlan(){
             axios({
                 url:process.env.VUE_APP_BACKEND_CONNECTION_URI + "/admin/updateAccountPlan",
@@ -142,6 +162,12 @@ div.buttons button{
     width:5rem;
     cursor: pointer;
 }
+tr:first-child{
+    font-weight: bold;
+}
+tr:not(:first-child){
+    cursor: pointer;
+}
 tr.active {
     background-color: rgba(30, 255, 79, 0.8);
 }
@@ -152,7 +178,7 @@ td:nth-child(1){
     width:20rem;
 }
 td:nth-child(2),td:nth-child(3),td:nth-child(4),td:nth-child(6){
-    width:2rem;
+    width:3rem;
 }
 td:nth-child(5){
     width:3rem;

@@ -53,7 +53,27 @@ axios.interceptors.response.use(function (response) {
 const app = createApp(App)
 
 app.config.globalProperties.allStates = AllStates.AllStates
+app.config.globalProperties.formatAmount = (amnt)=>{
+    var formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+      });
+      
+      return formatter.format(amnt);
+}
+app.config.globalProperties.getDateTimeFormatted = (dateTime,msg) => {
+    if (!dateTime) {
+        if (msg && msg != ""){
+            return msg;
+        }else{
+            return "No date set"
+        }
+    } else {
+      let d = new Date(dateTime);
 
+      return d.toLocaleDateString() + " " + d.toLocaleTimeString();
+    }
+  }
 app.config.globalProperties.$axios = axios
 
 app.use(store).use(router).use(VueHtmlToPaper).use(LoadScript).mount('#app')
