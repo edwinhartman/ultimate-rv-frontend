@@ -71,6 +71,15 @@ const routes = [
             import( /* webpackChunkName: "admin" */ '../views/NewAccount.vue')
     },
     {
+        path:'/continueRegistration/:reg_id',
+        name:'Account Setup',
+        meta:{
+            title:"Account Setup"
+        },
+        component:()=>
+        import( /* webpackChunkName: "admin" */ '../views/NewAccountSetup.vue')
+    },
+    {
         path: '/admin',
         name: 'Admin',
         meta: {

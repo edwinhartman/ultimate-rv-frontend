@@ -1,15 +1,17 @@
 <template>
-    <div>
-     <form class="login" @submit.prevent="login">
+    <div class="main">
+     <form class="login shadow-big" @submit.prevent="login">
         <label>User name</label>
         <input required v-model="username" ref="email_address" type="text" placeholder="Your Email Address" />
         <label>Password</label>
         <input required v-model="password" type="password" placeholder="Password"/>
         <hr />
         <button class="btn btn-primary" type="submit">Login</button>
+        <div class="register">
+    <a href="/register">Register</a>
+        </div>
       </form>
       </div>
-    <a href="/register">Register</a>
 </template>
 <script>
 export default{
@@ -42,6 +44,11 @@ export default{
   flex-direction: column;
   width: 300px;
   padding: 10px;
+  background-color: white;
+  border:solid black 1px;
+  border-radius: 0.25rem;
+  margin-top:13rem;
+  /* box-shadow: 0.2em 0.2em rgba(110, 110, 110,.5); */
 }
 div form{
     text-align:left;
@@ -52,5 +59,9 @@ div.error_message{
   font-weight:bold;
   font-size:0.9em;
   text-align:center;
+}
+div.register{
+    margin-top:1rem;
+    text-align: center;
 }
 </style>

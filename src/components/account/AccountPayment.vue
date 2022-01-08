@@ -44,7 +44,7 @@
             </tr>
         </table>
         </div>
-        <NewPaymentMethod v-if="showPaymentMethodDialog" @updateParent="finishedAddingPaymentMethod" />
+        <NewPaymentMethod v-if="showPaymentMethodDialog" :new_customer="false" @updateParent="finishedAddingPaymentMethod" />
     </div>
 </template>
 <script>
@@ -91,7 +91,9 @@ export default {
         },
         finishedAddingPaymentMethod(data){
             // console.log(data)
-            this.payment_methods = data
+            if (data){
+                this.payment_methods = data
+            }
             this.showPaymentMethodDialog = false
         }
     }

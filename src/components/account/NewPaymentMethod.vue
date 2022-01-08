@@ -1,5 +1,5 @@
 <template>
-  <div class="main">
+  <div class="main_cc">
     <form id="payment-form">
       <input
         id="customer-input"
@@ -16,8 +16,12 @@
           <input type="checkbox" name="" id="customer_authorization" v-model="authorized" required>
           <label for="customer_authorization">I authorize Ultimate-RV to automatically apply payments according to my selected Ultimate-RV plan</label>
         </div>
-      <button id="card-button" type="button" disabled>Store Card</button>
+      <button id="card-button" type="button" disabled>{{ new_customer?"Next Step":"Store Card" }}</button>
     </form>
+      <div v-if="!new_customer" class="cancel-button"><div>
+      <button type="button" @click="cancel">Cancel</button>
+      </div></div>
+      <div class="disclaimer">Disclaimer: No credit card information is store in our Ultimate-RV Planning system. All information is securely stored in our payment processing system (Square). No information will be shared with anyone. Your payment information will only be used to process the membership payment per your selected plan.</div>
     <div id="payment-status-container" class="store-card-message"></div>
   </div>
 </template>
@@ -26,6 +30,13 @@ import axios from "axios";
 
 export default {
   name: "NewPaymentMethod",
+  props:{
+    new_customer:{type:Boolean},
+    new_customer_id:{
+      type:String,
+      required:false
+    }
+  },
   data() {
     return {
       customer_id: null,
@@ -39,13 +50,23 @@ export default {
       window.squarewindow = this;
   },
   created() {
+    if (this.new_customer){
+        this.customer_id = this.new_customer_id
+      }
+
+    let url = process.env.VUE_APP_BACKEND_CONNECTION_URI +
+        "/system/getSquareSystemInfo"
+      if (this.new_customer){
+        url = process.env.VUE_APP_BACKEND_CONNECTION_URI +
+        "/system/getSquareUpInfoGeneric"
+      }
     axios({
-      url:
-        process.env.VUE_APP_BACKEND_CONNECTION_URI +
-        "/system/getSquareSystemInfo",
+      url:url,
       method: "get",
     }).then((res) => {
-      this.customer_id = res.data.account_id;
+      if (!this.new_customer){
+        this.customer_id = res.data.account_id;
+      }
       this.app_id = res.data.app_id;
       this.token = res.data.token;
       this.location = res.data.location;
@@ -160,16 +181,20 @@ export default {
         return verificationResults.token;
       },
       async storeCard(token, customerId, verificationToken) {
-        // const bodyParameters = {
-        //   locationId:this.location,
-        //   sourceId: token,
-        //   customerId,
-        //   verificationToken,
-        // };
-
-        // const body = JSON.stringify(bodyParameters);
-        // console.log(body)
-
+        if (this.new_customer){
+          axios({
+            url:process.env.VUE_APP_BACKEND_CONNECTION_URI + "/account/addUserAccountPaymentMethodRegistration",
+            method:'post',
+            data:{
+                customer_id:this.new_customer_id,
+                location_id:this.location,
+                source_id:token,
+                verification_token:verificationToken
+            }
+        }).then((res)=>{
+          this.$emit("updateParent",res.data.payment_methods)
+        })
+        }else{
         axios({
             url:process.env.VUE_APP_BACKEND_CONNECTION_URI + "/addUserAccountPaymentMethod",
             method:'post',
@@ -180,9 +205,9 @@ export default {
                 verification_token:verificationToken
             }
         }).then((res)=>{
-            // console.log(res)
-            this.$$emit("updateParent",res.data.payment_methods)
+            this.$emit("updateParent",res.data.payment_methods)
         })
+        }
         // const paymentResponse = await fetch('/card', {
         //   method: 'POST',
         //   headers: {
@@ -211,6 +236,9 @@ export default {
         }
         statusContainer.innerHTML = status
         statusContainer.style.visibility = 'visible';
+      },
+      cancel(){
+        this.$emit("updateParent",null)
       }
   }
 };
@@ -219,7 +247,7 @@ export default {
 * {
   box-sizing: border-box;
 }
-div.main {
+div.main_cc {
   border: solid 1px rgba(71, 71, 71, 0.8);
   border-radius: 0.5rem;
 }
@@ -227,7 +255,7 @@ div.main {
 #payment-form {
   max-width: 550px;
   min-width: 300px;
-  margin: 150px auto;
+  /* margin: 150px auto; */
 }
 #customer-input {
   margin-bottom: 40px;
@@ -270,5 +298,26 @@ div.authorization{
     align-items: center;
     justify-content: center;
     margin-bottom:0.5rem;
+}
+div.disclaimer{
+  margin-top:0.5rem;
+  text-align: center;
+  font-size:0.45rem;
+}
+div.cancel-button{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-top:0.2rem;
+}
+div.cancel-button>div{
+  width:5rem;
+  /* height:1rem; */
+}
+div.cancel-button button{
+  height:1.5rem !important;
+  font-size:0.8rem !important;
+  padding:0.1rem !important;
+  line-height:1rem !important;
 }
 </style>

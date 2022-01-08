@@ -3,6 +3,11 @@ html,body{
     max-height: 100vh;
     height:100vh;
     overflow: hidden;
+    background:url(/static/ultimate_rv_background.png) no-repeat center center fixed;
+    -webkit-background-size:cover;
+    -moz-background-size:cover;
+    -o-background-size:cover;
+    background-size:cover;
 }
 div.main_window{
     display:flex;
@@ -141,4 +146,7 @@ button{
 }
 .color-fg-yellow{
     color:yellow !important;
+}
+.shadow-big{
+    box-shadow: 0.25em 0.25em rgba(110, 110, 110,.5);
 }

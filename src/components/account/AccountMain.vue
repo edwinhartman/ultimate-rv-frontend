@@ -15,10 +15,8 @@
                 </Tab>
             </Tabs>
             <div class="buttons">
-                <button 
-                    @click="$store.commit('setShowAccountMaintenance',!$store.state.accountMaintenanceActive)"
-                    class="shadow-md pl-3 pr-3"
-                >Close</button>
+                <button @click="logoutUser">Logout</button>
+                <button @click="$store.commit('setShowAccountMaintenance',!$store.state.accountMaintenanceActive)">Close</button>
             </div>
         </div>
 </template>

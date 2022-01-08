@@ -25,7 +25,7 @@
     <button @click="addNewCronJob">Add New CRON Job</button>
 
     <div v-if="addEditFormVisible" class="add-edit-form">
-      <div>Title: <input type="text" v-model="title" /></div>
+      <div>Title: <input type="text" class="title" v-model="title" /></div>
       <div>
         Task Name:
         <select name="" id="" v-model="selectedTask">
@@ -245,5 +245,8 @@ td:nth-child(4) {
 }
 button{
   cursor: pointer;
+}
+input.title{
+  width:30rem;
 }
 </style>

@@ -89,6 +89,7 @@ export default {
             }).then((res)=>{
                 // console.log(res)
                 this.tasks = res.data.tasks
+                this.showAddEditForm = false
             })
         },
         cancel(){
