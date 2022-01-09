@@ -105,6 +105,10 @@ export default {
 div.main{
     text-align: left;
     margin-left:2.5rem;
+        background-color: white;
+    border:solid black 1px;
+    border-radius: 0.2rem;
+    width:40rem;
 }
 div.form{
     margin-top:0.5rem;

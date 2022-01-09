@@ -180,6 +180,10 @@ div.main_div {
   text-align: left;
   margin-left: 2.5rem;
   font-size: 0.7rem;
+      background-color: white;
+    border:solid black 1px;
+    border-radius: 0.2rem;
+  width:45rem;
 }
 button {
   font-size: 0.7rem;

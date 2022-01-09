@@ -123,6 +123,10 @@ export default {
 div.main{
     text-align: left;
     margin-left:2.5rem;
+    background-color: white;
+    border:solid black 1px;
+    border-radius: 0.2rem;
+    width:45rem;
 }
 button{
     cursor: pointer;

@@ -134,7 +134,6 @@ export default {
         "/admin/getAllUserAccounts",
       method: "get",
     }).then((res) => {
-      console.log(res)
       this.users = res.data.users;
     });
     axios({
@@ -206,8 +205,6 @@ export default {
         let usr = res.data.users.filter((u) => {
           return u._id == this.userID;
         });
-        console.log("here");
-        console.log(usr);
         this.editUser(usr[0]);
       });
     },
@@ -232,6 +229,11 @@ export default {
 div.main {
   text-align: left;
   margin-left: 2.5rem;
+    background-color: white;
+    border:solid black 1px;
+    border-radius: 0.2rem;
+    width:45rem;
+
 }
 table td:nth-child(1) {
   width: 16rem;
