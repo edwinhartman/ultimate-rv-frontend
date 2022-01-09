@@ -92,7 +92,7 @@
           </div>
         </AdminTab>
       </AdminTabs>
-      <button @click="save">Save</button><button @click="cancel">Cancel</button>
+      <button @click="save">Save</button><button @click="cancel">Cancel</button><button @click="sendTestEmail">Send Test Email</button>
     </div>
   </div>
 </template>
@@ -211,6 +211,17 @@ export default {
         this.editUser(usr[0]);
       });
     },
+    sendTestEmail(){
+      axios({
+        url:process.env.VUE_APP_BACKEND_CONNECTION_URI + '/admin/sendTestEmail',
+        method:'post',
+        data:{
+          email:this.email
+        }
+      }).then((res)=>{
+        
+      })
+    }
   },
 };
 </script>
