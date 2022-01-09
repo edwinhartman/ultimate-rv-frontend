@@ -87,9 +87,9 @@ export function searchGasStations(region,store, city,state,zipcode,country,callb
                   document.createElement("button")
                 );
                 btn.className="text-tiny bg-blue-600 text-white pl-1 pr-1 mr-1 rounded-md inline"
-                btn.textContent = "Add To Route";
+                btn.textContent = "Add To Trip";
                 btn.onclick = function () {
-                  window.mymapview.addToRouteNotPlace(
+                  window.mymapview.addToTripNotPlace(
                     res.data.data[i][j].displayName,
                     res.data.data[i][j].formattedAddress,
                     Number(res.data.data[i][j].latitude),

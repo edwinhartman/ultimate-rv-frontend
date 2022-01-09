@@ -25,8 +25,8 @@
         <label for="PreventToll">Prevent Tollroads</label>
         </li>
         <li>
-        <input type="checkbox" id="AlwaysShowRouteSummary" value="true" v-model="alwaysShowRouteSummary" />
-        <label for="AlwaysShowRouteSummary">Always Show Route Summary</label>
+        <input type="checkbox" id="AlwaysShowTripSummary" value="true" v-model="alwaysShowTripSummary" />
+        <label for="AlwaysShowTripSummary">Always Show Trip Summary</label>
         </li>
         <li>
         <input type="checkbox" id="ShowYelpDetails" value="true" v-model="showYelpDetails" />
@@ -48,16 +48,16 @@
         </Popper>
         </li>
         <li>
-            <input type="checkbox" id="ShowArchivedRoutes" value="true" v-model="showArchivedRoutes" />
-        <label for="ShowArchivedRoutes">Show Archived Routes section</label>
+            <input type="checkbox" id="ShowArchivedTrips" value="true" v-model="showArchivedTrips" />
+        <label for="ShowArchivedTrips">Show Archived Trips section</label>
         </li>
         <li v-if="$store.state.adminToken != null">
             <input type="checkbox" id="HideAdminFunctions" value="true" v-model="hideAdminFunctions" />
             <label for="HideAdminFunctions">Hide Admin Functions</label>
         </li>
         <li v-if="$store.state.adminToken != null && !$store.state.hideAdminFunctions">
-            <input type="checkbox" id="ShowSystemRoutes" value="true" v-model="showSystemRoutes" />
-            <label for="ShowSystemRoutes">Show System Routes section</label>
+            <input type="checkbox" id="ShowSystemTrips" value="true" v-model="showSystemTrips" />
+            <label for="ShowSystemTrips">Show System Trips section</label>
         </li>
         <li>
             Default Origin: <select name="" id="" v-model="defaultOriginType">
@@ -82,25 +82,25 @@ export default{
     data(){
         return {
             preventTollroads:false,
-            alwaysShowRouteSummary:false,
+            alwaysShowTripSummary:false,
             expanded:false,
             showYelpDetails:false,
             defaultOriginType:"current",
             autoPreventBigCities:false,
-            showArchivedRoutes:false,
-            showSystemRoutes:false,
+            showArchivedTrips:false,
+            showSystemTrips:false,
             hideAdminFunctions:false,
             showRVSettings:false
         }
     },
     mounted(){
         this.preventTollroads = this.$store.state.preventTollroads
-        this.alwaysShowRouteSummary = this.$store.state.alwaysShowRouteSummary
+        this.alwaysShowTripSummary = this.$store.state.alwaysShowTripSummary
         this.showYelpDetails = this.$store.state.showYelpDetails
         this.defaultOriginType = this.$store.state.defaultOriginType
         this.autoPreventBigCities = this.$store.state.autoPreventBigCities
-        this.showArchivedRoutes = this.$store.state.showArchivedRoutes
-        this.showSystemRoutes = this.$store.state.showSystemRoutes
+        this.showArchivedTrips = this.$store.state.showArchivedTrips
+        this.showSystemTrips = this.$store.state.showSystemTrips
         this.hideAdminFunctions = this.$store.state.hideAdminFunctions
         this.showRVSettings = this.$store.state.showRVSettings
     },
@@ -114,8 +114,8 @@ export default{
         "$store.state.preventTollroads":function(){
             this.preventTollroads = this.$store.state.preventTollroads
         },
-        alwaysShowRouteSummary:function(newValue,oldValue){
-            this.$store.commit("setAlwaysShowRouteSummary",newValue)
+        alwaysShowTripSummary:function(newValue,oldValue){
+            this.$store.commit("setAlwaysShowTripSummary",newValue)
             if (newValue != oldValue){
                 this.$store.dispatch("saveUserSettings")
             }
@@ -138,14 +138,14 @@ export default{
                 this.$store.dispatch("saveUserSettings")
             }
         },
-        showArchivedRoutes:function(newValue,oldValue){
-            this.$store.commit("setShowArchivedRoutes",newValue)
+        showArchivedTrips:function(newValue,oldValue){
+            this.$store.commit("setShowArchivedTrips",newValue)
             if (newValue != oldValue){
                 this.$store.dispatch("saveUserSettings")
             }
         },
-        showSystemRoutes:function(newValue,oldValue){
-            this.$store.commit("setShowSystemRoutes",newValue)
+        showSystemTrips:function(newValue,oldValue){
+            this.$store.commit("setShowSystemTrips",newValue)
             if (newValue != oldValue){
                 this.$store.dispatch("saveUserSettings")
             }

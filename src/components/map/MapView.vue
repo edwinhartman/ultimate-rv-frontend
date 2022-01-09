@@ -3,8 +3,8 @@
     <ModalPopup :yesNoOption="true" v-if="showRemoveAvoidAreaPopup" @yesAnswer="removeAvoidArea(true)" @noAnswer="removeAvoidArea(false)">
       <div>You are about to remove an avoid area. Are you sure?</div>
     </ModalPopup>
-    <RouteSummary2 />
-    <SearchAlongRoute />
+    <TripSummary2 />
+    <SearchAlongTrip />
     <div
       id="map"
       v-bind:style="{ width: map_width + 'px', height: map_height + 'px' }"
@@ -25,8 +25,8 @@ import { getCampgrounds } from "../../business_logic/Campgrounds";
 import { getOvernightParking } from "../../business_logic/OvernightParking";
 
 import ModalPopup from "../templates/ModalPopup.vue";
-import RouteSummary2 from '../route/RouteSummary2.vue'
-import SearchAlongRoute from '../route/SearchAlongRoute.vue'
+import TripSummary2 from '../trip/TripSummary2.vue'
+import SearchAlongTrip from '../trip/SearchAlongTrip.vue'
 import {toRad,toDeg} from '../../business_logic/HelperLogic'
 
 export default {
@@ -43,8 +43,8 @@ export default {
   },
   components: {
     ModalPopup,
-    RouteSummary2,
-    SearchAlongRoute
+    TripSummary2,
+    SearchAlongTrip
   },
   data() {
     return {
@@ -140,29 +140,29 @@ export default {
     },
     polyline() {
       if (
-        this.$store.state.activeRoute != null &&
-        this.$store.state.activeRoute.polyline != null
+        this.$store.state.activeTrip != null &&
+        this.$store.state.activeTrip.polyline != null
       ) {
-        // if (this.$store.state.activeRoute.polyline != null){
-        //     return this.$store.state.activeRoute.polyline
+        // if (this.$store.state.activeTrip.polyline != null){
+        //     return this.$store.state.activeTrip.polyline
         // }
-        return this.$store.state.activeRoute.polyline.length;
+        return this.$store.state.activeTrip.polyline.length;
       }
       return null;
     },
     stops() {
       if (
-        this.$store.state.activeRoute != null &&
-        this.$store.state.activeRoute.stops != null
+        this.$store.state.activeTrip != null &&
+        this.$store.state.activeTrip.stops != null
       ) {
-        return this.$store.state.activeRoute.stops.length;
+        return this.$store.state.activeTrip.stops.length;
       }
       return null;
     },
     areasToAvoid(){
-      if (this.$store.state.activeRoute != null &&
-        this.$store.state.activeRoute.areasToAvoid != null){
-          return this.$store.state.activeRoute.areasToAvoid.length
+      if (this.$store.state.activeTrip != null &&
+        this.$store.state.activeTrip.areasToAvoid != null){
+          return this.$store.state.activeTrip.areasToAvoid.length
         }
         return null;
     }
@@ -199,9 +199,9 @@ export default {
 
               var btn = element.appendChild(document.createElement("button"));
               btn.className = "text-tiny bg-blue-500 align-middle pl-1 pr-1 text-white rounded-md"
-              btn.textContent = "Add To Route";
+              btn.textContent = "Add To Trip";
               btn.onclick = function () {
-                window.mymapview.addToRoute(data.places[i]);
+                window.mymapview.addToTrip(data.places[i]);
                 //this.parentNode.style.display = 'none';
               };
 
@@ -243,7 +243,7 @@ export default {
     areasToAvoid(newValue,oldValue){
       this.loadAreasToAvoid()
     },
-    "$store.state.activeRoute": function (newValue,oldValue) {
+    "$store.state.activeTrip": function (newValue,oldValue) {
       
       if (this.map != null && this.map.overlays != null && newValue == null){
         this.map.removeOverlays(this.map.overlays)
@@ -365,9 +365,9 @@ export default {
           }
          
       }
-      if (this.map != null && this.$store.state.activeRoute != null && this.$store.state.activeRoute.polyline != null){
-      for (let i = 0;i < this.$store.state.activeRoute.polyline.length;i++) {
-            var coords = this.$store.state.activeRoute.polyline[i].map(
+      if (this.map != null && this.$store.state.activeTrip != null && this.$store.state.activeTrip.polyline != null){
+      for (let i = 0;i < this.$store.state.activeTrip.polyline.length;i++) {
+            var coords = this.$store.state.activeTrip.polyline[i].map(
               function (point) {
                 return new mapkit.Coordinate(point[0], point[1]);
               }
@@ -385,8 +385,8 @@ export default {
           }
       }
     },
-    addToRoute(place) {
-      this.$store.dispatch("addRouteStop", {
+    addToTrip(place) {
+      this.$store.dispatch("addTripStop", {
         name: place.name,
         formattedAddress: place.formattedAddress,
         coordinate: {
@@ -395,8 +395,8 @@ export default {
         },
       });
     },
-    addToRouteNotPlace(name, address, latitude, longitude) {
-      this.$store.dispatch("addRouteStop", {
+    addToTripNotPlace(name, address, latitude, longitude) {
+      this.$store.dispatch("addTripStop", {
         name: name,
         formattedAddress: address,
         coordinate: {
@@ -545,7 +545,7 @@ export default {
         this.markedAreas.push(points)
         this.map.addOverlay(rectangle);
         this.$store.dispatch("addAreaToAvoid", {
-          id: this.$store.state.activeRoute._id,
+          id: this.$store.state.activeTrip._id,
           points: points,
         });
         this.avoidStarted = false;
@@ -559,7 +559,7 @@ export default {
     },
     loadAreasToAvoid() {
       
-      if (this.$store.state.activeRoute == null || !this.maploaded || this.map == null) {
+      if (this.$store.state.activeTrip == null || !this.maploaded || this.map == null) {
         return;
       }
       if (this.markedAreas.length > 0 && this.map.overlays.length > 0) {
@@ -599,10 +599,10 @@ export default {
       }
 
       if (
-        this.$store.state.activeRoute.areasToAvoid != null &&
-        this.$store.state.activeRoute.areasToAvoid.length > 0
+        this.$store.state.activeTrip.areasToAvoid != null &&
+        this.$store.state.activeTrip.areasToAvoid.length > 0
       ) {
-        let areasToAvoid = this.$store.state.activeRoute.areasToAvoid;
+        let areasToAvoid = this.$store.state.activeTrip.areasToAvoid;
         for (let i = 0; i < areasToAvoid.length; i++) {
           let points = [];
           points.push(new mapkit.Coordinate(areasToAvoid[i].point1.latitude,areasToAvoid[i].point1.longitude));
@@ -642,7 +642,7 @@ export default {
     removeAvoidArea(doRemove){
       if (doRemove){
               this.$store.dispatch("removeAreaToAvoid", {
-          id: this.$store.state.activeRoute._id,
+          id: this.$store.state.activeTrip._id,
           points: this.areaToBeRemoved,
         });
       }
@@ -652,7 +652,7 @@ export default {
       this.map.dispatchEvent(deselectEvent)
     },
     loadStops() {
-      if (this.$store.state.activeRoute == null) {
+      if (this.$store.state.activeTrip == null) {
         return;
       }
       if (this.stopMarkers.length > 0 && this.map.annotations.length > 0) {
@@ -675,8 +675,8 @@ export default {
         this.stopMarkers.splice(0, this.stopMarkers.length);
       }
       if (
-        this.$store.state.activeRoute.stops != null &&
-        this.$store.state.activeRoute.stops.length > 0 &&
+        this.$store.state.activeTrip.stops != null &&
+        this.$store.state.activeTrip.stops.length > 0 &&
         this.map != null
       ) {
         if (
@@ -725,7 +725,7 @@ export default {
           this.stopMarkers.push(annotation.coordinate);
           this.map.addAnnotation(annotation);
         }
-        for (let i = 0; i < this.$store.state.activeRoute.stops.length; i++) {
+        for (let i = 0; i < this.$store.state.activeTrip.stops.length; i++) {
           var calloutDelegate2 = {
                     calloutElementForAnnotation: function (annotation) {
                         //console.log(annotation);
@@ -751,12 +751,12 @@ export default {
                 };
           let annotation = new mapkit.MarkerAnnotation(
             new mapkit.Coordinate(
-              this.$store.state.activeRoute.stops[i].coordinate.latitude,
-              this.$store.state.activeRoute.stops[i].coordinate.longitude
+              this.$store.state.activeTrip.stops[i].coordinate.latitude,
+              this.$store.state.activeTrip.stops[i].coordinate.longitude
             ),
             {
-              title: this.$store.state.activeRoute.stops[i].name,
-              subtitle: this.$store.state.activeRoute.stops[i].formattedAddress,
+              title: this.$store.state.activeTrip.stops[i].name,
+              subtitle: this.$store.state.activeTrip.stops[i].formattedAddress,
               glyphText: (i + 1).toString(),
               color: "#FF0000",
               displayPriority: 1000,

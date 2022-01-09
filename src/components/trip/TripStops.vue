@@ -6,7 +6,7 @@
       @change="updateStopList(route)"
     >
       <template #item="{ element }">
-        <RouteStop :stop_prop="element" :route_prop="route" />
+        <TripStop :stop_prop="element" :route_prop="route" />
       </template>
     </draggable>
    
@@ -15,13 +15,13 @@
 <script>
 
 import draggable from "vuedraggable";
-import RouteStop from "./RouteStop.vue";
+import TripStop from "./TripStop.vue";
 
 export default {
-  name: "RouteStops",
+  name: "TripStops",
   components: {
     draggable,
-    RouteStop,
+    TripStop,
   },
   props: {
     route_prop: {

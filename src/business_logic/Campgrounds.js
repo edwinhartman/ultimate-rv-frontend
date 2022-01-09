@@ -28,9 +28,9 @@ export function getCampgrounds(region,callback){
                             document.createElement("button")
                         );
                         btn.className = "text-tiny bg-blue-500 align-middle pl-1 pr-1 text-white rounded-md"
-                        btn.textContent = "Add To Route";
+                        btn.textContent = "Add To Trip";
                         btn.onclick = function () {
-                            window.mymapview.addToRouteNotPlace(
+                            window.mymapview.addToTripNotPlace(
                                 places[j].name,
                                 places[j].formattedAddress,
                                 places[j].coordinate.latitude,

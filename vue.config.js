@@ -1,4 +1,5 @@
 module.exports = {
+
   pages: {
     index: {
       // entry for the page

@@ -1,14 +1,14 @@
 <template>
   <div
-    v-if="$store.state.alwaysShowRouteSummary && activeRoute != null && !activeRoute.system && summaries != null && summaries.length > 0"
+    v-if="$store.state.alwaysShowTripSummary && activeTrip != null && !activeTrip.system && summaries != null && summaries.length > 0"
     class="route-summary2 secondary-color-70"
   >
     <div class="font-bold">
-      <div class="clickable" @click="$store.commit('setShowRouteSummary',!$store.state.showRouteSummary)">Route Summary</div>
-      <img class="icon clickable show-detailed-route-summary" src="/static/route_directions.png" @click="showRouteDirections()"></div>
-      <div v-if="$store.state.alwaysShowRouteSummary || $store.state.showRouteSummary">
+      <div class="clickable" @click="$store.commit('setShowTripSummary',!$store.state.showTripSummary)">Trip Summary</div>
+      <img class="icon clickable show-detailed-route-summary" src="/static/route_directions.png" @click="showTripDirections()"></div>
+      <div v-if="$store.state.alwaysShowTripSummary || $store.state.showTripSummary">
     <div>
-      {{ $store.state.activeRoute.name }}
+      {{ $store.state.activeTrip.name }}
     </div>
    
     <div class="font-bold">Total: {{ getTotalDistance() }} miles</div>
@@ -17,23 +17,23 @@
 </template>
 <script>
 export default {
-  name: "RouteSummary2",
+  name: "TripSummary2",
   data(){
       return {
           summaries:[],
-          activeRoute:null
+          activeTrip:null
       }
   },
   mounted(){
     this.summaries = this.$store.state.summaries
-    this.activeRoute = this.$store.state.activeRoute
+    this.activeTrip = this.$store.state.activeTrip
   },
   watch: {
     "$store.state.summaries":function(){
       this.summaries = this.$store.state.summaries
     },
-    "$store.state.activeRoute":function(){
-      this.activeRoute = this.$store.state.activeRoute
+    "$store.state.activeTrip":function(){
+      this.activeTrip = this.$store.state.activeTrip
     }
   },
   methods: {
@@ -59,11 +59,11 @@ export default {
       }
       return hrs + ":" + minutes_rounded;
     },
-    showRouteDirections(){
-      this.$store.commit('setShowRouteDirections',!this.$store.state.showRouteDirections)
+    showTripDirections(){
+      this.$store.commit('setShowTripDirections',!this.$store.state.showTripDirections)
     },
     showTolls(){
-      this.$store.commit('setShowRouteTolls',!this.$store.state.showRouteTolls)
+      this.$store.commit('setShowTripTolls',!this.$store.state.showTripTolls)
     }
   },
 };

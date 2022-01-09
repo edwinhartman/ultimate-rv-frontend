@@ -3,7 +3,7 @@
     <div class="w-full archived-routes">
         <div>{{route.name}}</div>
         <Popper :interactive="false" :hover="true">
-        <button @click="restoreRoute(route._id)">
+        <button @click="restoreTrip(route._id)">
             Restore
         </button>
         <template #content>
@@ -13,7 +13,7 @@
         <Popper :interactive="false" :hover="true">
         <button
       
-      @click="removeRoute(route._id)"
+      @click="removeTrip(route._id)"
     >
       Remove
     </button>
@@ -28,7 +28,7 @@
 import Popper from 'vue3-popper'
 
 export default{
-    name:"ArchivedRoutes",
+    name:"ArchivedTrips",
     components:{
         Popper
     },
@@ -49,12 +49,12 @@ export default{
         }
     },
     methods:{
-        restoreRoute(id){
-            this.$store.dispatch("restoreRoute",id)
+        restoreTrip(id){
+            this.$store.dispatch("restoreTrip",id)
         },
-        removeRoute(id){
+        removeTrip(id){
       
-        this.$store.dispatch("removeRoute",id);
+        this.$store.dispatch("removeTrip",id);
       
     },
     }

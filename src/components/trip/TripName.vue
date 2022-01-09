@@ -2,17 +2,17 @@
   <div>
     <ModalPopup
       :yesNoOption="true"
-      v-if="showRemoveRoutePopup"
-      @yesAnswer="confirmRemoveRoute(true)"
-      @noAnswer="confirmRemoveRoute(false)"
+      v-if="showRemoveTripPopup"
+      @yesAnswer="confirmRemoveTrip(true)"
+      @noAnswer="confirmRemoveTrip(false)"
     >
       <div>Are you sure that you want to remove this route?</div>
     </ModalPopup>
     <ModalPopup
       :yesNoOption="true"
-      v-if="showArchiveRoutePopup"
-      @yesAnswer="confirmArchiveRoute(true)"
-      @noAnswer="confirmArchiveRoute(false)"
+      v-if="showArchiveTripPopup"
+      @yesAnswer="confirmArchiveTrip(true)"
+      @noAnswer="confirmArchiveTrip(false)"
     >
       <div>
         You are about to archive this route.<br />You will not be able to make
@@ -21,7 +21,7 @@
     </ModalPopup>
     <ClickToEdit
       :value="route.name"
-      @input="updateRouteName"
+      @input="updateTripName"
       :identifier="route._id"
       :active="route.active"
       :class="route.active ? 'font-bold color-fg-yellow' : 'font-normal'"
@@ -30,7 +30,7 @@
     <Popper :interactive="false" :hover="true">
       <button
         v-if="!route.active"
-        @click="setRouteActive(route._id)"
+        @click="setTripActive(route._id)"
         class="bg-green fg-yellow clickable"
       >
         Set Active
@@ -54,7 +54,7 @@
             (route.firstStopIsDeparture && route.stops.length > 1)) &&
           route.active
         "
-        @click="calculateRoute(route)"
+        @click="calculateTrip(route)"
         :disabled="$store.state.routeCalculateInProcess"
       >
         {{ calculateButtonName }}
@@ -72,10 +72,10 @@
             (route.firstStopIsDeparture && route.stops.length > 1)) &&
           route.active
         "
-        @click="zoomToActiveRoute()"
+        @click="zoomToActiveTrip()"
         class="bg-blue fg-yellow clickable"
       >
-        Zoom To Route
+        Zoom To Trip
       </button>
       <template #content>
         <div class="tooltip-popup">
@@ -86,7 +86,7 @@
     <Popper :interactive="false" :hover="true">
       <button
         v-if="!route.active && !route.system"
-        @click="archiveRoute(route._id)"
+        @click="archiveTrip(route._id)"
         class="clickable"
       >
         Archive
@@ -96,7 +96,7 @@
       </template>
     </Popper>
     <Popper :interactive="false" :hover="true">
-      <button @click="removeRoute(route._id)" class="bg-red fg-white clickable">
+      <button @click="removeTrip(route._id)" class="bg-red fg-white clickable">
         Remove
       </button>
       <template #content>
@@ -118,7 +118,7 @@
     </Popper>
     <button
       v-if="$store.state.adminToken != null && !route_prop.system && !$store.state.hideAdminFunctions"
-      @click="setRouteAsSystemRoute(route._id)"
+      @click="setTripAsSystemTrip(route._id)"
     >
       System
     </button>
@@ -131,7 +131,7 @@ import Popper from "vue3-popper";
 import { generateCalendarFile } from "../../business_logic/CalendarFiles";
 
 export default {
-  name: "RouteName",
+  name: "TripName",
   components: {
     ClickToEdit,
     ModalPopup,
@@ -147,10 +147,10 @@ export default {
   data() {
     return {
       route: this.route_prop,
-      showRemoveRoutePopup: false,
+      showRemoveTripPopup: false,
       routeToRemove: null,
       routeToArchive: null,
-      showArchiveRoutePopup: false,
+      showArchiveTripPopup: false,
     };
   },
   computed: {
@@ -179,58 +179,58 @@ export default {
     },
   },
   methods: {
-    setRouteActive(id) {
-      this.$store.dispatch("activateRoute", id).then(()=>{
-        this.zoomToActiveRoute()
+    setTripActive(id) {
+      this.$store.dispatch("activateTrip", id).then(()=>{
+        this.zoomToActiveTrip()
       });
     },
-    updateRouteName(oldValue, newRouteName, identifier) {
+    updateTripName(oldValue, newTripName, identifier) {
       let payload = {
         identifier: identifier,
         oldValue: oldValue,
-        newValue: newRouteName,
+        newValue: newTripName,
       };
-      this.$store.dispatch("updateRouteName", payload);
+      this.$store.dispatch("updateTripName", payload);
     },
-    calculateRoute(route) {
-      this.$store.dispatch("calculateRoute", route);
-      this.zoomToActiveRoute();
+    calculateTrip(route) {
+      this.$store.dispatch("calculateTrip", route);
+      this.zoomToActiveTrip();
     },
-    removeRoute(id) {
+    removeTrip(id) {
       this.routeToRemove = id;
-      this.showRemoveRoutePopup = true;
-      //this.$store.dispatch("removeRoute",id);
+      this.showRemoveTripPopup = true;
+      //this.$store.dispatch("removeTrip",id);
     },
-    confirmRemoveRoute(doRemove) {
+    confirmRemoveTrip(doRemove) {
       if (doRemove) {
-        this.$store.dispatch("removeRoute", this.routeToRemove);
+        this.$store.dispatch("removeTrip", this.routeToRemove);
       }
       this.routeToRemove = null;
-      this.showRemoveRoutePopup = false;
+      this.showRemoveTripPopup = false;
     },
-    archiveRoute(id) {
+    archiveTrip(id) {
       this.routeToArchive = id;
-      this.showArchiveRoutePopup = true;
+      this.showArchiveTripPopup = true;
     },
-    confirmArchiveRoute(doArchive) {
+    confirmArchiveTrip(doArchive) {
       if (doArchive) {
-        this.$store.dispatch("archiveRoute", this.routeToArchive);
+        this.$store.dispatch("archiveTrip", this.routeToArchive);
       }
       this.routeToArchive = null;
-      this.showArchiveRoutePopup = false;
+      this.showArchiveTripPopup = false;
     },
-    zoomToActiveRoute() {
+    zoomToActiveTrip() {
       var lowestLat = 9999999;
       var lowestLon = 9999999;
       var highestLat = -9999999;
       var highestLon = -9999999;
       let stopStartIdx = 0;
-      if (this.$store.state.activeRoute.searchPredefined != null && this.$store.state.activeRoute.searchPredefined) {
-        lowestLat = this.$store.state.activeRoute.stops[0].coordinate.latitude;
-        highestLat = this.$store.state.activeRoute.stops[0].coordinate.latitude;
-        lowestLon = this.$store.state.activeRoute.stops[0].coordinate.longitude;
+      if (this.$store.state.activeTrip.searchPredefined != null && this.$store.state.activeTrip.searchPredefined) {
+        lowestLat = this.$store.state.activeTrip.stops[0].coordinate.latitude;
+        highestLat = this.$store.state.activeTrip.stops[0].coordinate.latitude;
+        lowestLon = this.$store.state.activeTrip.stops[0].coordinate.longitude;
         highestLon =
-          this.$store.state.activeRoute.stops[0].coordinate.longitude;
+          this.$store.state.activeTrip.stops[0].coordinate.longitude;
         stopStartIdx = 1;
       } else {
         lowestLat = this.$store.state.currentLocation.coords.latitude;
@@ -241,35 +241,35 @@ export default {
 
       for (
         let i = stopStartIdx;
-        i < this.$store.state.activeRoute.stops.length;
+        i < this.$store.state.activeTrip.stops.length;
         i++
       ) {
         if (
-          this.$store.state.activeRoute.stops[i].coordinate.latitude < lowestLat
+          this.$store.state.activeTrip.stops[i].coordinate.latitude < lowestLat
         ) {
           lowestLat =
-            this.$store.state.activeRoute.stops[i].coordinate.latitude;
+            this.$store.state.activeTrip.stops[i].coordinate.latitude;
         }
         if (
-          this.$store.state.activeRoute.stops[i].coordinate.latitude >
+          this.$store.state.activeTrip.stops[i].coordinate.latitude >
           highestLat
         ) {
           highestLat =
-            this.$store.state.activeRoute.stops[i].coordinate.latitude;
+            this.$store.state.activeTrip.stops[i].coordinate.latitude;
         }
         if (
-          this.$store.state.activeRoute.stops[i].coordinate.longitude <
+          this.$store.state.activeTrip.stops[i].coordinate.longitude <
           lowestLon
         ) {
           lowestLon =
-            this.$store.state.activeRoute.stops[i].coordinate.longitude;
+            this.$store.state.activeTrip.stops[i].coordinate.longitude;
         }
         if (
-          this.$store.state.activeRoute.stops[i].coordinate.longitude >
+          this.$store.state.activeTrip.stops[i].coordinate.longitude >
           highestLon
         ) {
           highestLon =
-            this.$store.state.activeRoute.stops[i].coordinate.longitude;
+            this.$store.state.activeTrip.stops[i].coordinate.longitude;
         }
       }
 
@@ -299,8 +299,8 @@ export default {
         });
       }
     },
-    setRouteAsSystemRoute(route_id) {
-      this.$store.dispatch("setRouteAsSystemRoute", { route_id: route_id });
+    setTripAsSystemTrip(route_id) {
+      this.$store.dispatch("setTripAsSystemTrip", { route_id: route_id });
     },
   },
 };

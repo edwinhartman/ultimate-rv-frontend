@@ -1,19 +1,19 @@
 <template>
   <div class="route-overview">
-    <RouteName :route_prop="route" />
-    <RouteStops :route_prop="route" />
+    <TripName :route_prop="route" />
+    <TripStops :route_prop="route" />
     <!-- <div v-if="route.active">
-        <SearchAlongRoute :route_prop="route" />
+        <SearchAlongTrip :route_prop="route" />
     </div> -->
   </div>
 </template>
 <script>
-import RouteName from "./RouteName.vue";
-import RouteStops from "./RouteStops.vue";
-// import SearchAlongRoute from './SearchAlongRoute.vue'
+import TripName from "./TripName.vue";
+import TripStops from "./TripStops.vue";
+// import SearchAlongTrip from './SearchAlongTrip.vue'
 
 export default{
-    name:"RouteOverview",
+    name:"TripOverview",
     props:{
         route_prop:{
             type:Object,
@@ -21,9 +21,9 @@ export default{
         }
     },
     components:{
-        RouteName,
-        RouteStops,
-        // SearchAlongRoute
+        TripName,
+        TripStops,
+        // SearchAlongTrip
     },
     data(){
         return{

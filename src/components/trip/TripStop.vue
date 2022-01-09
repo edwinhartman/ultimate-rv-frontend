@@ -26,7 +26,7 @@
 </template>
 <script>
 export default {
-  name: "RouteStop",
+  name: "TripStop",
   props: {
     stop_prop: {
       type: Object,
@@ -68,7 +68,7 @@ export default {
   },
   methods:{
     deleteStop(route_info, stop_info) {
-      this.$store.dispatch("removeStopFromRoute", {
+      this.$store.dispatch("removeStopFromTrip", {
         route_id: route_info.route._id,
         stop_id: stop_info.stop._id,
       });
@@ -84,7 +84,7 @@ export default {
       this.$store.commit("setNewMapRegion",{centerLat:this.stop.coordinate.latitude,centerLon:this.stop.coordinate.longitude,diffLat:0.25,diffLon:0.25})
     },
     setDate(route_info, stop_info){
-      this.$store.dispatch("editRouteStopDate",{
+      this.$store.dispatch("editTripStopDate",{
         route:route_info,
         stop:stop_info,
         stop_idx:this.stopIdx

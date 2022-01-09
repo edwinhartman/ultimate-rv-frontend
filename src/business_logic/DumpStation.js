@@ -55,9 +55,9 @@ export function searchDumpStations(region,store, zipcode, callback) {
                         );
                         
                         btn.className = "bg-blue-500 text-white rounded-md pl-1 pr-1 text-tiny"
-                        btn.textContent = "Add To Route";
+                        btn.textContent = "Add To Trip";
                         btn.onclick = function () {
-                            window.mymapview.addToRouteNotPlace(
+                            window.mymapview.addToTripNotPlace(
                                 res.data.data[i].name,
                                 "",
                                 res.data.data[i].latitude,

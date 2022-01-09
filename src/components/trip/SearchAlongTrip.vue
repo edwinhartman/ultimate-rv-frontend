@@ -1,13 +1,13 @@
 <template>
   <div
     v-if="
-      $store.state.activeRoute != null &&
-      $store.state.activeRoute.polyline != null &&
-      $store.state.activeRoute.polyline.length > 0
+      $store.state.activeTrip != null &&
+      $store.state.activeTrip.polyline != null &&
+      $store.state.activeTrip.polyline.length > 0
     "
   >
   <div class="search-along-route-banner secondary-color-70" :class="{ 'shift-right':routeSummaryShown,'shift-left':!routeSummaryShown}">
-    <div @click="expanded = !expanded">Search Along Route</div>
+    <div @click="expanded = !expanded">Search Along Trip</div>
       <img v-if="!expanded"
       @click="expanded = true" src="/static/arrow-down-icon.png" class="icon clickable" />
 
@@ -77,7 +77,7 @@
           value="after"
           v-if="
             searchStop != null &&
-            searchStop < $store.state.activeRoute.stops.length - 1
+            searchStop < $store.state.activeTrip.stops.length - 1
           "
         >
           After
@@ -86,7 +86,7 @@
       <br />
       <select name="" id="" v-model="searchStop">
         <option
-          v-for="(stop, idx) in $store.state.activeRoute.stops"
+          v-for="(stop, idx) in $store.state.activeTrip.stops"
           :key="stop._id"
           :value="idx"
         >
@@ -100,7 +100,7 @@
             'bg-green-700  text-white cursor-pointer': searchEnabled,
             'bg-gray-400 text-gray-500 cursor-not-allowed': !searchEnabled,
           }"
-          @click="searchAlongRoute()"
+          @click="searchAlongTrip()"
           :disabled="searchEnabled == false"
         >
           Go
@@ -120,7 +120,7 @@
 import { getPredefinedSearchTypes } from "../../definitions/PredefinedSearchTypes.js";
 
 export default {
-  name: "SearchAlongRoute",
+  name: "SearchAlongTrip",
   computed: {
     searchEnabled() {
       if (
@@ -146,11 +146,11 @@ export default {
   },
   created() {
     this.predefinedSearchTypes = getPredefinedSearchTypes();
-    this.routeSummaryShown = this.$store.state.alwaysShowRouteSummary
+    this.routeSummaryShown = this.$store.state.alwaysShowTripSummary
   },
   watch:{
-    "$store.state.alwaysShowRouteSummary":function(){
-      this.routeSummaryShown = this.$store.state.alwaysShowRouteSummary
+    "$store.state.alwaysShowTripSummary":function(){
+      this.routeSummaryShown = this.$store.state.alwaysShowTripSummary
     }
   },
   methods: {
@@ -167,7 +167,7 @@ export default {
       this.searchBeforeAfterAround = "";
       this.$store.commit("setSearchPredefined", "None");
     },
-    searchAlongRoute() {
+    searchAlongTrip() {
       if (
         this.searchBeforeAfterAround == "after" ||
         this.searchBeforeAfterAround == "before"
@@ -179,12 +179,12 @@ export default {
 
         if (this.searchBeforeAfterAround == "before") {
           sectionIdx = this.searchStop - 1;
-          for (let i = this.$store.state.activeRoute.polyline[sectionIdx].length - 1;i > 0;i--) {
+          for (let i = this.$store.state.activeTrip.polyline[sectionIdx].length - 1;i > 0;i--) {
             currentDistance += this.distance(
-              this.$store.state.activeRoute.polyline[sectionIdx][i][0],
-              this.$store.state.activeRoute.polyline[sectionIdx][i][1],
-              this.$store.state.activeRoute.polyline[sectionIdx][i - 1][0],
-              this.$store.state.activeRoute.polyline[sectionIdx][i - 1][1],
+              this.$store.state.activeTrip.polyline[sectionIdx][i][0],
+              this.$store.state.activeTrip.polyline[sectionIdx][i][1],
+              this.$store.state.activeTrip.polyline[sectionIdx][i - 1][0],
+              this.$store.state.activeTrip.polyline[sectionIdx][i - 1][1],
               "M"
             );
             if (currentDistance >= searchLength) {
@@ -194,12 +194,12 @@ export default {
           }
         } else {
           sectionIdx = this.searchStop;
-          for (let i = 0;i < this.$store.state.activeRoute.polyline[sectionIdx].length - 1;i++) {
+          for (let i = 0;i < this.$store.state.activeTrip.polyline[sectionIdx].length - 1;i++) {
             currentDistance += this.distance(
-              this.$store.state.activeRoute.polyline[sectionIdx][i][0],
-              this.$store.state.activeRoute.polyline[sectionIdx][i][1],
-              this.$store.state.activeRoute.polyline[sectionIdx][i + 1][0],
-              this.$store.state.activeRoute.polyline[sectionIdx][i + 1][1],
+              this.$store.state.activeTrip.polyline[sectionIdx][i][0],
+              this.$store.state.activeTrip.polyline[sectionIdx][i][1],
+              this.$store.state.activeTrip.polyline[sectionIdx][i + 1][0],
+              this.$store.state.activeTrip.polyline[sectionIdx][i + 1][1],
               "M"
             );
             if (currentDistance >= searchLength) {
@@ -213,9 +213,9 @@ export default {
           var span = 0.5;
 
           var lat =
-            this.$store.state.activeRoute.polyline[sectionIdx][offset][0];
+            this.$store.state.activeTrip.polyline[sectionIdx][offset][0];
           var lon =
-            this.$store.state.activeRoute.polyline[sectionIdx][offset][1];
+            this.$store.state.activeTrip.polyline[sectionIdx][offset][1];
           this.$store.commit("setNewMapRegion", {
             centerLat: lat,
             centerLon: lon,
@@ -231,10 +231,10 @@ export default {
         }
       } else {
         var lat1 =
-          this.$store.state.activeRoute.stops[this.searchStop].coordinate
+          this.$store.state.activeTrip.stops[this.searchStop].coordinate
             .latitude;
         var lon1 =
-          this.$store.state.activeRoute.stops[this.searchStop].coordinate
+          this.$store.state.activeTrip.stops[this.searchStop].coordinate
             .longitude;
         var span1 = parseFloat(this.searchDistance) / 100.0;
         this.$store.commit("setNewMapRegion", {

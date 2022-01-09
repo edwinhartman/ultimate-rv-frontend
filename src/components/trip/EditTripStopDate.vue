@@ -15,7 +15,7 @@
 </template>
 <script>
 export default {
-  name: "EditRouteStopDate",
+  name: "EditTripStopDate",
   data() {
     return {
       stop_date: null,
@@ -86,7 +86,7 @@ export default {
       this.$store.commit("clearEditStopDateStop");
     },
     clear() {
-      this.$store.dispatch("updateRouteStopDate", {
+      this.$store.dispatch("updateTripStopDate", {
         route_id: this.$store.state.editStopDateStop.route.route._id,
         stop_id: this.$store.state.editStopDateStop.stop.stop._id,
         stop_idx: this.$store.state.editStopDateStop.idx,
@@ -95,7 +95,7 @@ export default {
 
     },
     updateStopDate() {
-      this.$store.dispatch("updateRouteStopDate", {
+      this.$store.dispatch("updateTripStopDate", {
         route_id: this.$store.state.editStopDateStop.route.route._id,
         stop_id: this.$store.state.editStopDateStop.stop.stop._id,
         stop_idx: this.$store.state.editStopDateStop.stop_idx,

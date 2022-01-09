@@ -1,7 +1,7 @@
 <template>
     <div class="route-tolls">
         <div class="font-bold">Toll Overview</div>
-        <div v-for="section in $store.state.activeRoute.tolls" :key="section.id">
+        <div v-for="section in $store.state.activeTrip.tolls" :key="section.id">
             <div v-for="toll in section" :key="toll.id" class="text-left">
                 {{toll.tollSystem}}
                 <div v-for="fare in toll.fares" :key="fare.id" class="w-full grid">
@@ -18,7 +18,7 @@
 </template>
 <script>
 export default{
-    name:"RouteTolls",
+    name:"TripTolls",
     data(){
         return {
             preventTollroads:false

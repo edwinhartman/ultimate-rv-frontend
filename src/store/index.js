@@ -2,7 +2,7 @@ import { createStore } from 'vuex'
 import axios from 'axios'
 import VuexPersistence from 'vuex-persist'
 import flexible_polyline from '../helpers/flexible_polyline'
-import { calculateRouteHERE } from '../business_logic/RoutingCalculator'
+import { calculateTripHERE } from '../business_logic/RoutingCalculator'
 import router from '../router/index'
 
 const vuexLocal = new VuexPersistence({
@@ -13,7 +13,7 @@ export default createStore({
   state: {
     searchKeywords: "",
     routes: [],
-    activeRoute: null,
+    activeTrip: null,
     currentLocation: null,
     token: localStorage.getItem("user-token") || "",
     adminToken: localStorage.getItem("user-token-admin") || null,
@@ -22,13 +22,13 @@ export default createStore({
     summaries: [],
     searchPredefined: "none",
     mapRegion: null,
-    showRouteDirections: false,
+    showTripDirections: false,
     showAbout: false,
     preventTollroads: false,
-    showRouteTolls: false,
+    showTripTolls: false,
     routeCalculateInProcess: false,
-    alwaysShowRouteSummary: false,
-    showRouteSummary: false,
+    alwaysShowTripSummary: false,
+    showTripSummary: false,
     sharedSearchMarkers: [],
     showPicture: null,
     showYelpDetails: false,
@@ -39,8 +39,8 @@ export default createStore({
     editStopDateStop:null,
     defaultOriginType:"current",
     autoPreventBigCities:false,
-    showArchivedRoutes:false,
-    showSystemRoutes:false,
+    showArchivedTrips:false,
+    showSystemTrips:false,
     hideAdminFunctions:false,
     showRVSettings:false
   },
@@ -70,14 +70,14 @@ export default createStore({
         state.showAnnotationDetailsAvailable = Math.random() * 1000
       }
     },
-    setShowRouteSummary(state, val) {
-      state.showRouteSummary = val
+    setShowTripSummary(state, val) {
+      state.showTripSummary = val
     },
     setPreventTollroads(state, val) {
       state.preventTollroads = val
     },
-    setAlwaysShowRouteSummary(state, val) {
-      state.alwaysShowRouteSummary = val
+    setAlwaysShowTripSummary(state, val) {
+      state.alwaysShowTripSummary = val
     },
     setShowYelpDetails(state, val) {
       state.showYelpDetails = val
@@ -85,11 +85,11 @@ export default createStore({
     setAutoPreventBigCities(state,val){
       state.autoPreventBigCities = val
     },
-    setShowArchivedRoutes(state,val){
-      state.showArchivedRoutes = val
+    setShowArchivedTrips(state,val){
+      state.showArchivedTrips = val
     },
-    setShowSystemRoutes(state,val){
-      state.showSystemRoutes = val
+    setShowSystemTrips(state,val){
+      state.showSystemTrips = val
     },
     setHideAdminFunctions(state,val){
       state.hideAdminFunctions = val
@@ -99,12 +99,12 @@ export default createStore({
     },
     resetValues(state) {
       state.searchKeywords = ""
-      state.activeRoute = null
+      state.activeTrip = null
       state.summaries = []
     },
-    resetCurrentRoute(state) {
+    resetCurrentTrip(state) {
       state.summaries = []
-      state.activeRoute.polyline = []
+      state.activeTrip.polyline = []
     },
     resetSearchPredefined(state) {
       state.searchPredefined = "none"
@@ -115,24 +115,24 @@ export default createStore({
     updateKeywords(state, value) {
       state.searchKeywords = value
     },
-    addRoute(state, value) {
+    addTrip(state, value) {
       value.startLocation = state.currentLocation
       value.stops = []
       value.polyline = []
       state.routes.push(value)
       if (value.active) {
-        state.activeRoute = value
+        state.activeTrip = value
       }
     },
-    loadRoutes(state, value) {
+    loadTrips(state, value) {
       state.routes = value
       if (state.routes != null) {
         if (state.routes.length == 0) {
-          state.activeRoute = null;
+          state.activeTrip = null;
         } else {
           for (let i = 0; i < state.routes.length; i++) {
             if (state.routes[i].active) {
-              state.activeRoute = state.routes[i]
+              state.activeTrip = state.routes[i]
               state.summaries = state.routes[i].summary
             }
           }
@@ -141,27 +141,27 @@ export default createStore({
     },
     setCurrentLocation(state, value) {
       state.currentLocation = value
-      if (state.activeRoute != null && state.activeRoute.startLocation == null) {
-        state.activeRoute.startLocation = value
+      if (state.activeTrip != null && state.activeTrip.startLocation == null) {
+        state.activeTrip.startLocation = value
       }
     },
     addStop(state, value) {
-      state.activeRoute.stops.push(value)
+      state.activeTrip.stops.push(value)
     },
     clearPolyline(state) {
-      state.activeRoute.polyline = []
+      state.activeTrip.polyline = []
     },
     clearSummaries(state) {
       state.summaries = []
     },
     clearActions(state) {
-      state.activeRoute.actions = []
+      state.activeTrip.actions = []
     },
     clearSpeeds(state) {
-      state.activeRoute.speeds = []
+      state.activeTrip.speeds = []
     },
     clearTolls(state) {
-      state.activeRoute.tolls = []
+      state.activeTrip.tolls = []
     },
     clearShowPicture(state) {
       state.showPicture = null
@@ -170,15 +170,15 @@ export default createStore({
       state.showPicture = value
     },
     addPolyline(state, value) {
-      state.activeRoute.polyline.push(value)
+      state.activeTrip.polyline.push(value)
     },
-    updateRouteName(state, payload) {
+    updateTripName(state, payload) {
       state.routes[payload.idx].name = payload.newName
     },
     updateStopList(state, newList) {
-      state.activeRoute.stops = newList
+      state.activeTrip.stops = newList
       state.summaries = []
-      state.activeRoute.polyline = []
+      state.activeTrip.polyline = []
     },
     authenticationSuccess(state, resp) {
       //state.status = "success";
@@ -206,13 +206,13 @@ export default createStore({
       state.summaries.push(value)
     },
     addActions(state, value) {
-      state.activeRoute.actions.push(value)
+      state.activeTrip.actions.push(value)
     },
     addSpeeds(state, value) {
-      state.activeRoute.speeds.push(value)
+      state.activeTrip.speeds.push(value)
     },
     addTolls(state, value) {
-      state.activeRoute.tolls.push(value)
+      state.activeTrip.tolls.push(value)
     },
     setActiveRV(state, rv) {
       state.activeRV = rv
@@ -232,19 +232,19 @@ export default createStore({
     setMapType(state, val) {
       state.mapType = val
     },
-    setShowRouteDirections(state, show) {
-      state.showRouteDirections = show
+    setShowTripDirections(state, show) {
+      state.showTripDirections = show
     },
     setShowAbout(state, show) {
       state.showAbout = show
     },
-    setShowRouteTolls(state, show) {
-      state.showRouteTolls = show
+    setShowTripTolls(state, show) {
+      state.showTripTolls = show
     },
     setDefaultOriginType(state,value){
       state.defaultOriginType = value
     },
-    setRouteCalculateInProcess(state, active) {
+    setTripCalculateInProcess(state, active) {
       state.routeCalculateInProcess = active
     },
     clearSharedSearchMarkers(state) {
@@ -267,20 +267,20 @@ export default createStore({
       
       state.searchKeywords = ""
       state.routes = []
-      state.activeRoute = null
+      state.activeTrip = null
       state.currentLocation = null
       state.rvs = []
       state.activeRV = null
       state.summaries = []
       state.searchPredefined = "none"
       state.mapRegion = null
-      state.showRouteDirections = false
+      state.showTripDirections = false
       state.showAbout = false
       state.preventTollroads = false
-      state.showRouteTolls = false
+      state.showTripTolls = false
       state.routeCalculateInProcess = false
-      state.alwaysShowRouteSummary = false
-      state.showRouteSummary = false
+      state.alwaysShowTripSummary = false
+      state.showTripSummary = false
       state.sharedSearchMarkers = []
       state.showPicture = null
       state.showYelpDetails = false
@@ -330,15 +330,15 @@ export default createStore({
 
       axios({
         method: 'post',
-        url: process.env.VUE_APP_BACKEND_CONNECTION_URI + '/updateRoute',
+        url: process.env.VUE_APP_BACKEND_CONNECTION_URI + '/updateTrip',
         data: {
           route: value
         }
       }).then((res) => {
-        commit('loadRoutes', res.data.routes)
+        commit('loadTrips', res.data.routes)
       }).catch((err) => { console.log(err) })
     },
-    addRouteStop({ commit }, value) {
+    addTripStop({ commit }, value) {
       commit('addStop', value)
       commit('clearPolyline')
       commit('clearSummaries')
@@ -346,17 +346,17 @@ export default createStore({
 
       axios({
         method: 'post',
-        url: process.env.VUE_APP_BACKEND_CONNECTION_URI + '/updateRoute',
+        url: process.env.VUE_APP_BACKEND_CONNECTION_URI + '/updateTrip',
         data: {
-          route: this.state.activeRoute
+          route: this.state.activeTrip
         }
       }).then((res) => {
         commit('setSearchPredefined', "None")
-        commit('loadRoutes', res.data.routes)
+        commit('loadTrips', res.data.routes)
       }).catch((err) => { console.log(err) })
 
     },
-    updateRouteName({ commit }, payload) {
+    updateTripName({ commit }, payload) {
       if (typeof payload.newValue == "string") {
         let idx = -1
         for (let i = 0; i < this.state.routes.length; i++) {
@@ -367,42 +367,42 @@ export default createStore({
           }
         }
         if (idx > -1) {
-          commit('updateRouteName', { idx: idx, newName: payload.newValue })
+          commit('updateTripName', { idx: idx, newName: payload.newValue })
           axios({
             method: 'post',
-            url: process.env.VUE_APP_BACKEND_CONNECTION_URI + '/updateRoute',
+            url: process.env.VUE_APP_BACKEND_CONNECTION_URI + '/updateTrip',
             data: {
               route: this.state.routes[idx]
             }
           }).then((res) => {
-            commit('loadRoutes', res.data.routes)
+            commit('loadTrips', res.data.routes)
           }).catch((err) => { console.log(err) })
         }
       }
     },
     setAsOrigin({ commit }, payload) {
-      commit('resetCurrentRoute')
+      commit('resetCurrentTrip')
       payload.route.route.firstStopIsDeparture = payload.isOrigin
       axios({
         method: 'post',
-        url: process.env.VUE_APP_BACKEND_CONNECTION_URI + '/updateRoute',
+        url: process.env.VUE_APP_BACKEND_CONNECTION_URI + '/updateTrip',
         data: {
           route: payload.route.route
         }
       }).then((res) => {
-        commit('loadRoutes', res.data.routes)
+        commit('loadTrips', res.data.routes)
       }).catch((err) => { console.log(err) })
     },
-    calculateRoute({ commit }, route) {
+    calculateTrip({ commit }, route) {
       if (this.state.currentLocation != null) {
-        commit('setRouteCalculateInProcess', true)
+        commit('setTripCalculateInProcess', true)
         commit('clearPolyline')
         commit('clearSummaries')
         commit('clearActions')
         commit('clearSpeeds')
         commit('clearTolls')
 
-        calculateRouteHERE(this.state, (routes) => {
+        calculateTripHERE(this.state, (routes) => {
           if (routes != null) {
             for (let r = 0; r < routes.length; r++) {
               for (let i = 0; i < routes[r].sections.length; i++) {
@@ -415,7 +415,7 @@ export default createStore({
                   tolls = routes[r].sections[i].tolls
                 }
                 commit('addTolls', tolls)
-                commit('setRouteCalculateInProcess', false)
+                commit('setTripCalculateInProcess', false)
               }
             }
 
@@ -425,18 +425,18 @@ export default createStore({
               method: 'post',
               url: process.env.VUE_APP_BACKEND_CONNECTION_URI + "/addPolylineSummaryActionsTollsSpeeds",
               data: {
-                route_id: this.state.activeRoute._id,
-                polyline: this.state.activeRoute.polyline,
+                route_id: this.state.activeTrip._id,
+                polyline: this.state.activeTrip.polyline,
                 summary: this.state.summaries,
-                actions: this.state.activeRoute.actions,
-                tolls: this.state.activeRoute.tolls,
-                speeds: this.state.activeRoute.speeds
+                actions: this.state.activeTrip.actions,
+                tolls: this.state.activeTrip.tolls,
+                speeds: this.state.activeTrip.speeds
               }
             }).then((res1) => {
-              commit('loadRoutes', res1.data.routes)
+              commit('loadTrips', res1.data.routes)
             })
           } else {
-            commit('setRouteCalculateInProcess', false)
+            commit('setTripCalculateInProcess', false)
           }
         })
 
@@ -458,12 +458,12 @@ export default createStore({
             if (res.data.settings != null && res.data.settings.length > 0){
 
               this.state.preventTollroads = res.data.settings.filter(e => { return Object.keys(e)[0] === "preventTollroads"})[0].preventTollroads
-              this.state.alwaysShowRouteSummary = res.data.settings.filter((e)=>{ return Object.keys(e)[0] == "alwaysShowRouteSummary" })[0].alwaysShowRouteSummary
+              this.state.alwaysShowTripSummary = res.data.settings.filter((e)=>{ return Object.keys(e)[0] == "alwaysShowTripSummary" })[0].alwaysShowTripSummary
               this.state.showYelpDetails = res.data.settings.filter((e)=>{ return Object.keys(e)[0] == "showYelpDetails"})[0].showYelpDetails
               this.state.autoPreventBigCities = res.data.settings.filter((e)=>{ return Object.keys(e)[0] == "autoPreventBigCities"})[0].autoPreventBigCities
-              this.state.showArchivedRoutes = res.data.settings.filter((e)=>{ return Object.keys(e)[0] == "showArchivedRoutes"})[0].showArchivedRoutes
+              this.state.showArchivedTrips = res.data.settings.filter((e)=>{ return Object.keys(e)[0] == "showArchivedTrips"})[0].showArchivedTrips
               this.state.hideAdminFunctions = res.data.settings.filter((e)=>{ return Object.keys(e)[0] == "hideAdminFunctions"})[0].hideAdminFunctions
-              this.state.showSystemRoutes = res.data.settings.filter((e)=>{ return Object.keys(e)[0] == "showSystemRoutes"})[0].showSystemRoutes
+              this.state.showSystemTrips = res.data.settings.filter((e)=>{ return Object.keys(e)[0] == "showSystemTrips"})[0].showSystemTrips
               this.state.defaultOriginType = res.data.settings.filter((e)=>{ return Object.keys(e)[0] == "defaultOriginType"})[0].defaultOriginType
               if (res.data.settings.filter((e)=>{ return Object.keys(e)[0] == "showRVSettings"})){
                 this.state.showRVSettings = res.data.settings.filter((e)=>{ return Object.keys(e)[0] == "showRVSettings"})[0].showRVSettings
@@ -489,15 +489,15 @@ export default createStore({
         });
       });
     },
-    removeStopFromRoute({ commit }, payload) {
+    removeStopFromTrip({ commit }, payload) {
       axios({
         method: 'post',
-        url: process.env.VUE_APP_BACKEND_CONNECTION_URI + '/removeStopFromRoute',
+        url: process.env.VUE_APP_BACKEND_CONNECTION_URI + '/removeStopFromTrip',
         data: {
           payload
         }
       }).then((res) => {
-        commit('loadRoutes', res.data.routes)
+        commit('loadTrips', res.data.routes)
       }).catch((err) => { console.log(err) })
     },
     addRV({ commit }, payload) {
@@ -533,64 +533,64 @@ export default createStore({
     resetValues({ commit }) {
       commit('resetValues')
     },
-    addBlankRoute({ commit }) {
+    addBlankTrip({ commit }) {
       axios({
         method: 'get',
-        url: process.env.VUE_APP_BACKEND_CONNECTION_URI + '/addBlankRoute?addBigCities=' + this.state.autoPreventBigCities
+        url: process.env.VUE_APP_BACKEND_CONNECTION_URI + '/addBlankTrip?addBigCities=' + this.state.autoPreventBigCities
       }).then((res) => {
-        commit('loadRoutes', res.data.routes)
+        commit('loadTrips', res.data.routes)
       })
     },
-    activateRoute({ commit }, id) {
+    activateTrip({ commit }, id) {
       return new Promise((resolve,reject)=>{
       commit('resetValues')
       axios({
         method: 'post',
-        url: process.env.VUE_APP_BACKEND_CONNECTION_URI + '/activateRoute',
+        url: process.env.VUE_APP_BACKEND_CONNECTION_URI + '/activateTrip',
         data: {
           id
         }
       }).then((res) => {
-        commit('loadRoutes', res.data.routes)
+        commit('loadTrips', res.data.routes)
           resolve()
         
       })
     })
     },
-    copyActiveRouteToReverse({ commit }) {
+    copyActiveTripToReverse({ commit }) {
       axios({
         method: 'post',
-        url: process.env.VUE_APP_BACKEND_CONNECTION_URI + "/copyActiveRouteToReverse",
-        data: { route: this.state.activeRoute }
+        url: process.env.VUE_APP_BACKEND_CONNECTION_URI + "/copyActiveTripToReverse",
+        data: { route: this.state.activeTrip }
       }).then((res) => {
-        commit('loadRoutes', res.data.routes)
+        commit('loadTrips', res.data.routes)
       })
     },
-    removeRoute({ commit }, id) {
+    removeTrip({ commit }, id) {
       axios({
         method: 'post',
-        url: process.env.VUE_APP_BACKEND_CONNECTION_URI + "/removeRoute",
+        url: process.env.VUE_APP_BACKEND_CONNECTION_URI + "/removeTrip",
         data: { route_id: id }
       }).then((res) => {
-        commit('loadRoutes', res.data.routes)
+        commit('loadTrips', res.data.routes)
       })
     },
-    archiveRoute({ commit }, id) {
+    archiveTrip({ commit }, id) {
       axios({
         method: 'post',
-        url: process.env.VUE_APP_BACKEND_CONNECTION_URI + "/archiveRoute",
+        url: process.env.VUE_APP_BACKEND_CONNECTION_URI + "/archiveTrip",
         data: { route_id: id }
       }).then((res) => {
-        commit('loadRoutes', res.data.routes)
+        commit('loadTrips', res.data.routes)
       })
     },
-    restoreRoute({ commit }, id) {
+    restoreTrip({ commit }, id) {
       axios({
         method: 'post',
-        url: process.env.VUE_APP_BACKEND_CONNECTION_URI + "/restoreRoute",
+        url: process.env.VUE_APP_BACKEND_CONNECTION_URI + "/restoreTrip",
         data: { route_id: id }
       }).then((res) => {
-        commit('loadRoutes', res.data.routes)
+        commit('loadTrips', res.data.routes)
       })
     },
     addAreaToAvoid({ commit }, payload) {
@@ -599,7 +599,7 @@ export default createStore({
         url: process.env.VUE_APP_BACKEND_CONNECTION_URI + "/addAreaToAvoid",
         data: { route_id: payload.id, points: payload.points }
       }).then((res) => {
-        commit('loadRoutes', res.data.routes)
+        commit('loadTrips', res.data.routes)
       })
     },
     removeAreaToAvoid({ commit }, payload) {
@@ -610,16 +610,16 @@ export default createStore({
           route_id: payload.id, points: payload.points
         }
       }).then((res) => {
-        commit('loadRoutes', res.data.routes)
+        commit('loadTrips', res.data.routes)
       })
     },
-    editRouteStopDate({commit},payload){
+    editTripStopDate({commit},payload){
       commit('setEditStopDateStop',payload)
     },
-    updateRouteStopDate({commit},payload){
+    updateTripStopDate({commit},payload){
       axios({
         method:'post',
-        url:process.env.VUE_APP_BACKEND_CONNECTION_URI + "/updateRouteStopDate",
+        url:process.env.VUE_APP_BACKEND_CONNECTION_URI + "/updateTripStopDate",
         data:{
           route_id:payload.route_id,
           stop_id: payload.stop_id,
@@ -627,29 +627,29 @@ export default createStore({
         }
       }).then((res)=>{
         commit('clearEditStopDateStop')
-        commit('loadRoutes',res.data.routes)
+        commit('loadTrips',res.data.routes)
       })
     },
-    setRouteAsSystemRoute({commit},payload){
+    setTripAsSystemTrip({commit},payload){
       axios({
         method:'post',
-        url:process.env.VUE_APP_BACKEND_CONNECTION_URI + "/admin/updateRouteToSystemRoute",
+        url:process.env.VUE_APP_BACKEND_CONNECTION_URI + "/admin/updateTripToSystemTrip",
         data:{
           route_id:payload.route_id
         }
       }).then((res)=>{
-        commit('loadRoutes',res.data.routes)
+        commit('loadTrips',res.data.routes)
       })
     },
     saveUserSettings({commit}){
       let settings = [
         {"preventTollroads":this.state.preventTollroads},
-        {"alwaysShowRouteSummary":this.state.alwaysShowRouteSummary},
+        {"alwaysShowTripSummary":this.state.alwaysShowTripSummary},
         {"showYelpDetails":this.state.showYelpDetails},
         {"autoPreventBigCities":this.state.autoPreventBigCities},
-        {"showArchivedRoutes":this.state.showArchivedRoutes},
+        {"showArchivedTrips":this.state.showArchivedTrips},
         {"hideAdminFunctions":this.state.hideAdminFunctions},
-        {"showSystemRoutes":this.state.showSystemRoutes},
+        {"showSystemTrips":this.state.showSystemTrips},
         {"defaultOriginType":this.state.defaultOriginType},
         {"showRVSettings":this.state.showRVSettings}
       ]

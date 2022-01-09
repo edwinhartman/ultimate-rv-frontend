@@ -1,27 +1,27 @@
 import axios from 'axios'
 
-export function calculateRouteHERE(state, callback) {
+export function calculateTripHERE(state, callback) {
     var url = 'https://router.hereapi.com/v8/routes?transportMode=truck&origin='
     var stopStartIdx = 0
-    if (state.activeRoute.firstStopIsDeparture) {
-        url += state.activeRoute.stops[0].coordinate.latitude + ',' +
-            state.activeRoute.stops[0].coordinate.longitude
+    if (state.activeTrip.firstStopIsDeparture) {
+        url += state.activeTrip.stops[0].coordinate.latitude + ',' +
+            state.activeTrip.stops[0].coordinate.longitude
         stopStartIdx = 1
     } else {
         url += state.currentLocation.coords.latitude + ',' +
             state.currentLocation.coords.longitude
     }
-    url += '&destination=' + state.activeRoute.stops[state.activeRoute.stops.length - 1].coordinate.latitude + ',' +
-        state.activeRoute.stops[state.activeRoute.stops.length - 1].coordinate.longitude;
-    if (state.activeRoute.stops.length > 1) {
-        for (let i = stopStartIdx; i < state.activeRoute.stops.length - 1; i++) {
-            url += "&via=" + state.activeRoute.stops[i].coordinate.latitude + "," + state.activeRoute.stops[i].coordinate.longitude
+    url += '&destination=' + state.activeTrip.stops[state.activeTrip.stops.length - 1].coordinate.latitude + ',' +
+        state.activeTrip.stops[state.activeTrip.stops.length - 1].coordinate.longitude;
+    if (state.activeTrip.stops.length > 1) {
+        for (let i = stopStartIdx; i < state.activeTrip.stops.length - 1; i++) {
+            url += "&via=" + state.activeTrip.stops[i].coordinate.latitude + "," + state.activeTrip.stops[i].coordinate.longitude
         }
     }
-    if (state.activeRoute.areasToAvoid != null &&
-        state.activeRoute.areasToAvoid.length > 0) {
+    if (state.activeTrip.areasToAvoid != null &&
+        state.activeTrip.areasToAvoid.length > 0) {
         url += "&avoid[areas]="
-        let areasToAvoid = state.activeRoute.areasToAvoid
+        let areasToAvoid = state.activeTrip.areasToAvoid
         for (let i = 0; i < areasToAvoid.length; i++) {
             if (i > 0) {
                 url += "|"

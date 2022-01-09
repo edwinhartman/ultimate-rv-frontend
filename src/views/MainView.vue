@@ -1,19 +1,19 @@
 <template>
-    <ModalPopup v-if="$store.state.showRouteDirections" 
+    <ModalPopup v-if="$store.state.showTripDirections" 
                 :rightTopCloseOption="true" 
-                @close="$store.commit('setShowRouteDirections',!$store.state.showRouteDirections)"
-                dialogTitle="Route Summary"
+                @close="$store.commit('setShowTripDirections',!$store.state.showTripDirections)"
+                dialogTitle="Trip Summary"
     >
-        <RouteDirections />
+        <TripDirections />
     </ModalPopup>
     <ModalPopup v-if="$store.state.showAbout" :rightTopCloseOption="true" @close="$store.commit('setShowAbout',!$store.state.showAbout)">
         <AboutPage />
     </ModalPopup>
-    <ModalPopup v-if="$store.state.showRouteTolls" :rightTopCloseOption="true" @close="$store.commit('setShowRouteTolls',!$store.state.showRouteTolls)">
-       <RouteTolls />
+    <ModalPopup v-if="$store.state.showTripTolls" :rightTopCloseOption="true" @close="$store.commit('setShowTripTolls',!$store.state.showTripTolls)">
+       <TripTolls />
     </ModalPopup>
     <ModalPopup v-if="$store.state.routeCalculateInProcess">
-        <div>Route Calculation In Process. Please Wait</div>
+        <div>Trip Calculation In Process. Please Wait</div>
     </ModalPopup>
     <ModalPopup v-if="$store.state.showPicture!=null" :rightTopCloseOption="true" @close="$store.commit('clearShowPicture')">
         <div>{{$store.state.showPicture.title}}</div>
@@ -23,7 +23,7 @@
         <AccountMain />
     </ModalPopup>
     <ModalPopup v-if="$store.state.editStopDateActive">
-        <EditRouteStopDate />
+        <EditTripStopDate />
     </ModalPopup>
     <Header />
     <div class="main_window">
@@ -38,11 +38,11 @@ import LeftToolbar from '../components/toolbars/LeftToolbar.vue'
 import MapView from '../components/map/MapView.vue'
 import RightToolbar from '../components/toolbars/RightToolbar.vue'
 import ModalPopup from '../components/templates/ModalPopup.vue'
-import RouteDirections from '../components/route/RouteDirections.vue'
+import TripDirections from '../components/trip/TripDirections.vue'
 import AboutPage from '../components/other/AboutPage.vue'
-import RouteTolls from '../components/route/RouteTolls.vue'
+import TripTolls from '../components/trip/TripTolls.vue'
 import AccountMain from '../components/account/AccountMain.vue'
-import EditRouteStopDate from '../components/route/EditRouteStopDate.vue'
+import EditTripStopDate from '../components/trip/EditTripStopDate.vue'
 
 export default {
     name:'MainView',
@@ -52,11 +52,11 @@ export default {
         MapView,
         RightToolbar,
         ModalPopup,
-        RouteDirections,
+        TripDirections,
         AboutPage,
-        RouteTolls,
+        TripTolls,
         AccountMain,
-        EditRouteStopDate
+        EditTripStopDate
     },
     data(){
         return {
