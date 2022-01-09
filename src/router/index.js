@@ -89,6 +89,16 @@ const routes = [
             import ( /* webpackChunkName: "admin" */ '../admin/views/AdminMain.vue'),
         beforeEnter: ifAuthenticatedAdmin
     },
+    {
+        path: '/checkAccount/:error_code',
+        name:'CheckAccount',
+        meta:{
+            title:'Check Account'
+        },
+        component: () =>
+            import ( /* webpackChunkName: "admin" */ '../views/CheckAccountMain.vue'),
+        beforeEnter: ifAuthenticated
+    }
 ]
 const router = new createRouter({
     history:createWebHistory(),

@@ -11,6 +11,7 @@ import  VueHtmlToPaper from './components/other/VueHtmlToPaper'
 import LoadScript from 'vue-plugin-load-script';
 
 import AllStates from './definitions/AllStates'
+import ErrorCodes from './definitions/ErrorCodes'
 
 axios.interceptors.request.use((config) => {
     // console.log(process.env.VUE_APP_BACKEND_CONNECTION_URI)
@@ -40,10 +41,15 @@ axios.interceptors.request.use((config) => {
 axios.interceptors.response.use(function (response) {
     // Any status code within the range of 2xx cause this function to trigger
     // Do something with response data
+    console.log(response.status)
     return response;
 }, function (error) {
     if (error.response.status === 401){
         store.dispatch("logoutUser")
+    }
+    if (error.response.status === 987){
+        // console.log(error.response)
+        router.push({path:"/checkAccount/" + error.response.status})
     }
     // Any status codes outside the range of 2xx cause this function to trigger
     // Do something with response error
@@ -53,6 +59,7 @@ axios.interceptors.response.use(function (response) {
 const app = createApp(App)
 
 app.config.globalProperties.allStates = AllStates.AllStates
+app.config.globalProperties.BackendErrorCodes = ErrorCodes.ErrorCodes
 app.config.globalProperties.formatAmount = (amnt)=>{
     var formatter = new Intl.NumberFormat('en-US', {
         style: 'currency',
