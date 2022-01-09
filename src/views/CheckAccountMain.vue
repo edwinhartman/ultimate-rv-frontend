@@ -1,6 +1,6 @@
 <template>
   <div class="main">
-      <form v-if="user && user.account.account && !user.account.account.review_requested">
+      <form v-if="user && user.account.account && !user.account.account.review_requested && !user.account.account.on_hold_updated" @submit.prevent="submitUpdates">
     <div class="content">
       <div class="title">Check Account</div>
       <div class="error">{{ message }}</div>
@@ -165,9 +165,13 @@
       </div>
     </div>
       </form>
-      <div v-if="user && user.account.account && user.account.account.review_requested" class="content">
+      <div v-if="user && user.account.account && user.account.account.review_requested && !user.account.account.on_hold_updated" class="content">
           <div class="title">Account Review</div>
           <div>Your account is being reviewed. You will be notified by email when the review is complete. Additional actions from you might be required based on our findings.</div>
+      </div>
+      <div class="content" v-if="user && user.account.account && user.account.account.on_hold_updated">
+          <div class="title">Account Update Submitted</div>
+          <div>Your account updates have been submitted. We will re-attempt to process the payment using the updated information. Once the updates have been processed, you will receive an email with either a payment confirmation or payment error, depending on if the information updated is now correct or not.</div>
       </div>
   </div>
 </template>
@@ -201,8 +205,11 @@ export default {
         "/accountValidation/getUserDetails",
       method: "get",
     }).then((res) => {
-      console.log(res);
+    //   console.log(res);
       this.user = res.data.user;
+      if (!this.user.account.account.on_hold){
+          this.$router.push({name:"Home"})
+      }
     });
   },
   methods:{
@@ -223,8 +230,19 @@ export default {
     }).then((res) => {
       this.user = res.data.user;
     });
-      }
+      },
+  submitUpdates(){
+      axios({
+          url:process.env.VUE_APP_BACKEND_CONNECTION_URI + "/accountValidation/processUpdates",
+          method:'post',
+          data:{
+              user:this.user
+          }
+      }).then((res)=>{
+          this.user = req.data.user
+      })
   }
+  },
 };
 </script>
 <style scoped>

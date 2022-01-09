@@ -41,7 +41,7 @@ axios.interceptors.request.use((config) => {
 axios.interceptors.response.use(function (response) {
     // Any status code within the range of 2xx cause this function to trigger
     // Do something with response data
-    console.log(response.status)
+    // console.log(response.status)
     return response;
 }, function (error) {
     if (error.response.status === 401){
