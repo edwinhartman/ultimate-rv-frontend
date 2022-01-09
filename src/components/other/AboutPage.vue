@@ -10,11 +10,13 @@
         </div>
         <div class="text-left text-tiny">
             <ul>
-                <li>Easy route planning</li>
+                <li>Easy route and trip planning</li>
                 <li>RV Dimensions taken into consideration</li>
                 <li>Multi-stop support</li>
                 <li>Making finding campgrounds, state parks, national parks easy</li>
                 <li>Portability between web and mobile</li>
+                <li>iPhone and CarPlay support [App needed]</li>
+                <li>Weather Radar overlay on iPhone and CarPlay map</li>
             </ul>
         </div>
     </div>

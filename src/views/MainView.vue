@@ -67,9 +67,9 @@ export default {
     mounted(){
         var w = window.innerWidth;
         var h = window.innerHeight;
-        this.map_width = (w - 445)
+        this.map_width = (w - 435)
         this.map_height = (h-33)
-        document.getElementById("main_map_view_123").style.width = (w - 445) + "px";
+        document.getElementById("main_map_view_123").style.width = (w - 435) + "px";
         document.getElementById("main_map_view_123").style.height = (h) + "px";
     },
     created(){
