@@ -1,4 +1,5 @@
 <template>
+<div class="main_div">
     <ModalPopup v-if="$store.state.showTripDirections" 
                 :rightTopCloseOption="true" 
                 @close="$store.commit('setShowTripDirections',!$store.state.showTripDirections)"
@@ -30,6 +31,7 @@
     <LeftToolbar/>
     <MapView class="z-0" id="main_map_view_123" :map_width="map_width" :map_height="map_height"/>
     <RightToolbar/>
+    </div>
     </div>
 </template>
 <script>
@@ -90,3 +92,8 @@ export default {
     }
 }
 </script>
+<style scoped>
+div.main_div{
+    background:rgba(255,255,255,0.8);
+}
+</style>

@@ -45,8 +45,11 @@ const routes = [
         path:'/',
         name:'Home',
         meta:{
-            title:'Home'
-        },
+            title:'Ultimate-RV : Home',
+            metaTags:[{
+            name:"ultimate-rv-app",
+            content:"app-id=" + process.env.VUE_APP_AppleAppId + ", app-argument=" + window.location.origin +"/"
+        }]},
         component: () =>
             import ( /* webpackChunkName: "about" */ '../views/MainView.vue'),
         beforeEnter: ifAuthenticated
@@ -55,8 +58,12 @@ const routes = [
         path: '/login',
         name: 'Login',
         meta: {
-            title: 'Login'
-        },
+            title: 'Ultimate-RV : Login',
+            metaTags:[
+        {
+            name:"ultimate-rv-app",
+            content:"app-id=" + process.env.AppleAppID + ", app-argument=" + window.location.origin +"/login"
+        }]},
         component: () =>
             import ( /* webpackChunkName: "admin" */ '../views/Login.vue'),
         beforeEnter: ifNotAuthenticated
@@ -65,8 +72,12 @@ const routes = [
         path:'/register',
         name:'Register',
         meta:{
-            title:'Register'
-        },
+            title:'Ultimate-RV : Register',
+            metaTags:[
+        {
+            name:"ultimate-rv-app",
+            content:"app-id=" + process.env.AppleAppID + ", app-argument=" + window.location.origin +"/register"
+        }]},
         component:()=>
             import( /* webpackChunkName: "admin" */ '../views/NewAccount.vue')
     },
@@ -74,8 +85,12 @@ const routes = [
         path:'/continueRegistration/:reg_id',
         name:'Account Setup',
         meta:{
-            title:"Account Setup"
-        },
+            title:"Ultimate-RV : Account Setup",
+            metaTags:[
+        {
+            name:"ultimate-rv-app",
+            content:"app-id=" + process.env.AppleAppID + ", app-argument=" + window.location.origin +"/continueRegistration"
+        }]},
         component:()=>
         import( /* webpackChunkName: "admin" */ '../views/NewAccountSetup.vue')
     },
@@ -83,7 +98,7 @@ const routes = [
         path: '/admin',
         name: 'Admin',
         meta: {
-            title: 'Admin'
+            title: 'Ultimate-RV Admin'
         },
         component: () =>
             import ( /* webpackChunkName: "admin" */ '../admin/views/AdminMain.vue'),
@@ -93,8 +108,11 @@ const routes = [
         path: '/checkAccount/:error_code',
         name:'CheckAccount',
         meta:{
-            title:'Check Account'
-        },
+            title:'Ultimate-RV : Check Account',
+            metaTags:[{
+            name:"ultimate-rv-app",
+            content:"app-id=" + process.env.AppleAppID + ", app-argument=" + window.location.origin +"/checkAccount"
+        }]},
         component: () =>
             import ( /* webpackChunkName: "admin" */ '../views/CheckAccountMain.vue'),
         beforeEnter: ifAuthenticated
@@ -104,4 +122,20 @@ const router = new createRouter({
     history:createWebHistory(),
     routes
 });
+
+router.beforeEach((to,from,next)=>{
+    const nearestWithTitle = to.matched.slice().reverse().find(r=>r.meta && r.meta.title)
+    const nearestWithMeta = to.matched.slice().reverse().find(r=>r.meta && r.meta.metaTags)
+    if (nearestWithTitle){
+        document.title = nearestWithTitle.meta.title
+    }
+    nearestWithMeta.meta.metaTags.map(tagDef =>{
+        const tag = document.createElement("meta")
+        Object.keys(tagDef).forEach(key =>{
+            tag.setAttribute(key,tagDef[key])
+        })
+        return tag
+    }).forEach(tag => document.head.appendChild(tag))
+    next()
+})
 export default router

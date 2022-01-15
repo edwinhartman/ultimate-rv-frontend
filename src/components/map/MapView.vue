@@ -87,7 +87,7 @@ export default {
 
         var region = new mapkit.CoordinateRegion(
           new mapkit.Coordinate(mylat, mylng),
-          new mapkit.CoordinateSpan(5, 5)
+          new mapkit.CoordinateSpan(100, 100)
         );
 
         self.map = new mapkit.Map("map", {
