@@ -98,7 +98,8 @@ const routes = [
         path: '/admin',
         name: 'Admin',
         meta: {
-            title: 'Ultimate-RV Admin'
+            title: 'Ultimate-RV Admin',
+            metaTags:[]
         },
         component: () =>
             import ( /* webpackChunkName: "admin" */ '../admin/views/AdminMain.vue'),
