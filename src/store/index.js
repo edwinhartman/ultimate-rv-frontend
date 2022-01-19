@@ -541,6 +541,7 @@ export default createStore({
       commit('resetValues')
     },
     addBlankTrip({ commit }) {
+      // console.log("Auto Prevent Big Cities: " + this.state.autoPreventBigCities)
       axios({
         method: 'get',
         url: process.env.VUE_APP_BACKEND_CONNECTION_URI + '/addBlankTrip?addBigCities=' + this.state.autoPreventBigCities

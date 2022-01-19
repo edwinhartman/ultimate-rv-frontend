@@ -252,6 +252,7 @@ export default {
       }
       this.loadStops();
       this.loadPolyline();
+      this.loadAreasToAvoid();
     },
     "$store.state.currentLocation": function () {
       this.loadStops();
