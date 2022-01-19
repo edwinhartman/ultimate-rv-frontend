@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 export function calculateTripHERE(state, callback) {
-    console.log(state.currentLocation.coords.latitude)
+    // console.log(state.currentLocation.coords.latitude)
     axios({
         url:process.env.VUE_APP_BACKEND_CONNECTION_URI + '/calculateRoute',
         method:'post',
@@ -17,6 +17,7 @@ export function calculateTripHERE(state, callback) {
             }
         }
     }).then((res)=>{
-        callback(res.data.routes)
+        // console.log(res.data.polylines)
+        callback(res.data.routes,res.data.polylines)
     })
 }

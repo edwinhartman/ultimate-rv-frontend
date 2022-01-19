@@ -402,11 +402,18 @@ export default createStore({
         commit('clearSpeeds')
         commit('clearTolls')
 
-        calculateTripHERE(this.state, (routes) => {
+        calculateTripHERE(this.state, (routes,polylines) => {
+          if (polylines != null){
+            for (let p=0;p<polylines.length;p++){
+              commit('addPolyline', polylines[p].polyline)
+            }
+            
+          }
           if (routes != null) {
             for (let r = 0; r < routes.length; r++) {
               for (let i = 0; i < routes[r].sections.length; i++) {
-                commit('addPolyline', flexible_polyline.decode(routes[r].sections[i].polyline).polyline)
+                // commit('addPolyline', flexible_polyline.decode(routes[r].sections[i].polyline).polyline)
+                
                 commit('addSummary', routes[r].sections[i].summary)
                 commit('addActions', routes[r].sections[i].actions)
                 commit('addSpeeds', routes[r].sections[i].spans)
