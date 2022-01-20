@@ -1,6 +1,11 @@
 <template>
   <div>
-    <ModalPopup :yesNoOption="true" v-if="showRemoveAvoidAreaPopup" @yesAnswer="removeAvoidArea(true)" @noAnswer="removeAvoidArea(false)">
+    <ModalPopup
+      :yesNoOption="true"
+      v-if="showRemoveAvoidAreaPopup"
+      @yesAnswer="removeAvoidArea(true)"
+      @noAnswer="removeAvoidArea(false)"
+    >
       <div>You are about to remove an avoid area. Are you sure?</div>
     </ModalPopup>
     <TripSummary2 />
@@ -10,24 +15,23 @@
       v-bind:style="{ width: map_width + 'px', height: map_height + 'px' }"
       class="z-0"
     ></div>
-  
   </div>
 </template>
 <script>
-import { reactive } from "vue";
-import axios from "axios";
-import { searchGasStations } from "../../business_logic/GasStations";
-import { searchDumpStations } from "../../business_logic/DumpStation";
-import { getNationalParks } from "../../business_logic/NationalPark";
-import { getStateParks } from "../../business_logic/StateParks";
-import { getCOEParks } from "../../business_logic/COEParks";
-import { getCampgrounds } from "../../business_logic/Campgrounds";
-import { getOvernightParking } from "../../business_logic/OvernightParking";
+import { reactive } from "vue"
+import axios from "axios"
+import { searchGasStations } from "../../business_logic/GasStations"
+import { searchDumpStations } from "../../business_logic/DumpStation"
+import { getNationalParks } from "../../business_logic/NationalPark"
+import { getStateParks } from "../../business_logic/StateParks"
+import { getCOEParks } from "../../business_logic/COEParks"
+import { getCampgrounds } from "../../business_logic/Campgrounds"
+import { getOvernightParking } from "../../business_logic/OvernightParking"
 
-import ModalPopup from "../templates/ModalPopup.vue";
-import TripSummary2 from '../trip/TripSummary2.vue'
-import SearchAlongTrip from '../trip/SearchAlongTrip.vue'
-import {toRad,toDeg} from '../../business_logic/HelperLogic'
+import ModalPopup from "../templates/ModalPopup.vue"
+import TripSummary2 from "../trip/TripSummary2.vue"
+import SearchAlongTrip from "../trip/SearchAlongTrip.vue"
+import { toRad, toDeg } from "../../business_logic/HelperLogic"
 
 export default {
   name: "MapView",
@@ -44,7 +48,7 @@ export default {
   components: {
     ModalPopup,
     TripSummary2,
-    SearchAlongTrip
+    SearchAlongTrip,
   },
   data() {
     return {
@@ -54,41 +58,41 @@ export default {
       center: null,
       avoidStarted: false,
       avoidRectStart: null,
-      maploaded:false,
-      markedAreas:[],
-      showRemoveAvoidAreaPopup:false,
-      areaToBeRemoved:null
-    };
+      maploaded: false,
+      markedAreas: [],
+      showRemoveAvoidAreaPopup: false,
+      areaToBeRemoved: null,
+    }
   },
   created() {
-    let appleMapKitScript = document.createElement("script");
-    let self = this;
+    let appleMapKitScript = document.createElement("script")
+    let self = this
     appleMapKitScript.onload = () => {
       const tokenID =
-        "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjZKRkI0Vlo0VUMifQ.eyJpc3MiOiI5MjJQUzc4S0pLIiwiaWF0IjoxNjM2OTk5OTk4LCJleHAiOjE2Njg0NzA0MDB9.geDTQF2SnneWBGy2vaE2EEQNqTbT4eM79imDhiLmF5ESaBRBjXaevvc6Z6_palG4hhYdtY0gtGH1ecgvCfrtiw";
+        "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjZKRkI0Vlo0VUMifQ.eyJpc3MiOiI5MjJQUzc4S0pLIiwiaWF0IjoxNjM2OTk5OTk4LCJleHAiOjE2Njg0NzA0MDB9.geDTQF2SnneWBGy2vaE2EEQNqTbT4eM79imDhiLmF5ESaBRBjXaevvc6Z6_palG4hhYdtY0gtGH1ecgvCfrtiw"
 
       mapkit.init({
         authorizationCallback: function (done) {
-          done(tokenID);
+          done(tokenID)
           window.mymapview.maploaded = true
         },
-      });
+      })
 
       if (!("geolocation" in navigator)) {
-        this.errorStr = "Geolocation is not available.";
-        return;
+        this.errorStr = "Geolocation is not available."
+        return
       }
 
       navigator.geolocation.getCurrentPosition(function (position) {
-        var mylat = position.coords.latitude;
-        var mylng = position.coords.longitude;
+        var mylat = position.coords.latitude
+        var mylng = position.coords.longitude
 
-        window.mymapview.currentLocation = position.coords;
+        window.mymapview.currentLocation = position.coords
 
         var region = new mapkit.CoordinateRegion(
           new mapkit.Coordinate(mylat, mylng),
           new mapkit.CoordinateSpan(100, 100)
-        );
+        )
 
         self.map = new mapkit.Map("map", {
           region: region,
@@ -98,45 +102,45 @@ export default {
           showsUserLocation: true,
           tracksUserLocation: true,
           showsUserLocationControl: true,
-        });
+        })
 
         self.map.addEventListener("region-change-end", function () {
-          window.mymapview.regionChanged();
-        });
+          window.mymapview.regionChanged()
+        })
         self.map.addEventListener("long-press", function (evt) {
-          window.mymapview.longPress(evt);
-        });
-        self.map.addEventListener('select', function(event) {
+          window.mymapview.longPress(evt)
+        })
+        self.map.addEventListener("select", function (event) {
           // console.log(event.annotation)
-          if (event.overlay){
+          if (event.overlay) {
             window.mymapview.removeAvoidRegion(event.overlay.points)
           }
-          if (event.annotation){
+          if (event.annotation) {
             window.mymapview.showAnnotationDetails(event.annotation)
           }
-        });
-        self.map.addEventListener("deselect",function(event){
-          for (let i=0;i<self.map.overlays.length;i++){
+        })
+        self.map.addEventListener("deselect", function (event) {
+          for (let i = 0; i < self.map.overlays.length; i++) {
             self.map.overlays[i].selected = false
           }
           window.mymapview.removeAnnotationDetails()
         })
-        window.mymapview.reloadData();
-      });
-    };
+        window.mymapview.reloadData()
+      })
+    }
     appleMapKitScript.setAttribute(
       "src",
       "https://cdn.apple-mapkit.com/mk/5.x.x/mapkit.js"
-    );
-    document.head.appendChild(appleMapKitScript);
+    )
+    document.head.appendChild(appleMapKitScript)
   },
   mounted() {
-    window.mymapview = this;
+    window.mymapview = this
   },
 
   computed: {
     keywords() {
-      return this.$store.state.searchKeywords;
+      return this.$store.state.searchKeywords
     },
     polyline() {
       if (
@@ -146,31 +150,33 @@ export default {
         // if (this.$store.state.activeTrip.polyline != null){
         //     return this.$store.state.activeTrip.polyline
         // }
-        return this.$store.state.activeTrip.polyline.length;
+        return this.$store.state.activeTrip.polyline.length
       }
-      return null;
+      return null
     },
     stops() {
       if (
         this.$store.state.activeTrip != null &&
         this.$store.state.activeTrip.stops != null
       ) {
-        return this.$store.state.activeTrip.stops.length;
+        return this.$store.state.activeTrip.stops.length
       }
-      return null;
+      return null
     },
-    areasToAvoid(){
-      if (this.$store.state.activeTrip != null &&
-        this.$store.state.activeTrip.areasToAvoid != null){
-          return this.$store.state.activeTrip.areasToAvoid.length
-        }
-        return null;
-    }
+    areasToAvoid() {
+      if (
+        this.$store.state.activeTrip != null &&
+        this.$store.state.activeTrip.areasToAvoid != null
+      ) {
+        return this.$store.state.activeTrip.areasToAvoid.length
+      }
+      return null
+    },
   },
   watch: {
     keywords(newValue, oldValue) {
-      this.removeAnnotationFromList(this.stopMarkers);
-      this.stopMarkers = [];
+      this.removeAnnotationFromList(this.stopMarkers)
+      this.stopMarkers = []
       var search = new mapkit.Search({
         language: "en-GB",
         //getsUserLocation: true,
@@ -178,36 +184,37 @@ export default {
         includeAddresses: true,
         includePointsOfInterest: true,
         includeQueries: true,
-      });
+      })
       search.search(newValue, (error, data) => {
         for (let i = 0; i < data.places.length; i++) {
           var calloutDelegate = {
             calloutElementForAnnotation: function (annotation) {
-              var element = document.createElement("div");
-              element.className = "annotation-detail";
-              var title = element.appendChild(document.createElement("h3"));
-              title.textContent = annotation.title;
+              var element = document.createElement("div")
+              element.className = "annotation-detail"
+              var title = element.appendChild(document.createElement("h3"))
+              title.textContent = annotation.title
 
               if (data.places[i].urls.length > 0) {
-                var link = element.appendChild(document.createElement("a"));
+                var link = element.appendChild(document.createElement("a"))
                 link.className = "text-tiny"
-                link.target = "_blank";
-                link.href = data.places[i].urls[0];
-                link.textContent = "Open Website";
-                element.appendChild(document.createElement("br"));
+                link.target = "_blank"
+                link.href = data.places[i].urls[0]
+                link.textContent = "Open Website"
+                element.appendChild(document.createElement("br"))
               }
 
-              var btn = element.appendChild(document.createElement("button"));
-              btn.className = "text-tiny bg-blue-500 align-middle pl-1 pr-1 text-white rounded-md"
-              btn.textContent = "Add To Trip";
+              var btn = element.appendChild(document.createElement("button"))
+              btn.className =
+                "text-tiny bg-blue-500 align-middle pl-1 pr-1 text-white rounded-md"
+              btn.textContent = "Add To Trip"
               btn.onclick = function () {
-                window.mymapview.addToTrip(data.places[i]);
+                window.mymapview.addToTrip(data.places[i])
                 //this.parentNode.style.display = 'none';
-              };
+              }
 
-              return element;
+              return element
             },
-          };
+          }
           const annotation = new mapkit.MarkerAnnotation(
             data.places[i].coordinate,
             {
@@ -219,11 +226,11 @@ export default {
               //callout:data.places[i].urls.length > 0 ? calloutDelegate:null
               callout: calloutDelegate,
             }
-          );
-          this.map.addAnnotation(annotation);
+          )
+          this.map.addAnnotation(annotation)
         }
         //console.log(data)
-      });
+      })
     },
     polyline(newValue, oldValue) {
       if (newValue != null && this.map != null) {
@@ -231,32 +238,29 @@ export default {
           this.loadPolyline()
         } else {
           if (this.map != null && this.map.overlays != null) {
-            this.map.removeOverlays(this.map.overlays);
+            this.map.removeOverlays(this.map.overlays)
           }
         }
       }
     },
     stops(newValue, oldValue) {
-      this.loadStops();
-      
+      this.loadStops()
     },
-    areasToAvoid(newValue,oldValue){
+    areasToAvoid(newValue, oldValue) {
       this.loadAreasToAvoid()
     },
-    "$store.state.activeTrip": function (newValue,oldValue) {
-      
-      if (this.map != null && this.map.overlays != null && newValue == null){
+    "$store.state.activeTrip": function (newValue, oldValue) {
+      if (this.map != null && this.map.overlays != null && newValue == null) {
         this.map.removeOverlays(this.map.overlays)
         this.map.removeAnnotations(this.map.annotations)
-
       }
-      this.loadStops();
-      this.loadPolyline();
-      this.loadAreasToAvoid();
+      this.loadStops()
+      this.loadPolyline()
+      this.loadAreasToAvoid()
     },
     "$store.state.currentLocation": function () {
-      this.loadStops();
-      this.loadAreasToAvoid();
+      this.loadStops()
+      this.loadAreasToAvoid()
     },
     "$store.state.mapRegion": function () {
       //console.log("map region changed")
@@ -269,29 +273,29 @@ export default {
           this.$store.state.mapRegion.span.latitudeSpan,
           this.$store.state.mapRegion.span.longitudeSpan
         )
-      );
-      this.map.setRegionAnimated(region, true);
+      )
+      this.map.setRegionAnimated(region, true)
     },
     "$store.state.searchPredefined": function () {
       //console.log("searchPredefined changed");
-      this.removeAnnotationFromList(this.predefinedSearchMarkers);
-      this.$store.commit('clearSharedSearchMarkers')
-      this.predefinedSearchMarkers = [];
+      this.removeAnnotationFromList(this.predefinedSearchMarkers)
+      this.$store.commit("clearSharedSearchMarkers")
+      this.predefinedSearchMarkers = []
       if (this.map != null) {
-        let latitude = this.map.center.latitude;
-        let longitude = this.map.center.longitude;
+        let latitude = this.map.center.latitude
+        let longitude = this.map.center.longitude
 
-        var geocoder = new mapkit.Geocoder();
+        var geocoder = new mapkit.Geocoder()
         geocoder.reverseLookup(
           new mapkit.Coordinate(latitude, longitude),
           (err, data) => {
             //console.log(data)
             if (err == null) {
               if (data != null && data.results.length > 0) {
-                var city = data.results[0].locality;
-                var state = data.results[0].administrativeAreaCode;
-                var zip = data.results[0].postCode;
-                var country = data.results[0].countryCode;
+                var city = data.results[0].locality
+                var state = data.results[0].administrativeAreaCode
+                var zip = data.results[0].postCode
+                var country = data.results[0].countryCode
                 if (this.$store.state.searchPredefined == "gasstations") {
                   searchGasStations(
                     this.map.region,
@@ -300,42 +304,42 @@ export default {
                     state,
                     zip,
                     country,
-                    (annotations,markers) => {
+                    (annotations, markers) => {
                       // console.log(annotations)
                       for (let i = 0; i < annotations.length; i++) {
                         this.predefinedSearchMarkers.push(
                           annotations[i].coordinate
-                        );
-                        
-                        this.map.addAnnotation(annotations[i]);
+                        )
+
+                        this.map.addAnnotation(annotations[i])
                       }
-                      this.$store.dispatch("setSharedSearchMarkers",markers)
-                      this.center = this.map.region.center;
+                      this.$store.dispatch("setSharedSearchMarkers", markers)
+                      this.center = this.map.region.center
                     }
-                  );
+                  )
                 }
                 if (this.$store.state.searchPredefined == "dumpstations") {
-                  this.getDumpStations(zip);
+                  this.getDumpStations(zip)
                 }
                 if (this.$store.state.searchPredefined == "nationalparks") {
-                  this.getNationalParks();
+                  this.getNationalParks()
                 }
                 if (this.$store.state.searchPredefined == "stateparks") {
-                  this.getStateParks();
+                  this.getStateParks()
                 }
                 if (this.$store.state.searchPredefined == "coe_parks") {
-                  this.getCOEParks();
+                  this.getCOEParks()
                 }
                 if (this.$store.state.searchPredefined == "campgrounds") {
-                  this.getCampgrounds();
+                  this.getCampgrounds()
                 }
-                if (this.$store.state.searchPredefined == "overnightparking"){
+                if (this.$store.state.searchPredefined == "overnightparking") {
                   this.getOvernightParking()
                 }
               }
             }
           }
-        );
+        )
       }
     },
   },
@@ -348,42 +352,47 @@ export default {
               list[i].latitude == this.map.annotations[j].coordinate.latitude &&
               list[i].longitude == this.map.annotations[j].coordinate.longitude
             ) {
-              this.map.removeAnnotation(this.map.annotations[j]);
-              break;
+              this.map.removeAnnotation(this.map.annotations[j])
+              break
             }
           }
         }
       }
     },
-    loadPolyline(){
-      if (this.map != null && this.map.overlays != null && 
-          this.map.overlays.length > 0){
-          for (let i=0;i<this.map.overlays.length;i++){
-            //console.log(this.map.overlays[i].points.length)
-            if (this.map.overlays[i].points.length > 1){
-              this.map.removeOverlays([this.map.overlays[i]])
-            }
+    loadPolyline() {
+      if (
+        this.map != null &&
+        this.map.overlays != null &&
+        this.map.overlays.length > 0
+      ) {
+        for (let i = 0; i < this.map.overlays.length; i++) {
+          //console.log(this.map.overlays[i].points.length)
+          if (this.map.overlays[i].points.length > 1) {
+            this.map.removeOverlays([this.map.overlays[i]])
           }
-         
+        }
       }
-      if (this.map != null && this.$store.state.activeTrip != null && this.$store.state.activeTrip.polyline != null){
-      for (let i = 0;i < this.$store.state.activeTrip.polyline.length;i++) {
-            var coords = this.$store.state.activeTrip.polyline[i].map(
-              function (point) {
-                return new mapkit.Coordinate(point[0], point[1]);
-              }
-            );
-            var style = new mapkit.Style({
-              lineWidth: 2,
-              lineJoin: "round",
-              strokeColor: "#F0F",
-            });
-            var polyline = new mapkit.PolylineOverlay(coords, { style: style });
-            if (this.map != null){
-              
-            this.map.addOverlay(polyline);
-            }
+      if (
+        this.map != null &&
+        this.$store.state.activeTrip != null &&
+        this.$store.state.activeTrip.polyline != null
+      ) {
+        for (let i = 0; i < this.$store.state.activeTrip.polyline.length; i++) {
+          var coords = this.$store.state.activeTrip.polyline[i].map(function (
+            point
+          ) {
+            return new mapkit.Coordinate(point[0], point[1])
+          })
+          var style = new mapkit.Style({
+            lineWidth: 2,
+            lineJoin: "round",
+            strokeColor: "#F0F",
+          })
+          var polyline = new mapkit.PolylineOverlay(coords, { style: style })
+          if (this.map != null) {
+            this.map.addOverlay(polyline)
           }
+        }
       }
     },
     addToTrip(place) {
@@ -394,7 +403,7 @@ export default {
           latitude: place.coordinate.latitude,
           longitude: place.coordinate.longitude,
         },
-      });
+      })
     },
     addToTripNotPlace(name, address, latitude, longitude) {
       this.$store.dispatch("addTripStop", {
@@ -404,18 +413,18 @@ export default {
           latitude: latitude,
           longitude: longitude,
         },
-      });
+      })
     },
     reloadData() {
-      this.loadStops();
-      this.loadAreasToAvoid();
-      this.loadPolyline();
+      this.loadStops()
+      this.loadAreasToAvoid()
+      this.loadPolyline()
     },
     regionChanged() {
       if (
         this.$store.state.searchPredefined != "none" &&
         this.$store.state.searchPredefined != "nationalparks" &&
-        this.$store.state.searchPredefined != "stateparks" && 
+        this.$store.state.searchPredefined != "stateparks" &&
         this.$store.state.searchPredefined != "overnightparking"
       ) {
         if (
@@ -424,144 +433,147 @@ export default {
             this.center.longitude != this.map.region.center.longitude)
         ) {
           //console.log("resetting predefined search");
-          this.removeAnnotationFromList(this.predefinedSearchMarkers);
-          this.predefinedSearchMarkers = [];
+          this.removeAnnotationFromList(this.predefinedSearchMarkers)
+          this.predefinedSearchMarkers = []
           let prevSearchPredefined = this.$store.state.searchPredefined
-          this.$store.commit("setSearchPredefined", "none");
+          this.$store.commit("setSearchPredefined", "none")
           setTimeout(() => {
-          this.$store.commit("setSearchPredefined", prevSearchPredefined);
-          },200)
+            this.$store.commit("setSearchPredefined", prevSearchPredefined)
+          }, 200)
         }
       }
       if (this.$store.state.searchPredefined == "stateparks") {
-        this.removeAnnotationFromList(this.predefinedSearchMarkers);
-        this.predefinedSearchMarkers = [];
-        this.getStateParks();
+        this.removeAnnotationFromList(this.predefinedSearchMarkers)
+        this.predefinedSearchMarkers = []
+        this.getStateParks()
       }
       if (this.$store.state.searchPredefined == "coe_parks") {
-        this.removeAnnotationFromList(this.predefinedSearchMarkers);
-        this.predefinedSearchMarkers = [];
-        this.getCOEParks();
+        this.removeAnnotationFromList(this.predefinedSearchMarkers)
+        this.predefinedSearchMarkers = []
+        this.getCOEParks()
       }
       if (this.$store.state.searchPredefined == "campgrounds") {
-        this.removeAnnotationFromList(this.predefinedSearchMarkers);
-        this.predefinedSearchMarkers = [];
-        this.getCampgrounds();
+        this.removeAnnotationFromList(this.predefinedSearchMarkers)
+        this.predefinedSearchMarkers = []
+        this.getCampgrounds()
       }
     },
-    getDumpStations(zip){
-      searchDumpStations(this.map.region,this.$store, zip, (annotations,markers) => {
-        for (let i = 0; i < annotations.length; i++) {
-          this.predefinedSearchMarkers.push(
-            annotations[i].coordinate
-          );
-          this.map.addAnnotation(annotations[i]);
+    getDumpStations(zip) {
+      searchDumpStations(
+        this.map.region,
+        this.$store,
+        zip,
+        (annotations, markers) => {
+          for (let i = 0; i < annotations.length; i++) {
+            this.predefinedSearchMarkers.push(annotations[i].coordinate)
+            this.map.addAnnotation(annotations[i])
+          }
+          this.$store.dispatch("setSharedSearchMarkers", markers)
+          this.center = this.map.region.center
         }
-        this.$store.dispatch("setSharedSearchMarkers",markers)
-        this.center = this.map.region.center;
-      });
-
+      )
     },
-    getNationalParks(){
-      getNationalParks(this.map.region,(annotations,markers) => {
-                    for (let i = 0; i < annotations.length; i++) {
-                      this.predefinedSearchMarkers.push(
-                        annotations[i].coordinate
-                      );
-                      this.map.addAnnotation(annotations[i]);
-                    }
-                    this.$store.dispatch("setSharedSearchMarkers",markers)
-                  });
+    getNationalParks() {
+      getNationalParks(this.map.region, (annotations, markers) => {
+        for (let i = 0; i < annotations.length; i++) {
+          this.predefinedSearchMarkers.push(annotations[i].coordinate)
+          this.map.addAnnotation(annotations[i])
+        }
+        this.$store.dispatch("setSharedSearchMarkers", markers)
+      })
     },
     getStateParks() {
-      getStateParks(this.map.region, (annotations,markers) => {
+      getStateParks(this.map.region, (annotations, markers) => {
         for (let i = 0; i < annotations.length; i++) {
-          this.predefinedSearchMarkers.push(annotations[i].coordinate);
-          this.map.addAnnotation(annotations[i]);
+          this.predefinedSearchMarkers.push(annotations[i].coordinate)
+          this.map.addAnnotation(annotations[i])
         }
-        this.$store.dispatch("setSharedSearchMarkers",markers)
-      });
+        this.$store.dispatch("setSharedSearchMarkers", markers)
+      })
     },
     getCOEParks() {
-      getCOEParks(this.map.region, (annotations,markers) => {
+      getCOEParks(this.map.region, (annotations, markers) => {
         for (let i = 0; i < annotations.length; i++) {
-          this.predefinedSearchMarkers.push(annotations[i].coordinate);
-          this.map.addAnnotation(annotations[i]);
+          this.predefinedSearchMarkers.push(annotations[i].coordinate)
+          this.map.addAnnotation(annotations[i])
         }
-        this.$store.dispatch("setSharedSearchMarkers",markers)
-      });
+        this.$store.dispatch("setSharedSearchMarkers", markers)
+      })
     },
     getCampgrounds() {
-      getCampgrounds(this.map.region, (annotations,markers) => {
+      getCampgrounds(this.map.region, (annotations, markers) => {
         for (let i = 0; i < annotations.length; i++) {
-          this.predefinedSearchMarkers.push(annotations[i].coordinate);
-          this.map.addAnnotation(annotations[i]);
+          this.predefinedSearchMarkers.push(annotations[i].coordinate)
+          this.map.addAnnotation(annotations[i])
         }
-        this.$store.dispatch("setSharedSearchMarkers",markers)
-      });
+        this.$store.dispatch("setSharedSearchMarkers", markers)
+      })
     },
-    getOvernightParking(){
-      getOvernightParking(this.map.region,(annotations,markers)=>{
+    getOvernightParking() {
+      getOvernightParking(this.map.region, (annotations, markers) => {
         for (let i = 0; i < annotations.length; i++) {
-          this.predefinedSearchMarkers.push(annotations[i].coordinate);
-          this.map.addAnnotation(annotations[i]);
+          this.predefinedSearchMarkers.push(annotations[i].coordinate)
+          this.map.addAnnotation(annotations[i])
         }
-        this.$store.dispatch("setSharedSearchMarkers",markers)
+        this.$store.dispatch("setSharedSearchMarkers", markers)
       })
     },
     longPress(evt) {
-      var coordinate = this.map.convertPointOnPageToCoordinate(evt.pointOnPage);
+      var coordinate = this.map.convertPointOnPageToCoordinate(evt.pointOnPage)
       if (this.avoidStarted) {
-        let points = [];
+        let points = []
         points.push(
           new mapkit.Coordinate(
             this.avoidRectStart.latitude,
             this.avoidRectStart.longitude
           )
-        );
+        )
         points.push(
           new mapkit.Coordinate(
             this.avoidRectStart.latitude,
             coordinate.longitude
           )
-        );
-        points.push(coordinate);
+        )
+        points.push(coordinate)
         points.push(
           new mapkit.Coordinate(
             coordinate.latitude,
             this.avoidRectStart.longitude
           )
-        );
+        )
         var style = new mapkit.Style({
           strokeColor: "#F00",
           strokeOpacity: 0.5,
           lineWidth: 2,
           lineJoin: "round",
           lineDash: [], //[2, 2, 6, 2, 6, 2],
-          fillOpacity:0.5,
-          fillColor:"FF0000"
-        });
+          fillOpacity: 0.5,
+          fillColor: "FF0000",
+        })
 
-        var rectangle = new mapkit.PolygonOverlay(points, { style: style });
+        var rectangle = new mapkit.PolygonOverlay(points, { style: style })
         this.markedAreas.push(points)
-        this.map.addOverlay(rectangle);
+        this.map.addOverlay(rectangle)
         this.$store.dispatch("addAreaToAvoid", {
           id: this.$store.state.activeTrip._id,
           points: points,
-        });
-        this.avoidStarted = false;
+        })
+        this.avoidStarted = false
       } else {
-        this.avoidStarted = true;
+        this.avoidStarted = true
         this.avoidRectStart = new mapkit.Coordinate(
           coordinate.latitude,
           coordinate.longitude
-        );
+        )
       }
     },
     loadAreasToAvoid() {
-      
-      if (this.$store.state.activeTrip == null || !this.maploaded || this.map == null) {
-        return;
+      if (
+        this.$store.state.activeTrip == null ||
+        !this.maploaded ||
+        this.map == null
+      ) {
+        return
       }
       if (this.markedAreas.length > 0 && this.map.overlays.length > 0) {
         try {
@@ -572,80 +584,100 @@ export default {
                   this.map.overlays[j].points[0][0].latitude &&
                 this.markedAreas[i][0].longitude ==
                   this.map.overlays[j].points[0][0].longitude &&
-                                  this.markedAreas[i][1].latitude ==
+                this.markedAreas[i][1].latitude ==
                   this.map.overlays[j].points[0][1].latitude &&
                 this.markedAreas[i][1].longitude ==
                   this.map.overlays[j].points[0][1].longitude &&
-                                  this.markedAreas[i][2].latitude ==
+                this.markedAreas[i][2].latitude ==
                   this.map.overlays[j].points[0][2].latitude &&
                 this.markedAreas[i][2].longitude ==
                   this.map.overlays[j].points[0][2].longitude &&
-                                  this.markedAreas[i][3].latitude ==
+                this.markedAreas[i][3].latitude ==
                   this.map.overlays[j].points[0][3].latitude &&
                 this.markedAreas[i][3].longitude ==
                   this.map.overlays[j].points[0][3].longitude
-
-
-
               ) {
-                this.map.removeOverlays([this.map.overlays[j]]);
+                this.map.removeOverlays([this.map.overlays[j]])
               }
             }
           }
         } catch (err) {
           //console.log(err);
-          let a = 1 + 2;
+          let a = 1 + 2
         }
-        this.markedAreas.splice(0, this.markedAreas.length);
+        this.markedAreas.splice(0, this.markedAreas.length)
       }
 
       if (
         this.$store.state.activeTrip.areasToAvoid != null &&
         this.$store.state.activeTrip.areasToAvoid.length > 0
       ) {
-        let areasToAvoid = this.$store.state.activeTrip.areasToAvoid;
+        let areasToAvoid = this.$store.state.activeTrip.areasToAvoid
         for (let i = 0; i < areasToAvoid.length; i++) {
-          let points = [];
-          points.push(new mapkit.Coordinate(areasToAvoid[i].point1.latitude,areasToAvoid[i].point1.longitude));
-          points.push(new mapkit.Coordinate(areasToAvoid[i].point2.latitude,areasToAvoid[i].point2.longitude));
-          points.push(new mapkit.Coordinate(areasToAvoid[i].point3.latitude,areasToAvoid[i].point3.longitude));
-          points.push(new mapkit.Coordinate(areasToAvoid[i].point4.latitude,areasToAvoid[i].point4.longitude));
+          let points = []
+          points.push(
+            new mapkit.Coordinate(
+              areasToAvoid[i].point1.latitude,
+              areasToAvoid[i].point1.longitude
+            )
+          )
+          points.push(
+            new mapkit.Coordinate(
+              areasToAvoid[i].point2.latitude,
+              areasToAvoid[i].point2.longitude
+            )
+          )
+          points.push(
+            new mapkit.Coordinate(
+              areasToAvoid[i].point3.latitude,
+              areasToAvoid[i].point3.longitude
+            )
+          )
+          points.push(
+            new mapkit.Coordinate(
+              areasToAvoid[i].point4.latitude,
+              areasToAvoid[i].point4.longitude
+            )
+          )
           var style = new mapkit.Style({
             strokeColor: "#F00",
             strokeOpacity: 0.5,
             lineWidth: 2,
             lineJoin: "round",
             lineDash: [], //[2, 2, 6, 2, 6, 2],
-            fillOpacity:0.5,
-            fillColor:"FF0000"
-          });
+            fillOpacity: 0.5,
+            fillColor: "FF0000",
+          })
 
-          var rectangle = new mapkit.PolygonOverlay(points, { style: style });
+          var rectangle = new mapkit.PolygonOverlay(points, { style: style })
           this.markedAreas.push(points)
-          this.map.addOverlay(rectangle);
+          this.map.addOverlay(rectangle)
 
           var annotationOptions = {
-            title:"Avoid",
-            subtitle:"",
-            url: { 1: "/static/avoid_area.png"},
-            anchorOffset:new DOMPoint(0,-6),
-            size:{height:8,width:60}
+            title: "Avoid",
+            subtitle: "",
+            url: { 1: "/static/avoid_area.png" },
+            anchorOffset: new DOMPoint(0, -6),
+            size: { height: 8, width: 60 },
           }
-          var annotation = new mapkit.ImageAnnotation(this.getCenterCoord(points),annotationOptions)
+          var annotation = new mapkit.ImageAnnotation(
+            this.getCenterCoord(points),
+            annotationOptions
+          )
           this.map.addAnnotation(annotation)
         }
       }
     },
-    removeAvoidRegion(points){
+    removeAvoidRegion(points) {
       this.areaToBeRemoved = points
       this.showRemoveAvoidAreaPopup = true
     },
-    removeAvoidArea(doRemove){
-      if (doRemove){
-              this.$store.dispatch("removeAreaToAvoid", {
+    removeAvoidArea(doRemove) {
+      if (doRemove) {
+        this.$store.dispatch("removeAreaToAvoid", {
           id: this.$store.state.activeTrip._id,
           points: this.areaToBeRemoved,
-        });
+        })
       }
       this.areaToBeRemoved = null
       this.showRemoveAvoidAreaPopup = false
@@ -654,7 +686,7 @@ export default {
     },
     loadStops() {
       if (this.$store.state.activeTrip == null) {
-        return;
+        return
       }
       if (this.stopMarkers.length > 0 && this.map.annotations.length > 0) {
         try {
@@ -666,14 +698,14 @@ export default {
                 this.stopMarkers[i].longitude ==
                   this.map.annotations[j].coordinate.longitude
               ) {
-                this.map.removeAnnotation(this.map.annotations[j]);
+                this.map.removeAnnotation(this.map.annotations[j])
               }
             }
           }
         } catch (err) {
-          console.log(err);
+          console.log(err)
         }
-        this.stopMarkers.splice(0, this.stopMarkers.length);
+        this.stopMarkers.splice(0, this.stopMarkers.length)
       }
       if (
         this.$store.state.activeTrip.stops != null &&
@@ -686,28 +718,25 @@ export default {
           this.$store.state.currentLocation.longitude != null
         ) {
           var calloutDelegate = {
-                    calloutElementForAnnotation: function (annotation) {
-                        //console.log(annotation);
-                        var element = document.createElement("div");
-                        element.className = "annotation-detail";
-                        var title = element.appendChild(
-                            document.createElement("h3")
-                        );
-                        title.textContent = annotation.title;
+            calloutElementForAnnotation: function (annotation) {
+              //console.log(annotation);
+              var element = document.createElement("div")
+              element.className = "annotation-detail"
+              var title = element.appendChild(document.createElement("h3"))
+              title.textContent = annotation.title
 
-                        var btn = element.appendChild(
-                            document.createElement("button")
-                        );
+              var btn = element.appendChild(document.createElement("button"))
 
-                        btn.className = "text-tiny bg-blue-500 align-middle pl-1 pr-1 text-white rounded-md"
-                        btn.textContent = "Post Review";
-                        btn.onclick = function () {
-                          alert("post review")
-                        };
+              btn.className =
+                "text-tiny bg-blue-500 align-middle pl-1 pr-1 text-white rounded-md"
+              btn.textContent = "Post Review"
+              btn.onclick = function () {
+                alert("post review")
+              }
 
-                        return element;
-                    },
-                };
+              return element
+            },
+          }
           let annotation = new mapkit.MarkerAnnotation(
             new mapkit.Coordinate(
               this.$store.state.currentLocation.coords.latitude,
@@ -719,37 +748,34 @@ export default {
               glyphText: "X",
               color: "#FF0000",
               displayPriority: 1000,
-              callout: calloutDelegate
+              callout: calloutDelegate,
             }
-          );
+          )
 
-          this.stopMarkers.push(annotation.coordinate);
-          this.map.addAnnotation(annotation);
+          this.stopMarkers.push(annotation.coordinate)
+          this.map.addAnnotation(annotation)
         }
         for (let i = 0; i < this.$store.state.activeTrip.stops.length; i++) {
           var calloutDelegate2 = {
-                    calloutElementForAnnotation: function (annotation) {
-                        //console.log(annotation);
-                        var element = document.createElement("div");
-                        element.className = "annotation-detail";
-                        var title = element.appendChild(
-                            document.createElement("h3")
-                        );
-                        title.textContent = annotation.title;
+            calloutElementForAnnotation: function (annotation) {
+              //console.log(annotation);
+              var element = document.createElement("div")
+              element.className = "annotation-detail"
+              var title = element.appendChild(document.createElement("h3"))
+              title.textContent = annotation.title
 
-                        var btn = element.appendChild(
-                            document.createElement("button")
-                        );
+              var btn = element.appendChild(document.createElement("button"))
 
-                        btn.className = "text-tiny bg-blue-500 align-middle pl-1 pr-1 text-white rounded-md"
-                        btn.textContent = "Post Review";
-                        btn.onclick = function () {
-                          alert("post review")
-                        };
+              btn.className =
+                "text-tiny bg-blue-500 align-middle pl-1 pr-1 text-white rounded-md"
+              btn.textContent = "Post Review"
+              btn.onclick = function () {
+                alert("post review")
+              }
 
-                        return element;
-                    },
-                };
+              return element
+            },
+          }
           let annotation = new mapkit.MarkerAnnotation(
             new mapkit.Coordinate(
               this.$store.state.activeTrip.stops[i].coordinate.latitude,
@@ -761,29 +787,33 @@ export default {
               glyphText: (i + 1).toString(),
               color: "#FF0000",
               displayPriority: 1000,
-              callout: calloutDelegate2
+              callout: calloutDelegate2,
             }
-          );
-          this.stopMarkers.push(annotation.coordinate);
-          this.map.addAnnotation(annotation);
+          )
+          this.stopMarkers.push(annotation.coordinate)
+          this.map.addAnnotation(annotation)
         }
       }
     },
-    zoomToLocation(lat,lon){
-      this.$store.commit("setNewMapRegion",{centerLat:lat,centerLon:lon,diffLat:0.001,diffLon:0.001})
-      
+    zoomToLocation(lat, lon) {
+      this.$store.commit("setNewMapRegion", {
+        centerLat: lat,
+        centerLon: lon,
+        diffLat: 0.001,
+        diffLon: 0.001,
+      })
     },
-    showAnnotationDetails(annotation){
-      this.$store.commit("setShowAnnotationDetails",annotation)
+    showAnnotationDetails(annotation) {
+      this.$store.commit("setShowAnnotationDetails", annotation)
     },
-    removeAnnotationDetails(){
-      this.$store.commit("setShowAnnotationDetails",null)
+    removeAnnotationDetails() {
+      this.$store.commit("setShowAnnotationDetails", null)
     },
-    getCenterCoord(locPoints){
+    getCenterCoord(locPoints) {
       var x = 0.0
       var y = 0.0
       var z = 0.0
-      for (let i=0;i<locPoints.length;i++){
+      for (let i = 0; i < locPoints.length; i++) {
         let lat = toRad(locPoints[i].latitude)
         let lon = toRad(locPoints[i].longitude)
 
@@ -795,14 +825,14 @@ export default {
       y = y / locPoints.length
       z = z / locPoints.length
 
-      let resultLon = Math.atan2(y,x)
+      let resultLon = Math.atan2(y, x)
       let resultHyp = Math.sqrt(x * x + y * y)
-      let resultLat = Math.atan2(z,resultHyp)
-      let result = new mapkit.Coordinate(toDeg(resultLat),toDeg(resultLon))
+      let resultLat = Math.atan2(z, resultHyp)
+      let result = new mapkit.Coordinate(toDeg(resultLat), toDeg(resultLon))
       return result
-    }
+    },
   },
-};
+}
 </script>
 
 <!-- style scoped>
