@@ -10,19 +10,11 @@
           </template>
         </Popper>
       </div>
-      <div
-        v-if="
-          $store.state.activeTrip != null &&
-          $store.state.activeTrip.stops.length > 0
-        "
-      >
+      <div v-if="$store.state.activeTrip != null && $store.state.activeTrip.stops.length > 0">
         <Popper :interactive="false" :hover="true">
           <button @click="copyToReverse">Copy To Reverse</button>
           <template #content>
-            <div class="tooltip-popup">
-              This will create a new trip that is the reverse of the active
-              trip
-            </div>
+            <div class="tooltip-popup">This will create a new trip that is the reverse of the active trip</div>
           </template>
         </Popper>
       </div>
@@ -32,10 +24,10 @@
   </div>
 </template>
 <script>
-import LocationSearch from "../search/LocationSearch.vue";
-import TripListing from "../trip/TripListing.vue";
+import LocationSearch from "../search/LocationSearch.vue"
+import TripListing from "../trip/TripListing.vue"
 // import TripSummary from "../route/TripSummary.vue";
-import Popper from "vue3-popper";
+import Popper from "vue3-popper"
 
 export default {
   name: "LeftToolbar",
@@ -49,16 +41,13 @@ export default {
   computed: {
     stopList: {
       get() {
-        if (
-          this.$store.state.activeTrip != null &&
-          this.$store.state.activeTrip.stops != null
-        ) {
-          return this.$store.state.activeTrip.stops;
+        if (this.$store.state.activeTrip != null && this.$store.state.activeTrip.stops != null) {
+          return this.$store.state.activeTrip.stops
         }
-        return null;
+        return null
       },
       set(value) {
-        this.$store.dispatch("updateStopList", value);
+        this.$store.dispatch("updateStopList", value)
       },
     },
   },
@@ -68,42 +57,41 @@ export default {
       this.$store.dispatch("removeStopFromTrip", {
         route_id: route_info.route._id,
         stop_id: stop_info.element._id,
-      });
+      })
     },
 
     addNewTrip() {
-      this.$store.dispatch("addBlankTrip");
+      this.$store.dispatch("addBlankTrip")
     },
     copyToReverse() {
-      this.$store.dispatch("copyActiveTripToReverse");
+      this.$store.dispatch("copyActiveTripToReverse")
     },
   },
   created() {
     this.$axios
       .get(process.env.VUE_APP_BACKEND_CONNECTION_URI + "/getTrips")
       .then((res) => {
+        // console.log(JSON.stringify(res.data.routes))
         //this.menu_items=res.data.menu;
         if (res.data.routes.length == 0) {
           this.$axios({
             method: "post",
-            url:
-              process.env.VUE_APP_BACKEND_CONNECTION_URI +
-              "/createDefaultTrip",
+            url: process.env.VUE_APP_BACKEND_CONNECTION_URI + "/createDefaultTrip",
           })
             .then((res) => {
-              this.$store.commit("resetValues");
-              this.$store.commit("loadTrips", res.data.routes);
+              this.$store.commit("resetValues")
+              this.$store.commit("loadTrips", res.data.routes)
             })
             .catch((err) => {
-              console.log(err);
-            });
+              console.log(err)
+            })
         } else {
-          this.$store.commit("loadTrips", res.data.routes);
+          this.$store.commit("loadTrips", res.data.routes)
         }
       })
-      .catch((error) => console.log(error));
+      .catch((error) => console.log(error))
   },
-};
+}
 </script>
 <style scoped>
 div.left-toolbar {
@@ -128,7 +116,7 @@ div.toolbar-buttons {
   /* bottom: 0.2rem; */
   min-width: 12rem;
   max-width: 15rem;
-  margin-bottom:0.2rem;
+  margin-bottom: 0.2rem;
 }
 div.toolbar-buttons button {
   font-size: 0.6rem;

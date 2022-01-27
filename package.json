@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --mode netlify --https true",
-    "dev": "vue-cli-service serve --mode development --https true",
     "build": "vue-cli-service build --mode netlify",
-    "lint": "vue-cli-service lint"
+    "test:unit": "vue-cli-service test:unit",
+    "lint": "vue-cli-service lint",
+    "dev": "vue-cli-service serve --mode development --https true"
   },
   "dependencies": {
     "axios": "^0.24.0",
@@ -26,13 +27,17 @@
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
+    "@vue/cli-plugin-unit-jest": "~4.5.0",
     "@vue/cli-plugin-vuex": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
     "@vue/compiler-sfc": "^3.0.0",
+    "@vue/test-utils": "^2.0.0-0",
     "autoprefixer": "^9.8.8",
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^7.0.0",
+    "typescript": "~3.9.3",
+    "vue-jest": "^5.0.0-0",
     "webpack": "^4.0.0",
     "webpack-cli": "^4.9.1",
     "webpack-dev-server": "^4.5.0"

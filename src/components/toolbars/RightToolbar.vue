@@ -2,35 +2,31 @@
   <div class="secondary-color right-toolbar shadow-left">
     <SearchPredefined />
     <GeneralSettings />
-    <RVListing 
-      v-if="$store.state.rvs.length > 0 && $store.state.showRVSettings" 
-      @add_new="openRVEditPanel" 
-      @edit_active_rv="editActiveRV" 
+    <RVListing
+      v-if="$store.state.rvs.length > 0 && $store.state.settings.showRVSettings"
+      @add_new="openRVEditPanel"
+      @edit_active_rv="editActiveRV"
       :edit_active="addNewRV || editRV != null"
     />
-    <RVSettings 
-      v-if="$store.state.rvs.length == 0 || addNewRV" 
-      @close_panel="closeRVEditPanel"
-      :edit_rv="editRV"
-    />
+    <RVSettings v-if="$store.state.rvs.length == 0 || addNewRV" @close_panel="closeRVEditPanel" :edit_rv="editRV" />
     <AnnotationDetails v-if="$store.state.showAnnotationDetails" />
     <SharedSearchMarkerListing />
   </div>
 </template>
 <script>
-import RVSettings from "../rv/RVSettings.vue";
-import RVListing from "../rv/RVListing.vue";
-import SearchPredefined from "../search/SearchPredefined.vue";
-import GeneralSettings from "../other/GeneralSettings.vue";
-import SharedSearchMarkerListing from '../search/SharedSearchMarkerListing.vue'
-import AnnotationDetails from '../search/AnnotationDetails.vue'
+import RVSettings from "../rv/RVSettings.vue"
+import RVListing from "../rv/RVListing.vue"
+import SearchPredefined from "../search/SearchPredefined.vue"
+import GeneralSettings from "../other/GeneralSettings.vue"
+import SharedSearchMarkerListing from "../search/SharedSearchMarkerListing.vue"
+import AnnotationDetails from "../search/AnnotationDetails.vue"
 
 export default {
   name: "RightToolbar",
-  data(){
+  data() {
     return {
-      addNewRV:false,
-      editRV:null
+      addNewRV: false,
+      editRV: null,
     }
   },
   components: {
@@ -39,33 +35,32 @@ export default {
     SearchPredefined,
     GeneralSettings,
     SharedSearchMarkerListing,
-    AnnotationDetails
+    AnnotationDetails,
   },
   created() {
-    this.$store.dispatch("loadRVs");
+    this.$store.dispatch("loadRVs")
   },
-  methods:{
-    editActiveRV(){
+  methods: {
+    editActiveRV() {
       this.addNewRV = true
       this.editRV = this.$store.state.activeRV
     },
-    closeRVEditPanel(){
-      this.addNewRV=false
+    closeRVEditPanel() {
+      this.addNewRV = false
       this.editRV = null
     },
-    openRVEditPanel(){
+    openRVEditPanel() {
       this.addNewRV = true
-    }
+    },
   },
-  
-};
+}
 </script>
 <style scoped>
-div.right-toolbar{
+div.right-toolbar {
   max-width: 16rem;
-  min-width:12.5rem;
+  min-width: 12.5rem;
   z-index: 80;
   max-height: 97vh;
-  overflow:hidden;
+  overflow: hidden;
 }
 </style>

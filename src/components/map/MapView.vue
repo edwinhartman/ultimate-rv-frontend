@@ -10,11 +10,7 @@
     </ModalPopup>
     <TripSummary2 />
     <SearchAlongTrip />
-    <div
-      id="map"
-      v-bind:style="{ width: map_width + 'px', height: map_height + 'px' }"
-      class="z-0"
-    ></div>
+    <div id="map" v-bind:style="{ width: map_width + 'px', height: map_height + 'px' }" class="z-0"></div>
   </div>
 </template>
 <script>
@@ -128,10 +124,7 @@ export default {
         window.mymapview.reloadData()
       })
     }
-    appleMapKitScript.setAttribute(
-      "src",
-      "https://cdn.apple-mapkit.com/mk/5.x.x/mapkit.js"
-    )
+    appleMapKitScript.setAttribute("src", "https://cdn.apple-mapkit.com/mk/5.x.x/mapkit.js")
     document.head.appendChild(appleMapKitScript)
   },
   mounted() {
@@ -143,10 +136,7 @@ export default {
       return this.$store.state.searchKeywords
     },
     polyline() {
-      if (
-        this.$store.state.activeTrip != null &&
-        this.$store.state.activeTrip.polyline != null
-      ) {
+      if (this.$store.state.activeTrip != null && this.$store.state.activeTrip.polyline != null) {
         // if (this.$store.state.activeTrip.polyline != null){
         //     return this.$store.state.activeTrip.polyline
         // }
@@ -155,19 +145,13 @@ export default {
       return null
     },
     stops() {
-      if (
-        this.$store.state.activeTrip != null &&
-        this.$store.state.activeTrip.stops != null
-      ) {
-        return this.$store.state.activeTrip.stops.length
+      if (this.$store.state.activeTrip != null && this.$store.state.activeTrip.stops != null) {
+        return this.$store.state.activeTrip.stops.filter((s) => !s.daytrip).length
       }
       return null
     },
     areasToAvoid() {
-      if (
-        this.$store.state.activeTrip != null &&
-        this.$store.state.activeTrip.areasToAvoid != null
-      ) {
+      if (this.$store.state.activeTrip != null && this.$store.state.activeTrip.areasToAvoid != null) {
         return this.$store.state.activeTrip.areasToAvoid.length
       }
       return null
@@ -186,6 +170,7 @@ export default {
         includeQueries: true,
       })
       search.search(newValue, (error, data) => {
+        let annotations = []
         for (let i = 0; i < data.places.length; i++) {
           var calloutDelegate = {
             calloutElementForAnnotation: function (annotation) {
@@ -204,8 +189,7 @@ export default {
               }
 
               var btn = element.appendChild(document.createElement("button"))
-              btn.className =
-                "text-tiny bg-blue-500 align-middle pl-1 pr-1 text-white rounded-md"
+              btn.className = "text-tiny bg-blue-500 align-middle pl-1 pr-1 text-white rounded-md"
               btn.textContent = "Add To Trip"
               btn.onclick = function () {
                 window.mymapview.addToTrip(data.places[i])
@@ -215,20 +199,30 @@ export default {
               return element
             },
           }
-          const annotation = new mapkit.MarkerAnnotation(
-            data.places[i].coordinate,
-            {
-              title: data.places[i].name,
-              subtitle: data.places[i].formattedAddress,
-              glyphText: "",
-              color: "#8e8e93",
-              displayPriority: 1000,
-              //callout:data.places[i].urls.length > 0 ? calloutDelegate:null
-              callout: calloutDelegate,
-            }
-          )
+          const annotation = new mapkit.MarkerAnnotation(data.places[i].coordinate, {
+            title: data.places[i].name,
+            subtitle: data.places[i].formattedAddress,
+            glyphText: "",
+            color: "#8e8e93",
+            displayPriority: 1000,
+            //callout:data.places[i].urls.length > 0 ? calloutDelegate:null
+            callout: calloutDelegate,
+          })
           this.map.addAnnotation(annotation)
+          const marker = {
+            title: data.places[i].name,
+            address: data.places[i].formattedAddress,
+            coordinate: {
+              latitude: data.places[i].coordinate.latitude,
+              longitude: data.places[i].coordinate.longitude,
+            },
+            contents: "",
+            distance: -1,
+          }
+          annotations.push(marker)
         }
+        this.$store.commit("clearSharedSearchMarkers")
+        this.$store.commit("setSharedSearchMarkers", annotations)
         //console.log(data)
       })
     },
@@ -286,60 +280,47 @@ export default {
         let longitude = this.map.center.longitude
 
         var geocoder = new mapkit.Geocoder()
-        geocoder.reverseLookup(
-          new mapkit.Coordinate(latitude, longitude),
-          (err, data) => {
-            //console.log(data)
-            if (err == null) {
-              if (data != null && data.results.length > 0) {
-                var city = data.results[0].locality
-                var state = data.results[0].administrativeAreaCode
-                var zip = data.results[0].postCode
-                var country = data.results[0].countryCode
-                if (this.$store.state.searchPredefined == "gasstations") {
-                  searchGasStations(
-                    this.map.region,
-                    this.$store,
-                    city,
-                    state,
-                    zip,
-                    country,
-                    (annotations, markers) => {
-                      // console.log(annotations)
-                      for (let i = 0; i < annotations.length; i++) {
-                        this.predefinedSearchMarkers.push(
-                          annotations[i].coordinate
-                        )
+        geocoder.reverseLookup(new mapkit.Coordinate(latitude, longitude), (err, data) => {
+          //console.log(data)
+          if (err == null) {
+            if (data != null && data.results.length > 0) {
+              var city = data.results[0].locality
+              var state = data.results[0].administrativeAreaCode
+              var zip = data.results[0].postCode
+              var country = data.results[0].countryCode
+              if (this.$store.state.searchPredefined == "gasstations") {
+                searchGasStations(this.map.region, this.$store, city, state, zip, country, (annotations, markers) => {
+                  // console.log(annotations)
+                  for (let i = 0; i < annotations.length; i++) {
+                    this.predefinedSearchMarkers.push(annotations[i].coordinate)
 
-                        this.map.addAnnotation(annotations[i])
-                      }
-                      this.$store.dispatch("setSharedSearchMarkers", markers)
-                      this.center = this.map.region.center
-                    }
-                  )
-                }
-                if (this.$store.state.searchPredefined == "dumpstations") {
-                  this.getDumpStations(zip)
-                }
-                if (this.$store.state.searchPredefined == "nationalparks") {
-                  this.getNationalParks()
-                }
-                if (this.$store.state.searchPredefined == "stateparks") {
-                  this.getStateParks()
-                }
-                if (this.$store.state.searchPredefined == "coe_parks") {
-                  this.getCOEParks()
-                }
-                if (this.$store.state.searchPredefined == "campgrounds") {
-                  this.getCampgrounds()
-                }
-                if (this.$store.state.searchPredefined == "overnightparking") {
-                  this.getOvernightParking()
-                }
+                    this.map.addAnnotation(annotations[i])
+                  }
+                  this.$store.dispatch("setSharedSearchMarkers", markers)
+                  this.center = this.map.region.center
+                })
+              }
+              if (this.$store.state.searchPredefined == "dumpstations") {
+                this.getDumpStations(zip)
+              }
+              if (this.$store.state.searchPredefined == "nationalparks") {
+                this.getNationalParks()
+              }
+              if (this.$store.state.searchPredefined == "stateparks") {
+                this.getStateParks()
+              }
+              if (this.$store.state.searchPredefined == "coe_parks") {
+                this.getCOEParks()
+              }
+              if (this.$store.state.searchPredefined == "campgrounds") {
+                this.getCampgrounds()
+              }
+              if (this.$store.state.searchPredefined == "overnightparking") {
+                this.getOvernightParking()
               }
             }
           }
-        )
+        })
       }
     },
   },
@@ -360,11 +341,7 @@ export default {
       }
     },
     loadPolyline() {
-      if (
-        this.map != null &&
-        this.map.overlays != null &&
-        this.map.overlays.length > 0
-      ) {
+      if (this.map != null && this.map.overlays != null && this.map.overlays.length > 0) {
         for (let i = 0; i < this.map.overlays.length; i++) {
           //console.log(this.map.overlays[i].points.length)
           if (this.map.overlays[i].points.length > 1) {
@@ -372,15 +349,9 @@ export default {
           }
         }
       }
-      if (
-        this.map != null &&
-        this.$store.state.activeTrip != null &&
-        this.$store.state.activeTrip.polyline != null
-      ) {
+      if (this.map != null && this.$store.state.activeTrip != null && this.$store.state.activeTrip.polyline != null) {
         for (let i = 0; i < this.$store.state.activeTrip.polyline.length; i++) {
-          var coords = this.$store.state.activeTrip.polyline[i].map(function (
-            point
-          ) {
+          var coords = this.$store.state.activeTrip.polyline[i].map(function (point) {
             return new mapkit.Coordinate(point[0], point[1])
           })
           var style = new mapkit.Style({
@@ -393,8 +364,44 @@ export default {
             this.map.addOverlay(polyline)
           }
         }
+
+        if (
+          this.$store.state.activeTrip.daytrips != null &&
+          this.$store.state.activeTrip.daytrips[0] != null &&
+          this.$store.state.activeTrip.daytrips[0].polylines != null &&
+          this.$store.state.activeTrip.daytrips[0].polylines.length > 0
+        ) {
+          // console.log("daytrip polylines found")
+          for (let k = 0; k < this.$store.state.activeTrip.daytrips[0].polylines.length; k++) {
+            // console.log(this.$store.state.activeTrip.daytrips[0].polylines[k])
+            if (this.$store.state.activeTrip.daytrips[0].polylines[k].length > 0) {
+              // console.log("daytrip polyline for idx " + k)
+              for (let i = 0; i < this.$store.state.activeTrip.daytrips[0].polylines[k].length; i++) {
+                // console.log(this.$store.state.activeTrip.daytrips[0].polylines[k][i].polyline[i])
+                var coords2 = this.$store.state.activeTrip.daytrips[0].polylines[k][i].polyline.map(function (point) {
+                  return new mapkit.Coordinate(point[0], point[1])
+                })
+                var style2 = new mapkit.Style({
+                  lineWidth: 2,
+                  lineJoin: "round",
+                  strokeColor: "#1f43d3",
+                })
+                var polyline2 = new mapkit.PolylineOverlay(coords2, {
+                  style: style2,
+                })
+                // console.log(polyline2)
+                if (this.map != null) {
+                  // console.log("adding polyline2")
+                  this.map.addOverlay(polyline2)
+                  // console.log(this.map.overlays)
+                }
+              }
+            }
+          }
+        }
       }
     },
+
     addToTrip(place) {
       this.$store.dispatch("addTripStop", {
         name: place.name,
@@ -459,19 +466,14 @@ export default {
       }
     },
     getDumpStations(zip) {
-      searchDumpStations(
-        this.map.region,
-        this.$store,
-        zip,
-        (annotations, markers) => {
-          for (let i = 0; i < annotations.length; i++) {
-            this.predefinedSearchMarkers.push(annotations[i].coordinate)
-            this.map.addAnnotation(annotations[i])
-          }
-          this.$store.dispatch("setSharedSearchMarkers", markers)
-          this.center = this.map.region.center
+      searchDumpStations(this.map.region, this.$store, zip, (annotations, markers) => {
+        for (let i = 0; i < annotations.length; i++) {
+          this.predefinedSearchMarkers.push(annotations[i].coordinate)
+          this.map.addAnnotation(annotations[i])
         }
-      )
+        this.$store.dispatch("setSharedSearchMarkers", markers)
+        this.center = this.map.region.center
+      })
     },
     getNationalParks() {
       getNationalParks(this.map.region, (annotations, markers) => {
@@ -522,25 +524,10 @@ export default {
       var coordinate = this.map.convertPointOnPageToCoordinate(evt.pointOnPage)
       if (this.avoidStarted) {
         let points = []
-        points.push(
-          new mapkit.Coordinate(
-            this.avoidRectStart.latitude,
-            this.avoidRectStart.longitude
-          )
-        )
-        points.push(
-          new mapkit.Coordinate(
-            this.avoidRectStart.latitude,
-            coordinate.longitude
-          )
-        )
+        points.push(new mapkit.Coordinate(this.avoidRectStart.latitude, this.avoidRectStart.longitude))
+        points.push(new mapkit.Coordinate(this.avoidRectStart.latitude, coordinate.longitude))
         points.push(coordinate)
-        points.push(
-          new mapkit.Coordinate(
-            coordinate.latitude,
-            this.avoidRectStart.longitude
-          )
-        )
+        points.push(new mapkit.Coordinate(coordinate.latitude, this.avoidRectStart.longitude))
         var style = new mapkit.Style({
           strokeColor: "#F00",
           strokeOpacity: 0.5,
@@ -561,18 +548,11 @@ export default {
         this.avoidStarted = false
       } else {
         this.avoidStarted = true
-        this.avoidRectStart = new mapkit.Coordinate(
-          coordinate.latitude,
-          coordinate.longitude
-        )
+        this.avoidRectStart = new mapkit.Coordinate(coordinate.latitude, coordinate.longitude)
       }
     },
     loadAreasToAvoid() {
-      if (
-        this.$store.state.activeTrip == null ||
-        !this.maploaded ||
-        this.map == null
-      ) {
+      if (this.$store.state.activeTrip == null || !this.maploaded || this.map == null) {
         return
       }
       if (this.markedAreas.length > 0 && this.map.overlays.length > 0) {
@@ -580,22 +560,14 @@ export default {
           for (let i = 0; i < this.markedAreas.length; i++) {
             for (let j = 0; j < this.map.overlays.length; j++) {
               if (
-                this.markedAreas[i][0].latitude ==
-                  this.map.overlays[j].points[0][0].latitude &&
-                this.markedAreas[i][0].longitude ==
-                  this.map.overlays[j].points[0][0].longitude &&
-                this.markedAreas[i][1].latitude ==
-                  this.map.overlays[j].points[0][1].latitude &&
-                this.markedAreas[i][1].longitude ==
-                  this.map.overlays[j].points[0][1].longitude &&
-                this.markedAreas[i][2].latitude ==
-                  this.map.overlays[j].points[0][2].latitude &&
-                this.markedAreas[i][2].longitude ==
-                  this.map.overlays[j].points[0][2].longitude &&
-                this.markedAreas[i][3].latitude ==
-                  this.map.overlays[j].points[0][3].latitude &&
-                this.markedAreas[i][3].longitude ==
-                  this.map.overlays[j].points[0][3].longitude
+                this.markedAreas[i][0].latitude == this.map.overlays[j].points[0][0].latitude &&
+                this.markedAreas[i][0].longitude == this.map.overlays[j].points[0][0].longitude &&
+                this.markedAreas[i][1].latitude == this.map.overlays[j].points[0][1].latitude &&
+                this.markedAreas[i][1].longitude == this.map.overlays[j].points[0][1].longitude &&
+                this.markedAreas[i][2].latitude == this.map.overlays[j].points[0][2].latitude &&
+                this.markedAreas[i][2].longitude == this.map.overlays[j].points[0][2].longitude &&
+                this.markedAreas[i][3].latitude == this.map.overlays[j].points[0][3].latitude &&
+                this.markedAreas[i][3].longitude == this.map.overlays[j].points[0][3].longitude
               ) {
                 this.map.removeOverlays([this.map.overlays[j]])
               }
@@ -608,37 +580,14 @@ export default {
         this.markedAreas.splice(0, this.markedAreas.length)
       }
 
-      if (
-        this.$store.state.activeTrip.areasToAvoid != null &&
-        this.$store.state.activeTrip.areasToAvoid.length > 0
-      ) {
+      if (this.$store.state.activeTrip.areasToAvoid != null && this.$store.state.activeTrip.areasToAvoid.length > 0) {
         let areasToAvoid = this.$store.state.activeTrip.areasToAvoid
         for (let i = 0; i < areasToAvoid.length; i++) {
           let points = []
-          points.push(
-            new mapkit.Coordinate(
-              areasToAvoid[i].point1.latitude,
-              areasToAvoid[i].point1.longitude
-            )
-          )
-          points.push(
-            new mapkit.Coordinate(
-              areasToAvoid[i].point2.latitude,
-              areasToAvoid[i].point2.longitude
-            )
-          )
-          points.push(
-            new mapkit.Coordinate(
-              areasToAvoid[i].point3.latitude,
-              areasToAvoid[i].point3.longitude
-            )
-          )
-          points.push(
-            new mapkit.Coordinate(
-              areasToAvoid[i].point4.latitude,
-              areasToAvoid[i].point4.longitude
-            )
-          )
+          points.push(new mapkit.Coordinate(areasToAvoid[i].point1.latitude, areasToAvoid[i].point1.longitude))
+          points.push(new mapkit.Coordinate(areasToAvoid[i].point2.latitude, areasToAvoid[i].point2.longitude))
+          points.push(new mapkit.Coordinate(areasToAvoid[i].point3.latitude, areasToAvoid[i].point3.longitude))
+          points.push(new mapkit.Coordinate(areasToAvoid[i].point4.latitude, areasToAvoid[i].point4.longitude))
           var style = new mapkit.Style({
             strokeColor: "#F00",
             strokeOpacity: 0.5,
@@ -660,10 +609,7 @@ export default {
             anchorOffset: new DOMPoint(0, -6),
             size: { height: 8, width: 60 },
           }
-          var annotation = new mapkit.ImageAnnotation(
-            this.getCenterCoord(points),
-            annotationOptions
-          )
+          var annotation = new mapkit.ImageAnnotation(this.getCenterCoord(points), annotationOptions)
           this.map.addAnnotation(annotation)
         }
       }
@@ -693,10 +639,8 @@ export default {
           for (let i = 0; i < this.stopMarkers.length; i++) {
             for (let j = 0; j < this.map.annotations.length; j++) {
               if (
-                this.stopMarkers[i].latitude ==
-                  this.map.annotations[j].coordinate.latitude &&
-                this.stopMarkers[i].longitude ==
-                  this.map.annotations[j].coordinate.longitude
+                this.stopMarkers[i].latitude == this.map.annotations[j].coordinate.latitude &&
+                this.stopMarkers[i].longitude == this.map.annotations[j].coordinate.longitude
               ) {
                 this.map.removeAnnotation(this.map.annotations[j])
               }
@@ -727,8 +671,7 @@ export default {
 
               var btn = element.appendChild(document.createElement("button"))
 
-              btn.className =
-                "text-tiny bg-blue-500 align-middle pl-1 pr-1 text-white rounded-md"
+              btn.className = "text-tiny bg-blue-500 align-middle pl-1 pr-1 text-white rounded-md"
               btn.textContent = "Post Review"
               btn.onclick = function () {
                 alert("post review")
@@ -755,7 +698,11 @@ export default {
           this.stopMarkers.push(annotation.coordinate)
           this.map.addAnnotation(annotation)
         }
+        let mainRouteMarker = 0
         for (let i = 0; i < this.$store.state.activeTrip.stops.length; i++) {
+          if (!this.$store.state.activeTrip.stops[i].daytrip) {
+            mainRouteMarker++
+          }
           var calloutDelegate2 = {
             calloutElementForAnnotation: function (annotation) {
               //console.log(annotation);
@@ -766,8 +713,7 @@ export default {
 
               var btn = element.appendChild(document.createElement("button"))
 
-              btn.className =
-                "text-tiny bg-blue-500 align-middle pl-1 pr-1 text-white rounded-md"
+              btn.className = "text-tiny bg-blue-500 align-middle pl-1 pr-1 text-white rounded-md"
               btn.textContent = "Post Review"
               btn.onclick = function () {
                 alert("post review")
@@ -784,8 +730,8 @@ export default {
             {
               title: this.$store.state.activeTrip.stops[i].name,
               subtitle: this.$store.state.activeTrip.stops[i].formattedAddress,
-              glyphText: (i + 1).toString(),
-              color: "#FF0000",
+              glyphText: !this.$store.state.activeTrip.stops[i].daytrip ? mainRouteMarker.toString() : "DT",
+              color: !this.$store.state.activeTrip.stops[i].daytrip ? "#FF0000" : "#092285",
               displayPriority: 1000,
               callout: calloutDelegate2,
             }

@@ -1,0 +1,18 @@
+div.tripinstructions_section {
+  margin-bottom: 0.7rem;
+  font-size: 0.8rem;
+}
+li.tab {
+  display: none;
+}
+button {
+  display: none;
+}
+
+div.font-bold {
+  font-weight: bold;
+  font-size: 1rem;
+}
+div.italic {
+  font-style: italic;
+}
