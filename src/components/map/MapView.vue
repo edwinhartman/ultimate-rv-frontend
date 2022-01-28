@@ -23,6 +23,7 @@ import { getStateParks } from "../../business_logic/StateParks"
 import { getCOEParks } from "../../business_logic/COEParks"
 import { getCampgrounds } from "../../business_logic/Campgrounds"
 import { getOvernightParking } from "../../business_logic/OvernightParking"
+import { getMapRestrictions } from "../../business_logic/MapRestrictions"
 
 import ModalPopup from "../templates/ModalPopup.vue"
 import TripSummary2 from "../trip/TripSummary2.vue"
@@ -464,6 +465,7 @@ export default {
         this.predefinedSearchMarkers = []
         this.getCampgrounds()
       }
+      this.getMapRestrictions()
     },
     getDumpStations(zip) {
       searchDumpStations(this.map.region, this.$store, zip, (annotations, markers) => {
@@ -518,6 +520,25 @@ export default {
           this.map.addAnnotation(annotations[i])
         }
         this.$store.dispatch("setSharedSearchMarkers", markers)
+      })
+    },
+    getMapRestrictions() {
+      let ann = []
+      for (let i = 0; i < this.map.annotations.length; i++) {
+        if (
+          this.map.annotations[i].glyphImage != null &&
+          this.map.annotations[i].glyphImage["1"] == "/static/bridge-clearance.png"
+        ) {
+          ann.push(this.map.annotations[i])
+        }
+      }
+      this.map.removeAnnotations(ann)
+      let max_height = 0
+      if (this.$store.state.activeRV != null && this.$store.state.activeRV.height != null) {
+        max_height = this.$store.state.activeRV.height
+      }
+      getMapRestrictions(this.map.region, max_height, (annotations) => {
+        this.map.addAnnotations(annotations)
       })
     },
     longPress(evt) {
