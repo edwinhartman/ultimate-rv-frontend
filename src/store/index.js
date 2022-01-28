@@ -5,6 +5,7 @@ import flexible_polyline from "../helpers/flexible_polyline"
 import { calculateTripHERE, calculateDayTripsHERE } from "../business_logic/RoutingCalculator"
 import router from "../router/index"
 import settings from "./modules/settings"
+import { determineDistanceBetweenTwoPoints } from "../business_logic/HelperLogic"
 
 const vuexLocal = new VuexPersistence({
   storage: window.localStorage,
@@ -39,6 +40,7 @@ export default createStore({
     showAnnotationDetailsAvailable: 0,
     editStopDateActive: false,
     editStopDateStop: null,
+    presentAlternativeData: null,
   },
   mutations: {
     resetAllHungupValues(state) {
@@ -267,6 +269,12 @@ export default createStore({
       state.editStopDateStop = null
       state.settings.defaultOriginType = "current"
       state.settings.autoPreventBigCities = false
+    },
+    clearAlternativeStopData(state) {
+      state.presentAlternativeData = null
+    },
+    setAlternativeStopData(state, data) {
+      state.presentAlternativeData = data
     },
   },
   actions: {
@@ -707,6 +715,52 @@ export default createStore({
           settings: settings,
         },
       }).then((res) => {})
+    },
+    updateStopComments({ commit }, data) {
+      axios({
+        url: process.env.VUE_APP_BACKEND_CONNECTION_URI + "/updateStopComments",
+        method: "post",
+        data: {
+          stop_id: data.stop_id,
+          comment: data.value,
+        },
+      }).then((res) => {
+        commit("loadTrips", res.data.routes)
+      })
+    },
+    showNearbyStopsForAlternative({ commit }, data) {
+      commit("clearAlternativeStopData")
+      let nearbyStops = []
+      if (this.state.activeTrip != null && this.state.activeTrip.stops.length > 0) {
+        for (let i = 0; i < this.state.activeTrip.stops.length; i++) {
+          if (determineDistanceBetweenTwoPoints(data.coordinate, this.state.activeTrip.stops[i].coordinate) < 10) {
+            let d = null
+            if (this.state.activeTrip.dates.length > 0) {
+              if (this.state.activeTrip.dates[i] != null) {
+                d = this.state.activeTrip.dates[i]
+              }
+            }
+            nearbyStops.push({ stop: this.state.activeTrip.stops[i], date: d })
+          }
+        }
+      }
+      if (nearbyStops.length > 0) {
+        // console.log(nearbyStops)
+        commit("setAlternativeStopData", { new_stop: data, nearby: nearbyStops })
+      }
+    },
+    addStopAlternative({ commit }, selectedValues) {
+      axios({
+        url: process.env.VUE_APP_BACKEND_CONNECTION_URI + "/addStopAlternative",
+        method: "post",
+        data: {
+          new_stop: this.state.presentAlternativeData.new_stop,
+          alternative_to: selectedValues,
+        },
+      }).then((res) => {
+        commit("clearAlternativeStopData")
+        console.log(res)
+      })
     },
   },
   modules: {

@@ -84,7 +84,7 @@
       </template>
     </Popper>
     <Popper :interactive="false" :hover="true" v-if="calendarDatesSet">
-      <button @click="downloadCalendar(route._id)" class="bg-blue fg-white clickable">Download</button>
+      <button @click="downloadCalendar(route._id)" class="bg-blue fg-white clickable">Calendar</button>
       <template #content>
         <div class="tooltip-popup">This will download the calendar file for this route</div>
       </template>

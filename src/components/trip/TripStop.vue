@@ -1,103 +1,88 @@
 <template>
-  <div
-    class="route-stop"
-    :class="stop.daytrip ? 'daytrip' : ''"
-    :alt="stop.name"
-  >
-    <Popper :interactive="false" :hover="true">
-      <img
-        class="icon clickable"
-        src="/static/red-circle-x.png"
-        alt="Remove"
-        @click="deleteStop({ route }, { stop })"
-      />
-      <template #content>
-        <div class="tooltip-popup">This will delete the stop permanently</div>
-      </template>
-    </Popper>
-    <div class="stop-name">{{ stopName }}</div>
-    <Popper :interactive="false" :hover="true">
-      <button
-        v-if="stop._id == route.stops[0]._id && !route.firstStopIsDeparture"
-        @click="setAsOrigin({ route })"
-      >
-        Origin
-      </button>
-      <template #content>
-        <div class="tooltip-popup">
-          This will the first stop as the departure location for the trip
-        </div>
-      </template>
-    </Popper>
-    <Popper :interactive="false" :hover="true">
-      <img
-        v-if="stop._id == route.stops[0]._id && route.firstStopIsDeparture"
-        src="/static/origin-icon.png"
-        class="icon clickable"
-        alt="Origin Location"
-        @click="removeAsOrigin({ route })"
-      />
-      <template #content>
-        <div class="tooltip-popup">
-          This will remove the first stop as the departure location and current
-          location will be used
-        </div>
-      </template>
-    </Popper>
-    <Popper :interactive="false" :hover="true">
-      <img
-        class="icon clickable"
-        src="/static/zoom-icon.png"
-        @click="zoomToRegion()"
-      />
-      <template #content>
-        <div class="tooltip-popup">
-          This will zoom the map to the region surrounding this stop
-        </div>
-      </template>
-    </Popper>
-    <Popper :interactive="false" :hover="true">
-      <img
-        v-if="
-          stop._id != route.stops[0]._id &&
-          stop._id != route.stops[route.stops.length - 1]._id
-        "
-        @click="updateDaytrip({ route }, { stop })"
-        class="icon clickable"
-        src="/static/daytrip-icon.png"
-        alt="Day Trip"
-      />
-      <template #content>
-        <div class="tooltip-popup">
-          This will set the stop to be a daytrip, so that it will be excluded
-          from the main route calculation/navigation
-        </div>
-      </template>
-    </Popper>
-    <Popper :interactive="false" :hover="true">
-      <div
-        v-if="stopIdx != route.stops.length - 1"
-        class="calendar-icon clickable"
-        @click="setDate({ route }, { stop })"
-      >
-        <img class="icon mr-1" src="/static/calendar-icon.png" alt="Calendar" />
+  <div>
+    <div class="route-stop" :class="stop.daytrip ? 'daytrip' : ''" :alt="stop.name">
+      <Popper :interactive="false" :hover="true" v-if="route.active">
+        <img
+          class="icon clickable"
+          src="/static/red-circle-x.png"
+          alt="Remove"
+          @click="deleteStop({ route }, { stop })"
+        />
+        <template #content>
+          <div class="tooltip-popup">This will delete the stop permanently</div>
+        </template>
+      </Popper>
+      <div class="stop-name">{{ stopName }}</div>
+      <Popper :interactive="false" :hover="true" v-if="route.active">
+        <button v-if="stop._id == route.stops[0]._id && !route.firstStopIsDeparture" @click="setAsOrigin({ route })">
+          Origin
+        </button>
+        <template #content>
+          <div class="tooltip-popup">This will the first stop as the departure location for the trip</div>
+        </template>
+      </Popper>
+      <Popper :interactive="false" :hover="true" v-if="route.active">
+        <img
+          v-if="stop._id == route.stops[0]._id && route.firstStopIsDeparture"
+          src="/static/origin-icon.png"
+          class="icon clickable"
+          alt="Origin Location"
+          @click="removeAsOrigin({ route })"
+        />
+        <template #content>
+          <div class="tooltip-popup">
+            This will remove the first stop as the departure location and current location will be used
+          </div>
+        </template>
+      </Popper>
+      <Popper :interactive="false" :hover="true" v-if="route.active">
+        <img class="icon clickable" src="/static/zoom-icon.png" @click="zoomToRegion()" />
+        <template #content>
+          <div class="tooltip-popup">This will zoom the map to the region surrounding this stop</div>
+        </template>
+      </Popper>
+      <Popper :interactive="false" :hover="true" v-if="route.active">
+        <img
+          v-if="stop._id != route.stops[0]._id && stop._id != route.stops[route.stops.length - 1]._id"
+          @click="updateDaytrip({ route }, { stop })"
+          class="icon clickable"
+          src="/static/daytrip-icon.png"
+          alt="Day Trip"
+        />
+        <template #content>
+          <div class="tooltip-popup">
+            This will set the stop to be a daytrip, so that it will be excluded from the main route
+            calculation/navigation
+          </div>
+        </template>
+      </Popper>
+      <Popper v-if="route.active && stop.comments != null && stop.comments != ''" :interactive="false" :hover="true">
+        <img class="icon" src="/static/info-icon.png" alt="Comments" />
+        <template #content>
+          <div class="tooltip-popup">
+            {{ stop.comments }}
+          </div>
+        </template>
+      </Popper>
+      <Popper :interactive="false" :hover="true" v-if="route.active">
         <div
-          v-if="
-            route.dates.length > stopIdx &&
-            route.dates[stopIdx] != null &&
-            route.dates[stopIdx] != ''
-          "
+          v-if="stopIdx != route.stops.length - 1"
+          class="calendar-icon clickable"
+          @click="setDate({ route }, { stop })"
         >
-          {{ getDay(route.dates[stopIdx]) }}
+          <img class="icon mr-1" src="/static/calendar-icon.png" alt="Calendar" />
+          <div v-if="route.dates.length > stopIdx && route.dates[stopIdx] != null && route.dates[stopIdx] != ''">
+            {{ getDay(route.dates[stopIdx]) }}
+          </div>
         </div>
-      </div>
-      <template #content>
-        <div class="tooltip-popup">
-          This will allow you to associate departure dates for the specific
-          location
-        </div>
-      </template>
-    </Popper>
+        <template #content>
+          <div class="tooltip-popup">This will allow you to associate departure dates for the specific location</div>
+        </template>
+      </Popper>
+    </div>
+    <div v-if="hasAltStop" class="alternative-stop route-stop">
+      <img src="/static/alt-stop-icon.png" class="icon" alt="Alt" />Alt: {{ stop.alt_stop.name }}
+    </div>
   </div>
 </template>
 <script>
@@ -125,10 +110,22 @@ export default {
     }
   },
   computed: {
+    hasAltStop() {
+      if (this.stop.alt_stop != null) {
+        console.log("has alt stop")
+        return true
+      }
+      console.log("does not have alt stop")
+      return false
+    },
     stopName() {
-      // if (this.element.name.length > 25){
-      //   return this.element.name.substr(0,25)
-      // }
+      if (this.route.active) {
+        if (this.stop.daytrip && this.stop.name.length > 20) {
+          return this.stop.name.substr(0, 20) + "..."
+        } else if (!this.stop.daytrip && this.stop.name.length > 28) {
+          return this.stop.name.substr(0, 28) + "..."
+        }
+      }
       return this.stop.name
     },
     stopIdx() {
@@ -236,6 +233,9 @@ div.calendar-icon div {
   text-align: center;
 }
 div.daytrip {
+  margin-left: 1rem;
+}
+div.alternative-stop {
   margin-left: 1rem;
 }
 </style>

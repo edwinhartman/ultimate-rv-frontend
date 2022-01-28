@@ -85,7 +85,7 @@ export async function calculateDayTripsHERE(state, callback) {
     }
     // routes.push([])
     // polylines.push([])
-    console.log(routes)
+    // console.log(routes)
     callback(routes, polylines)
   } else {
     callback(null, null)

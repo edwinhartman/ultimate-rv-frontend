@@ -39,6 +39,9 @@
     <ModalPopup v-if="$store.state.editStopDateActive">
       <EditTripStopDate />
     </ModalPopup>
+    <ModalPopup v-if="$store.state.presentAlternativeData != null">
+      <AddAlternativeToStop />
+    </ModalPopup>
     <Header />
     <div class="main_window">
       <LeftToolbar />
@@ -58,6 +61,7 @@ import AboutPage from "../components/other/AboutPage.vue"
 import TripTolls from "../components/trip/TripTolls.vue"
 import AccountMain from "../components/account/AccountMain.vue"
 import EditTripStopDate from "../components/trip/EditTripStopDate.vue"
+import AddAlternativeToStop from "../components/trip/AddAlternativeToStop.vue"
 
 export default {
   name: "MainView",
@@ -72,6 +76,7 @@ export default {
     TripTolls,
     AccountMain,
     EditTripStopDate,
+    AddAlternativeToStop,
   },
   data() {
     return {

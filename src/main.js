@@ -87,6 +87,19 @@ app.config.globalProperties.getDateTimeFormatted = (dateTime, msg) => {
     return d.toLocaleDateString() + " " + d.toLocaleTimeString()
   }
 }
+app.config.globalProperties.getDateFormatted = (dateTime, msg) => {
+  if (!dateTime) {
+    if (msg && msg != "") {
+      return msg
+    } else {
+      return "No date set"
+    }
+  } else {
+    let d = new Date(dateTime)
+
+    return d.toLocaleDateString()
+  }
+}
 app.config.globalProperties.$axios = axios
 
 // const htp_options = {

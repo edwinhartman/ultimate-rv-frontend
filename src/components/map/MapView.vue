@@ -30,6 +30,8 @@ import TripSummary2 from "../trip/TripSummary2.vue"
 import SearchAlongTrip from "../trip/SearchAlongTrip.vue"
 import { toRad, toDeg } from "../../business_logic/HelperLogic"
 
+import { determineDistanceBetweenTwoPoints } from "../../business_logic/HelperLogic"
+
 export default {
   name: "MapView",
   props: {
@@ -90,6 +92,10 @@ export default {
           new mapkit.Coordinate(mylat, mylng),
           new mapkit.CoordinateSpan(100, 100)
         )
+        var tripRegion = window.mymapview.getTripRegion()
+        if (tripRegion != null) {
+          region = tripRegion
+        }
 
         self.map = new mapkit.Map("map", {
           region: region,
@@ -190,10 +196,17 @@ export default {
               }
 
               var btn = element.appendChild(document.createElement("button"))
-              btn.className = "text-tiny bg-blue-500 align-middle pl-1 pr-1 text-white rounded-md"
+              btn.className = "annotation-callout-button"
               btn.textContent = "Add To Trip"
               btn.onclick = function () {
                 window.mymapview.addToTrip(data.places[i])
+                //this.parentNode.style.display = 'none';
+              }
+              var btn2 = element.appendChild(document.createElement("button"))
+              btn2.className = "annotation-callout-button"
+              btn2.textContent = "Add As Alternative"
+              btn2.onclick = function () {
+                window.mymapview.addToTrip(data.places[i], true)
                 //this.parentNode.style.display = 'none';
               }
 
@@ -326,6 +339,15 @@ export default {
     },
   },
   methods: {
+    getStopDetails(idx) {
+      return this.$store.state.activeTrip.stops[idx]
+    },
+    getDepartureDate(idx) {
+      if (this.$store.state.activeTrip.dates.length > 0 && this.$store.state.activeTrip.dates.length > idx) {
+        return this.$store.state.activeTrip.dates[idx]
+      }
+      return null
+    },
     removeAnnotationFromList(list) {
       if (this.map != null && this.map.annotations != null) {
         for (let i = 0; i < list.length; i++) {
@@ -403,25 +425,47 @@ export default {
       }
     },
 
-    addToTrip(place) {
-      this.$store.dispatch("addTripStop", {
-        name: place.name,
-        formattedAddress: place.formattedAddress,
-        coordinate: {
-          latitude: place.coordinate.latitude,
-          longitude: place.coordinate.longitude,
-        },
-      })
+    addToTrip(place, alt = false) {
+      if (!alt) {
+        this.$store.dispatch("addTripStop", {
+          name: place.name,
+          formattedAddress: place.formattedAddress,
+          coordinate: {
+            latitude: place.coordinate.latitude,
+            longitude: place.coordinate.longitude,
+          },
+        })
+      } else {
+        this.$store.dispatch("showNearbyStopsForAlternative", {
+          name: place.name,
+          formattedAddress: place.formattedAddress,
+          coordinate: {
+            latitude: place.coordinate.latitude,
+            longitude: place.coordinate.longitude,
+          },
+        })
+      }
     },
-    addToTripNotPlace(name, address, latitude, longitude) {
-      this.$store.dispatch("addTripStop", {
-        name: name,
-        formattedAddress: address,
-        coordinate: {
-          latitude: latitude,
-          longitude: longitude,
-        },
-      })
+    addToTripNotPlace(name, address, latitude, longitude, alt = false) {
+      if (!alt) {
+        this.$store.dispatch("addTripStop", {
+          name: name,
+          formattedAddress: address,
+          coordinate: {
+            latitude: latitude,
+            longitude: longitude,
+          },
+        })
+      } else {
+        this.$store.dispatch("showNearbyStopsForAlternative", {
+          name: name,
+          formattedAddress: address,
+          coordinate: {
+            latitude: latitude,
+            longitude: longitude,
+          },
+        })
+      }
     },
     reloadData() {
       this.loadStops()
@@ -466,6 +510,81 @@ export default {
         this.getCampgrounds()
       }
       this.getMapRestrictions()
+    },
+    getTripRegion() {
+      if (this.$store.state.activeTrip != null) {
+        var lowestLat = 9999999
+        var lowestLon = 9999999
+        var highestLat = -9999999
+        var highestLon = -9999999
+        let stopStartIdx = 0
+        if (this.$store.state.activeTrip.searchPredefined != null && this.$store.state.activeTrip.searchPredefined) {
+          lowestLat = this.$store.state.activeTrip.stops[0].coordinate.latitude
+          highestLat = this.$store.state.activeTrip.stops[0].coordinate.latitude
+          lowestLon = this.$store.state.activeTrip.stops[0].coordinate.longitude
+          highestLon = this.$store.state.activeTrip.stops[0].coordinate.longitude
+          stopStartIdx = 1
+        } else {
+          // lowestLat = this.$store.state.currentLocation.coords.latitude
+          // highestLat = this.$store.state.currentLocation.coords.latitude
+          // lowestLon = this.$store.state.currentLocation.coords.longitude
+          // highestLon = this.$store.state.currentLocation.coords.longitude
+          lowestLat = 999
+          highestLat = -999
+          lowestLon = 999
+          highestLon = -999
+        }
+
+        for (let i = stopStartIdx; i < this.$store.state.activeTrip.stops.length; i++) {
+          if (this.$store.state.activeTrip.stops[i].coordinate.latitude < lowestLat) {
+            lowestLat = this.$store.state.activeTrip.stops[i].coordinate.latitude
+          }
+          if (this.$store.state.activeTrip.stops[i].coordinate.latitude > highestLat) {
+            highestLat = this.$store.state.activeTrip.stops[i].coordinate.latitude
+          }
+          if (this.$store.state.activeTrip.stops[i].coordinate.longitude < lowestLon) {
+            lowestLon = this.$store.state.activeTrip.stops[i].coordinate.longitude
+          }
+          if (this.$store.state.activeTrip.stops[i].coordinate.longitude > highestLon) {
+            highestLon = this.$store.state.activeTrip.stops[i].coordinate.longitude
+          }
+        }
+        if (this.$store.state.activeTrip.polyline.length > 0) {
+          for (let i = 0; i < this.$store.state.activeTrip.polyline.length; i++) {
+            for (let j = 0; j < this.$store.state.activeTrip.polyline[i].length; j++) {
+              if (this.$store.state.activeTrip.polyline[i][j][0] < lowestLat) {
+                lowestLat = this.$store.state.activeTrip.polyline[i][j][0]
+              }
+              if (this.$store.state.activeTrip.polyline[i][j][0] > highestLat) {
+                highestLat = this.$store.state.activeTrip.polyline[i][j][0]
+              }
+              if (this.$store.state.activeTrip.polyline[i][j][1] < lowestLon) {
+                lowestLon = this.$store.state.activeTrip.polyline[i][j][1]
+              }
+              if (this.$store.state.activeTrip.polyline[i][j][1] > highestLon) {
+                highestLon = this.$store.state.activeTrip.polyline[i][j][1]
+              }
+            }
+          }
+        }
+
+        var centerLat = (highestLat - lowestLat) / 2 + lowestLat
+        var centerLon = (highestLon - lowestLon) / 2 + lowestLon
+        var diffLat = (highestLat - lowestLat) * 1.1
+        var diffLon = (highestLon - lowestLon) * 1.1
+        this.$store.commit("setNewMapRegion", {
+          centerLat: centerLat,
+          centerLon: centerLon,
+          diffLat: diffLat,
+          diffLon: diffLon,
+        })
+        var region = new mapkit.CoordinateRegion(
+          new mapkit.Coordinate(centerLat, centerLon),
+          new mapkit.CoordinateSpan(diffLat, diffLon)
+        )
+        return region
+      }
+      return null
     },
     getDumpStations(zip) {
       searchDumpStations(this.map.region, this.$store, zip, (annotations, markers) => {
@@ -690,13 +809,21 @@ export default {
               var title = element.appendChild(document.createElement("h3"))
               title.textContent = annotation.title
 
-              var btn = element.appendChild(document.createElement("button"))
+              // var btn2 = element.appendChild(document.createElement("button"))
 
-              btn.className = "text-tiny bg-blue-500 align-middle pl-1 pr-1 text-white rounded-md"
-              btn.textContent = "Post Review"
-              btn.onclick = function () {
-                alert("post review")
-              }
+              // btn2.className = "annotation-callout-button"
+              // btn2.textContent = "Add Stop Comment"
+              // btn2.onclick = function () {
+              //   alert("post review")
+              // }
+
+              // var btn = element.appendChild(document.createElement("button"))
+
+              // btn.className = "annotation-callout-button"
+              // btn.textContent = "Post Review"
+              // btn.onclick = function () {
+              //   alert("post review")
+              // }
 
               return element
             },
@@ -719,6 +846,86 @@ export default {
           this.stopMarkers.push(annotation.coordinate)
           this.map.addAnnotation(annotation)
         }
+        let altStops = this.$store.state.activeTrip.stops.filter((s) => s.alt_stop != null)
+        console.log(altStops)
+        if (altStops.length > 0) {
+          for (let i = 0; i < altStops.length; i++) {
+            var calloutDelegate3 = {
+              calloutElementForAnnotation: function (annotation) {
+                //console.log(annotation);
+                var stop = window.mymapview.getStopDetails(i)
+                var element = document.createElement("div")
+                element.id = "callout_" + stop._id
+                element.className = "annotation-detail"
+                var title = element.appendChild(document.createElement("h3"))
+                title.textContent = annotation.title
+
+                let dpt_date = window.mymapview.getDepartureDate(i)
+                if (dpt_date != null) {
+                  var dt = element.appendChild(document.createElement("div"))
+                  dt.textContent = "Scheduled departure: " + window.mymapview.getDateFormatted(dpt_date)
+                  dt.style = "margin-bottom:0.5rem;"
+                }
+                var btn2 = element.appendChild(document.createElement("button"))
+
+                btn2.className = "annotation-callout-button"
+
+                btn2.textContent = "Show/Hide Stop Comments"
+                btn2.onclick = function () {
+                  // window.mymapview.editStopComments(stop._id)
+                  var t = document.getElementById("stop_comments_" + stop._id)
+                  var e = document.getElementById("callout_" + stop._id)
+                  //console.log(e.style)
+                  if (t.style.display == "inline-block") {
+                    t.style.display = ""
+                    // e.clientWidth = e.clientWidth / 2
+                    e.style["min-width"] = ""
+                  } else {
+                    t.style.display = "inline-block"
+                    e.style = "min-width:20rem;"
+                  }
+                }
+                var btn = element.appendChild(document.createElement("button"))
+
+                btn.className = "annotation-callout-button"
+                btn.textContent = "Post Review"
+                btn.onclick = function () {
+                  alert("post review")
+                }
+                var comments = element.appendChild(document.createElement("textarea"))
+                comments.id = "stop_comments_" + stop._id
+                comments.className = "stop-comments"
+                if (stop.comments != null) {
+                  comments.value = stop.comments
+                } else {
+                  comments.value = ""
+                }
+                comments.addEventListener("blur", () => {
+                  var c = document.getElementById("stop_comments_" + stop._id)
+                  window.mymapview.updateStopComments(stop._id, c.value)
+                })
+                return element
+              },
+            }
+            let annotation = new mapkit.MarkerAnnotation(
+              new mapkit.Coordinate(
+                altStops[i].alt_stop.coordinate.latitude,
+                altStops[i].alt_stop.coordinate.longitude
+              ),
+              {
+                title: altStops[i].alt_stop.name,
+                subtitle: altStops[i].alt_stop.formattedAddress,
+                glyphText: "Alt",
+                color: "#ffc62e",
+                displayPriority: 1000,
+                callout: calloutDelegate3,
+              }
+            )
+            this.stopMarkers.push(annotation.coordinate)
+            this.map.addAnnotation(annotation)
+          }
+        }
+
         let mainRouteMarker = 0
         for (let i = 0; i < this.$store.state.activeTrip.stops.length; i++) {
           if (!this.$store.state.activeTrip.stops[i].daytrip) {
@@ -727,19 +934,57 @@ export default {
           var calloutDelegate2 = {
             calloutElementForAnnotation: function (annotation) {
               //console.log(annotation);
+              var stop = window.mymapview.getStopDetails(i)
               var element = document.createElement("div")
+              element.id = "callout_" + stop._id
               element.className = "annotation-detail"
               var title = element.appendChild(document.createElement("h3"))
               title.textContent = annotation.title
 
+              let dpt_date = window.mymapview.getDepartureDate(i)
+              if (dpt_date != null) {
+                var dt = element.appendChild(document.createElement("div"))
+                dt.textContent = "Scheduled departure: " + window.mymapview.getDateFormatted(dpt_date)
+                dt.style = "margin-bottom:0.5rem;"
+              }
+              var btn2 = element.appendChild(document.createElement("button"))
+
+              btn2.className = "annotation-callout-button"
+
+              btn2.textContent = "Show/Hide Stop Comments"
+              btn2.onclick = function () {
+                // window.mymapview.editStopComments(stop._id)
+                var t = document.getElementById("stop_comments_" + stop._id)
+                var e = document.getElementById("callout_" + stop._id)
+                //console.log(e.style)
+                if (t.style.display == "inline-block") {
+                  t.style.display = ""
+                  // e.clientWidth = e.clientWidth / 2
+                  e.style["min-width"] = ""
+                } else {
+                  t.style.display = "inline-block"
+                  e.style = "min-width:20rem;"
+                }
+              }
               var btn = element.appendChild(document.createElement("button"))
 
-              btn.className = "text-tiny bg-blue-500 align-middle pl-1 pr-1 text-white rounded-md"
+              btn.className = "annotation-callout-button"
               btn.textContent = "Post Review"
               btn.onclick = function () {
                 alert("post review")
               }
-
+              var comments = element.appendChild(document.createElement("textarea"))
+              comments.id = "stop_comments_" + stop._id
+              comments.className = "stop-comments"
+              if (stop.comments != null) {
+                comments.value = stop.comments
+              } else {
+                comments.value = ""
+              }
+              comments.addEventListener("blur", () => {
+                var c = document.getElementById("stop_comments_" + stop._id)
+                window.mymapview.updateStopComments(stop._id, c.value)
+              })
               return element
             },
           }
@@ -798,6 +1043,22 @@ export default {
       let result = new mapkit.Coordinate(toDeg(resultLat), toDeg(resultLon))
       return result
     },
+    updateStopComments(stop_id, value) {
+      this.$store.dispatch("updateStopComments", { stop_id: stop_id, value: value })
+    },
+    hasNearbyStops(coordinate) {
+      let stopFound = false
+
+      if (this.$store.state.activeTrip != null && this.$store.state.activeTrip.stops.length > 0) {
+        for (let i = 0; i < this.$store.state.activeTrip.stops.length; i++) {
+          if (determineDistanceBetweenTwoPoints(coordinate, this.$store.state.activeTrip.stops[i].coordinate) < 10) {
+            stopFound = true
+            break
+          }
+        }
+      }
+      return stopFound
+    },
   },
 }
 </script>
@@ -814,5 +1075,17 @@ a.right-accessory-view {
 }
 div.review-callout {
   background-color: white;
+}
+button.annotation-callout-button {
+  font-size: 0.6rem;
+  margin-left: 0.1rem;
+  margin-right: 0.1rem;
+  border-radius: 0.25rem;
+}
+textarea.stop-comments {
+  width: 15rem;
+  height: 5rem;
+  margin-top: 0.5rem;
+  display: none;
 }
 </style>

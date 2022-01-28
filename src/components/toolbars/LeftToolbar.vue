@@ -72,6 +72,7 @@ export default {
       .get(process.env.VUE_APP_BACKEND_CONNECTION_URI + "/getTrips")
       .then((res) => {
         // console.log(JSON.stringify(res.data.routes))
+        // console.log(res.data.routes)
         //this.menu_items=res.data.menu;
         if (res.data.routes.length == 0) {
           this.$axios({
