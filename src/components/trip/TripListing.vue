@@ -112,7 +112,7 @@ export default {
       this.renderComponent = false
       this.routes = this.$store.state.routes
       this.activeTrips = this.routes
-        .filter((r) => r.active && (r.archived == null || !r.archived) && !r.system)
+        .filter((r) => r.active)
         .sort((a, b) => {
           if (a.active == b.active) {
             return a.name < b.name ? 1 : -1

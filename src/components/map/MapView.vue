@@ -695,6 +695,7 @@ export default {
       this.loadPolyline()
     },
     regionChanged() {
+      // console.log(this.map.region)
       if (this.searchAlongTripActive) {
         return
       }

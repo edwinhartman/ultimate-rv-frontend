@@ -26,6 +26,7 @@
       :identifier="route._id"
       :active="route.active"
       :class="route.active ? 'font-bold color-fg-yellow' : 'font-normal'"
+      :isSystemRoute="route.system"
       class="route-name"
     />
     <Popper :interactive="false" :hover="true">

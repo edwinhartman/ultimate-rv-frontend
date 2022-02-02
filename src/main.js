@@ -101,71 +101,86 @@ app.config.globalProperties.getDateFormatted = (dateTime, msg) => {
   }
 }
 app.config.globalProperties.zoomToTrip = (trip, store) => {
-  var lowestLat = 9999999
-  var lowestLon = 9999999
-  var highestLat = -9999999
-  var highestLon = -9999999
-  let stopStartIdx = 0
-  if (trip.searchPredefined != null && trip.searchPredefined) {
-    lowestLat = trip.stops[0].coordinate.latitude
-    highestLat = trip.stops[0].coordinate.latitude
-    lowestLon = trip.stops[0].coordinate.longitude
-    highestLon = trip.stops[0].coordinate.longitude
-    stopStartIdx = 1
-  } else {
-    // lowestLat = this.$store.state.currentLocation.coords.latitude
-    // highestLat = this.$store.state.currentLocation.coords.latitude
-    // lowestLon = this.$store.state.currentLocation.coords.longitude
-    // highestLon = this.$store.state.currentLocation.coords.longitude
-    lowestLat = 999
-    highestLat = -999
-    lowestLon = 999
-    highestLon = -999
-  }
+  if (!trip.system) {
+    var lowestLat = 9999999
+    var lowestLon = 9999999
+    var highestLat = -9999999
+    var highestLon = -9999999
+    let stopStartIdx = 0
+    if (trip.searchPredefined != null && trip.searchPredefined) {
+      lowestLat = trip.stops[0].coordinate.latitude
+      highestLat = trip.stops[0].coordinate.latitude
+      lowestLon = trip.stops[0].coordinate.longitude
+      highestLon = trip.stops[0].coordinate.longitude
+      stopStartIdx = 1
+    } else {
+      // lowestLat = this.$store.state.currentLocation.coords.latitude
+      // highestLat = this.$store.state.currentLocation.coords.latitude
+      // lowestLon = this.$store.state.currentLocation.coords.longitude
+      // highestLon = this.$store.state.currentLocation.coords.longitude
+      lowestLat = 999
+      highestLat = -999
+      lowestLon = 999
+      highestLon = -999
+    }
 
-  for (let i = stopStartIdx; i < trip.stops.length; i++) {
-    if (trip.stops[i].coordinate.latitude < lowestLat) {
-      lowestLat = trip.stops[i].coordinate.latitude
+    for (let i = stopStartIdx; i < trip.stops.length; i++) {
+      if (trip.stops[i].coordinate.latitude < lowestLat) {
+        lowestLat = trip.stops[i].coordinate.latitude
+      }
+      if (trip.stops[i].coordinate.latitude > highestLat) {
+        highestLat = trip.stops[i].coordinate.latitude
+      }
+      if (trip.stops[i].coordinate.longitude < lowestLon) {
+        lowestLon = trip.stops[i].coordinate.longitude
+      }
+      if (trip.stops[i].coordinate.longitude > highestLon) {
+        highestLon = trip.stops[i].coordinate.longitude
+      }
     }
-    if (trip.stops[i].coordinate.latitude > highestLat) {
-      highestLat = trip.stops[i].coordinate.latitude
-    }
-    if (trip.stops[i].coordinate.longitude < lowestLon) {
-      lowestLon = trip.stops[i].coordinate.longitude
-    }
-    if (trip.stops[i].coordinate.longitude > highestLon) {
-      highestLon = trip.stops[i].coordinate.longitude
-    }
-  }
-  if (trip.polyline.length > 0) {
-    for (let i = 0; i < trip.polyline.length; i++) {
-      for (let j = 0; j < trip.polyline[i].length; j++) {
-        if (trip.polyline[i][j][0] < lowestLat) {
-          lowestLat = trip.polyline[i][j][0]
-        }
-        if (trip.polyline[i][j][0] > highestLat) {
-          highestLat = trip.polyline[i][j][0]
-        }
-        if (trip.polyline[i][j][1] < lowestLon) {
-          lowestLon = trip.polyline[i][j][1]
-        }
-        if (trip.polyline[i][j][1] > highestLon) {
-          highestLon = trip.polyline[i][j][1]
+    if (trip.polyline.length > 0) {
+      for (let i = 0; i < trip.polyline.length; i++) {
+        for (let j = 0; j < trip.polyline[i].length; j++) {
+          if (trip.polyline[i][j][0] < lowestLat) {
+            lowestLat = trip.polyline[i][j][0]
+          }
+          if (trip.polyline[i][j][0] > highestLat) {
+            highestLat = trip.polyline[i][j][0]
+          }
+          if (trip.polyline[i][j][1] < lowestLon) {
+            lowestLon = trip.polyline[i][j][1]
+          }
+          if (trip.polyline[i][j][1] > highestLon) {
+            highestLon = trip.polyline[i][j][1]
+          }
         }
       }
     }
-  }
 
-  var centerLat = (highestLat - lowestLat) / 2 + lowestLat
-  var centerLon = (highestLon - lowestLon) / 2 + lowestLon
-  var diffLat = (highestLat - lowestLat) * 1.1
-  var diffLon = (highestLon - lowestLon) * 1.1
-  store.commit("setNewMapRegion", {
-    centerLat: centerLat,
-    centerLon: centerLon,
-    diffLat: diffLat,
-    diffLon: diffLon,
-  })
+    var centerLat = (highestLat - lowestLat) / 2 + lowestLat
+    var centerLon = (highestLon - lowestLon) / 2 + lowestLon
+    var diffLat = (highestLat - lowestLat) * 1.1
+    var diffLon = (highestLon - lowestLon) * 1.1
+    store.commit("setNewMapRegion", {
+      centerLat: centerLat,
+      centerLon: centerLon,
+      diffLat: diffLat,
+      diffLon: diffLon,
+    })
+  } else {
+    //zoom to US
+
+    let centerLat = 39.80316561823299
+    let centerLon = -95.42902255829101
+    let diffLat = 36.031921083091
+    let diffLon = 54.58720384314029
+    store.commit("setNewMapRegion", {
+      centerLat: centerLat,
+      centerLon: centerLon,
+      diffLat: diffLat,
+      diffLon: diffLon,
+    })
+  }
 }
 app.config.globalProperties.$axios = axios
 
