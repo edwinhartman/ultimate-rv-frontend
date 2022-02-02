@@ -101,7 +101,7 @@ button {
 .annotation-detail {
   background-color: white;
   border-radius: 0.25rem;
-  box-shadow: 0.1em 0.1em rgba(110, 110, 110, 0.5);
+  box-shadow: 0.25em 0.25em rgba(110, 110, 110, 0.5);
   padding-left: 0.2rem;
   padding-right: 0.2rem;
   padding-bottom: 0.1rem;
@@ -111,6 +111,8 @@ button {
 }
 .annotation-detail button {
   font-size: 0.65rem;
+  margin-bottom: 0.2rem;
+  box-shadow: 0.15em 0.15em rgba(110, 110, 110, 0.5);
 }
 .mr-1 {
   margin-right: 0.1rem;

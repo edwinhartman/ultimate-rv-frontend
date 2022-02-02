@@ -17,7 +17,8 @@
             class="tripinstructions_section"
           >
             <div class="text-tiny font-bold italic">
-              {{ $store.state.activeTrip.stops[idx].name }} to {{ $store.state.activeTrip.stops[idx + 1].name }} [{{
+              {{ $store.state.activeTrip.stops[translateMainStopIndex(idx)].name }} to
+              {{ $store.state.activeTrip.stops[translateMainStopIndex(idx + 1)].name }} [{{
                 ($store.state.activeTrip.summary[idx].length / 1600).toFixed(0)
               }}
               miles]
@@ -32,8 +33,14 @@
       </Tab>
       <Tab title="Day Trips" v-if="daytrips.length > 0">
         <div class="tabwindow">
-          <div v-for="daytrip in daytrips" :key="daytrip.id">
-            <div v-for="section in daytrip[0].sections" :key="section.id" class="tripinstructions_section">
+          <div v-for="(daytrip, idx1) in daytrips" :key="daytrip.id">
+            <div v-for="(section, idx2) in daytrip[0].sections" :key="section.id" class="tripinstructions_section">
+              <div class="text-tiny font-bold italic">
+                {{ $store.state.activeTrip.stops[translateDaytripIndexFrom(idx1, idx2)].name }} to
+                {{ $store.state.activeTrip.stops[translateDaytripIndexTo(idx1, idx2)].name }} [
+                {{ (section.summary.length / 1600).toFixed(0) }}
+                miles]
+              </div>
               <div v-for="action in section.actions" :key="action.id">
                 {{ action.instruction }}
               </div>
@@ -61,6 +68,9 @@ export default {
     Tab,
   },
   computed: {
+    routeStops() {
+      return this.$store.state.activeTrip.stops.filter((s) => !s.daytrip)
+    },
     daytrips() {
       if (
         this.$store.state.activeTrip.daytrips != null &&
@@ -68,6 +78,7 @@ export default {
         this.$store.state.activeTrip.daytrips[0].routes.length > 0
       ) {
         let arr = this.$store.state.activeTrip.daytrips[0].routes.filter((r) => r.length > 0)
+        // console.log(arr)
         if (arr.length > 0) {
           return arr
         } else {
@@ -76,6 +87,9 @@ export default {
       } else {
         return []
       }
+    },
+    mainStops() {
+      return this.$store.state.activeTrip.stops.filter((e) => !e.daytrip)
     },
   },
   methods: {
@@ -88,6 +102,71 @@ export default {
       }
       //   console.log(options)
       this.$htmlToPaper("to_be_printed", options)
+    },
+    translateMainStopIndex(idx) {
+      if (idx == 0) {
+        return 0
+      }
+      if (idx >= this.$store.state.activeTrip.stops.length - 1) {
+        return idx
+      }
+      let filteredStops = this.$store.state.activeTrip.stops.filter((s) => !s.daytrip)
+      // console.log(filteredStops[idx])
+      for (let i = idx; i < this.$store.state.activeTrip.stops.length; i++) {
+        // console.log(this.$store.state.activeTrip.stops[i]._id + " - " + filteredStops[idx])
+        if (this.$store.state.activeTrip.stops[i]._id == filteredStops[idx]._id) {
+          return i
+        }
+      }
+      return idx
+    },
+    translateDaytripIndexFrom(idx1, idx2) {
+      let allStops = this.$store.state.activeTrip.stops
+      let filteredStops = this.$store.state.activeTrip.stops.filter((s) => s.daytrip)
+      let s_idx = -1
+      for (let i = idx1; i < allStops.length; i++) {
+        if (allStops[i]._id == filteredStops[idx1]._id) {
+          s_idx = i
+        }
+      }
+      let mainStopIdx = -1
+      if (idx2 == 0) {
+        if (s_idx > 0) {
+          for (let i = s_idx; i > -1; i--) {
+            if (!allStops[i].daytrip) {
+              mainStopIdx = i
+              break
+            }
+          }
+        }
+        return mainStopIdx
+      } else {
+        return s_idx
+      }
+    },
+    translateDaytripIndexTo(idx1, idx2) {
+      let allStops = this.$store.state.activeTrip.stops
+      let filteredStops = this.$store.state.activeTrip.stops.filter((s) => s.daytrip)
+      let s_idx = -1
+      for (let i = idx1; i < allStops.length; i++) {
+        if (allStops[i]._id == filteredStops[idx1]._id) {
+          s_idx = i
+        }
+      }
+      let mainStopIdx = -1
+      if (idx2 > 0) {
+        if (s_idx > 0) {
+          for (let i = s_idx; i > -1; i--) {
+            if (!allStops[i].daytrip) {
+              mainStopIdx = i
+              break
+            }
+          }
+        }
+        return mainStopIdx
+      } else {
+        return s_idx
+      }
     },
   },
 }

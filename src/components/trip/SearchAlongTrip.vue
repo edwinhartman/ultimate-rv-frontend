@@ -48,7 +48,7 @@
         </select>
         <br />
         <select name="" id="" v-model="searchStop">
-          <option v-for="(stop, idx) in $store.state.activeTrip.stops" :key="stop._id" :value="idx">
+          <option v-for="(stop, idx) in mainTripStops" :key="stop._id" :value="idx">
             {{ trimStopName(stop.name) }}
           </option>
         </select>
@@ -81,6 +81,9 @@ export default {
         return true
       }
       return false
+    },
+    mainTripStops() {
+      return this.$store.state.activeTrip.stops.filter((s) => !s.daytrip)
     },
   },
   data() {
@@ -141,6 +144,7 @@ export default {
           }
         } else {
           sectionIdx = this.searchStop
+          // console.log(this.$store.state.activeTrip.polyline)
           for (let i = 0; i < this.$store.state.activeTrip.polyline[sectionIdx].length - 1; i++) {
             currentDistance += this.distance(
               this.$store.state.activeTrip.polyline[sectionIdx][i][0],
@@ -157,10 +161,16 @@ export default {
         }
 
         if (offset > -1) {
-          var span = 0.5
+          var span = 0.2
 
           var lat = this.$store.state.activeTrip.polyline[sectionIdx][offset][0]
           var lon = this.$store.state.activeTrip.polyline[sectionIdx][offset][1]
+          let remainingPolyline = []
+          for (let i = offset; i < this.$store.state.activeTrip.polyline[sectionIdx].length; i++) {
+            remainingPolyline.push(this.$store.state.activeTrip.polyline[sectionIdx][i])
+          }
+          this.$store.commit("setAlongRoutePolyline", remainingPolyline)
+          // console.log("Lat: " + lat + " Lon: " + lon)
           this.$store.commit("setNewMapRegion", {
             centerLat: lat,
             centerLon: lon,
@@ -169,6 +179,7 @@ export default {
           })
           this.$store.commit("setSearchPredefined", "None")
           setTimeout(() => {
+            window.mymapview.searchAlongTripActive = true
             this.$store.commit("setSearchPredefined", this.searchTerm)
           }, 1000)
         } else {

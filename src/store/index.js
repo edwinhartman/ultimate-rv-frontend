@@ -5,6 +5,8 @@ import flexible_polyline from "../helpers/flexible_polyline"
 import { calculateTripHERE, calculateDayTripsHERE } from "../business_logic/RoutingCalculator"
 import router from "../router/index"
 import settings from "./modules/settings"
+import freetext_search from "./modules/freetext_search"
+
 import { determineDistanceBetweenTwoPoints } from "../business_logic/HelperLogic"
 
 const vuexLocal = new VuexPersistence({
@@ -41,8 +43,13 @@ export default createStore({
     editStopDateActive: false,
     editStopDateStop: null,
     presentAlternativeData: null,
+    alongRoutePolyline: [],
+    showOpenExistingTrip: false,
   },
   mutations: {
+    setShowOpenExistingTrip(state, val) {
+      state.showOpenExistingTrip = val
+    },
     resetAllHungupValues(state) {
       state.routeCalculateInProcess = false
       state.accountMaintenanceActive = false
@@ -88,6 +95,9 @@ export default createStore({
     },
     updateKeywords(state, value) {
       state.searchKeywords = value
+    },
+    setAlongRoutePolyline(state, value) {
+      state.alongRoutePolyline = value
     },
     addTrip(state, value) {
       value.startLocation = state.currentLocation
@@ -199,6 +209,7 @@ export default createStore({
       state.activeRV = rv
     },
     setNewMapRegion(state, payload) {
+      // console.log("setNewMapRegion: Lat: " + payload.centerLat + " Lon: " + payload.centerLon)
       state.mapRegion = {
         center: {
           latitude: payload.centerLat,
@@ -395,65 +406,69 @@ export default createStore({
         })
     },
     calculateTrip({ commit }, route) {
-      if (this.state.currentLocation != null) {
-        commit("setTripCalculateInProcess", true)
-        commit("clearPolyline")
-        commit("clearSummaries")
-        commit("clearActions")
-        commit("clearSpeeds")
-        commit("clearTolls")
+      return new Promise((resolve, reject) => {
+        if (this.state.currentLocation != null) {
+          commit("setTripCalculateInProcess", true)
+          commit("clearPolyline")
+          commit("clearSummaries")
+          commit("clearActions")
+          commit("clearSpeeds")
+          commit("clearTolls")
 
-        calculateTripHERE(this.state, async (routes, polylines) => {
-          if (polylines != null) {
-            for (let p = 0; p < polylines.length; p++) {
-              commit("addPolyline", polylines[p].polyline)
-            }
-          }
-          if (routes != null) {
-            for (let r = 0; r < routes.length; r++) {
-              for (let i = 0; i < routes[r].sections.length; i++) {
-                // commit('addPolyline', flexible_polyline.decode(routes[r].sections[i].polyline).polyline)
-
-                commit("addSummary", routes[r].sections[i].summary)
-                commit("addActions", routes[r].sections[i].actions)
-                commit("addSpeeds", routes[r].sections[i].spans)
-                var tolls = []
-                if (routes[r].sections[i].tolls != null) {
-                  tolls = routes[r].sections[i].tolls
-                }
-                commit("addTolls", tolls)
-                commit("setTripCalculateInProcess", false)
+          calculateTripHERE(this.state, async (routes, polylines) => {
+            if (polylines != null) {
+              for (let p = 0; p < polylines.length; p++) {
+                commit("addPolyline", polylines[p].polyline)
               }
             }
+            if (routes != null) {
+              for (let r = 0; r < routes.length; r++) {
+                for (let i = 0; i < routes[r].sections.length; i++) {
+                  // commit('addPolyline', flexible_polyline.decode(routes[r].sections[i].polyline).polyline)
 
-            await calculateDayTripsHERE(this.state, (routes, polylines) => {
-              commit("saveDayTripsDetails", {
-                routes: routes,
-                polylines: polylines,
+                  commit("addSummary", routes[r].sections[i].summary)
+                  commit("addActions", routes[r].sections[i].actions)
+                  commit("addSpeeds", routes[r].sections[i].spans)
+                  var tolls = []
+                  if (routes[r].sections[i].tolls != null) {
+                    tolls = routes[r].sections[i].tolls
+                  }
+                  commit("addTolls", tolls)
+                  commit("setTripCalculateInProcess", false)
+                  resolve()
+                }
+              }
+
+              await calculateDayTripsHERE(this.state, (routes, polylines) => {
+                commit("saveDayTripsDetails", {
+                  routes: routes,
+                  polylines: polylines,
+                })
               })
-            })
 
-            axios({
-              method: "post",
-              url: process.env.VUE_APP_BACKEND_CONNECTION_URI + "/addPolylineSummaryActionsTollsSpeedsDaytrips",
-              data: {
-                route_id: this.state.activeTrip._id,
-                polyline: this.state.activeTrip.polyline,
-                summary: this.state.summaries,
-                actions: this.state.activeTrip.actions,
-                tolls: this.state.activeTrip.tolls,
-                speeds: this.state.activeTrip.speeds,
-                daytrips: this.state.activeTrip.daytrips,
-              },
-            }).then((res1) => {
-              // console.log(res1.data.routes)
-              commit("loadTrips", res1.data.routes)
-            })
-          } else {
-            commit("setTripCalculateInProcess", false)
-          }
-        })
-      }
+              axios({
+                method: "post",
+                url: process.env.VUE_APP_BACKEND_CONNECTION_URI + "/addPolylineSummaryActionsTollsSpeedsDaytrips",
+                data: {
+                  route_id: this.state.activeTrip._id,
+                  polyline: this.state.activeTrip.polyline,
+                  summary: this.state.summaries,
+                  actions: this.state.activeTrip.actions,
+                  tolls: this.state.activeTrip.tolls,
+                  speeds: this.state.activeTrip.speeds,
+                  daytrips: this.state.activeTrip.daytrips,
+                },
+              }).then((res1) => {
+                // console.log(res1.data.routes)
+                commit("loadTrips", res1.data.routes)
+              })
+            } else {
+              commit("setTripCalculateInProcess", false)
+              resolve()
+            }
+          })
+        }
+      })
     },
     authenticateUser({ commit, dispatch }, user) {
       return new Promise((resolve, reject) => {
@@ -759,12 +774,32 @@ export default createStore({
         },
       }).then((res) => {
         commit("clearAlternativeStopData")
-        console.log(res)
+        commit("loadTrips", res.data.routes)
+      })
+    },
+    removeStopAlternative({ commit }, value) {
+      axios({
+        url: process.env.VUE_APP_BACKEND_CONNECTION_URI + "/removeStopAlternative",
+        method: "post",
+        data: value,
+      }).then((res) => {
+        commit("loadTrips", res.data.routes)
+      })
+    },
+    makePrimaryStop({ commit }, value) {
+      value.trip_id = this.state.activeTrip._id
+      axios({
+        url: process.env.VUE_APP_BACKEND_CONNECTION_URI + "/makeAlternativePrimary",
+        method: "post",
+        data: value,
+      }).then((res) => {
+        commit("loadTrips", res.data.routes)
       })
     },
   },
   modules: {
     settings,
+    freetext_search,
   },
   getters: {
     isAuthenticated: (state) => {

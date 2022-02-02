@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- <button @click="takePicture">Picture</button> -->
     <ModalPopup
       :yesNoOption="true"
       v-if="showRemoveTripPopup"
@@ -102,6 +103,8 @@ import ClickToEdit from "../templates/ClickToEdit.vue"
 import ModalPopup from "../templates/ModalPopup.vue"
 import Popper from "vue3-popper"
 import { generateCalendarFile } from "../../business_logic/CalendarFiles"
+import html2canvas from "html2canvas"
+import axios from "axios"
 
 export default {
   name: "TripName",
@@ -152,6 +155,33 @@ export default {
     },
   },
   methods: {
+    takePicture() {
+      var h = this.$parent.$parent.$parent.$parent.map_height
+      var w = this.$parent.$parent.$parent.$parent.map_width
+      html2canvas(document.querySelector("#map"), { userCORS: true, allowTaint: false, logging: false }).then(
+        (canvas) => {
+          const context = canvas.getContext("2d")
+          const imageData = context.getImageData(0, 0, w, h).data
+          // const left_toolbar = document.querySelector("#left_toolbar")
+          const outputCanvas = document.createElement("canvas")
+          // left_toolbar.appendChild(outputCanvas)
+          const outputContext = outputCanvas.getContext("2d")
+          outputCanvas.width = w
+          outputCanvas.height = h
+          const outputIData = outputContext.createImageData(w, h)
+          outputIData.data.set(imageData)
+          outputContext.putImageData(outputIData, 0, 0)
+          axios({
+            url: process.env.VUE_APP_BACKEND_CONNECTION_URI + "/setTripSnapshot",
+            method: "post",
+            data: {
+              route_id: this.$store.state.activeTrip._id,
+              image: outputCanvas.toDataURL(),
+            },
+          })
+        }
+      )
+    },
     setTripActive(id) {
       this.$store.dispatch("activateTrip", id).then(() => {
         this.zoomToActiveTrip()
@@ -166,8 +196,12 @@ export default {
       this.$store.dispatch("updateTripName", payload)
     },
     calculateTrip(route) {
-      this.$store.dispatch("calculateTrip", route)
-      this.zoomToActiveTrip()
+      this.$store.dispatch("calculateTrip", route).then(() => {
+        this.zoomToActiveTrip()
+        setTimeout(() => {
+          this.takePicture()
+        }, 1000)
+      })
     },
     removeTrip(id) {
       this.routeToRemove = id
@@ -193,72 +227,75 @@ export default {
       this.showArchiveTripPopup = false
     },
     zoomToActiveTrip() {
-      var lowestLat = 9999999
-      var lowestLon = 9999999
-      var highestLat = -9999999
-      var highestLon = -9999999
-      let stopStartIdx = 0
-      if (this.$store.state.activeTrip.searchPredefined != null && this.$store.state.activeTrip.searchPredefined) {
-        lowestLat = this.$store.state.activeTrip.stops[0].coordinate.latitude
-        highestLat = this.$store.state.activeTrip.stops[0].coordinate.latitude
-        lowestLon = this.$store.state.activeTrip.stops[0].coordinate.longitude
-        highestLon = this.$store.state.activeTrip.stops[0].coordinate.longitude
-        stopStartIdx = 1
-      } else {
-        // lowestLat = this.$store.state.currentLocation.coords.latitude
-        // highestLat = this.$store.state.currentLocation.coords.latitude
-        // lowestLon = this.$store.state.currentLocation.coords.longitude
-        // highestLon = this.$store.state.currentLocation.coords.longitude
-        lowestLat = 999
-        highestLat = -999
-        lowestLon = 999
-        highestLon = -999
-      }
-
-      for (let i = stopStartIdx; i < this.$store.state.activeTrip.stops.length; i++) {
-        if (this.$store.state.activeTrip.stops[i].coordinate.latitude < lowestLat) {
-          lowestLat = this.$store.state.activeTrip.stops[i].coordinate.latitude
-        }
-        if (this.$store.state.activeTrip.stops[i].coordinate.latitude > highestLat) {
-          highestLat = this.$store.state.activeTrip.stops[i].coordinate.latitude
-        }
-        if (this.$store.state.activeTrip.stops[i].coordinate.longitude < lowestLon) {
-          lowestLon = this.$store.state.activeTrip.stops[i].coordinate.longitude
-        }
-        if (this.$store.state.activeTrip.stops[i].coordinate.longitude > highestLon) {
-          highestLon = this.$store.state.activeTrip.stops[i].coordinate.longitude
-        }
-      }
-      if (this.$store.state.activeTrip.polyline.length > 0) {
-        for (let i = 0; i < this.$store.state.activeTrip.polyline.length; i++) {
-          for (let j = 0; j < this.$store.state.activeTrip.polyline[i].length; j++) {
-            if (this.$store.state.activeTrip.polyline[i][j][0] < lowestLat) {
-              lowestLat = this.$store.state.activeTrip.polyline[i][j][0]
-            }
-            if (this.$store.state.activeTrip.polyline[i][j][0] > highestLat) {
-              highestLat = this.$store.state.activeTrip.polyline[i][j][0]
-            }
-            if (this.$store.state.activeTrip.polyline[i][j][1] < lowestLon) {
-              lowestLon = this.$store.state.activeTrip.polyline[i][j][1]
-            }
-            if (this.$store.state.activeTrip.polyline[i][j][1] > highestLon) {
-              highestLon = this.$store.state.activeTrip.polyline[i][j][1]
-            }
-          }
-        }
-      }
-
-      var centerLat = (highestLat - lowestLat) / 2 + lowestLat
-      var centerLon = (highestLon - lowestLon) / 2 + lowestLon
-      var diffLat = (highestLat - lowestLat) * 1.1
-      var diffLon = (highestLon - lowestLon) * 1.1
-      this.$store.commit("setNewMapRegion", {
-        centerLat: centerLat,
-        centerLon: centerLon,
-        diffLat: diffLat,
-        diffLon: diffLon,
-      })
+      this.zoomToTrip(this.$store.state.activeTrip, this.$store)
     },
+    // zoomToActiveTrip() {
+    //   var lowestLat = 9999999
+    //   var lowestLon = 9999999
+    //   var highestLat = -9999999
+    //   var highestLon = -9999999
+    //   let stopStartIdx = 0
+    //   if (this.$store.state.activeTrip.searchPredefined != null && this.$store.state.activeTrip.searchPredefined) {
+    //     lowestLat = this.$store.state.activeTrip.stops[0].coordinate.latitude
+    //     highestLat = this.$store.state.activeTrip.stops[0].coordinate.latitude
+    //     lowestLon = this.$store.state.activeTrip.stops[0].coordinate.longitude
+    //     highestLon = this.$store.state.activeTrip.stops[0].coordinate.longitude
+    //     stopStartIdx = 1
+    //   } else {
+    //     // lowestLat = this.$store.state.currentLocation.coords.latitude
+    //     // highestLat = this.$store.state.currentLocation.coords.latitude
+    //     // lowestLon = this.$store.state.currentLocation.coords.longitude
+    //     // highestLon = this.$store.state.currentLocation.coords.longitude
+    //     lowestLat = 999
+    //     highestLat = -999
+    //     lowestLon = 999
+    //     highestLon = -999
+    //   }
+
+    //   for (let i = stopStartIdx; i < this.$store.state.activeTrip.stops.length; i++) {
+    //     if (this.$store.state.activeTrip.stops[i].coordinate.latitude < lowestLat) {
+    //       lowestLat = this.$store.state.activeTrip.stops[i].coordinate.latitude
+    //     }
+    //     if (this.$store.state.activeTrip.stops[i].coordinate.latitude > highestLat) {
+    //       highestLat = this.$store.state.activeTrip.stops[i].coordinate.latitude
+    //     }
+    //     if (this.$store.state.activeTrip.stops[i].coordinate.longitude < lowestLon) {
+    //       lowestLon = this.$store.state.activeTrip.stops[i].coordinate.longitude
+    //     }
+    //     if (this.$store.state.activeTrip.stops[i].coordinate.longitude > highestLon) {
+    //       highestLon = this.$store.state.activeTrip.stops[i].coordinate.longitude
+    //     }
+    //   }
+    //   if (this.$store.state.activeTrip.polyline.length > 0) {
+    //     for (let i = 0; i < this.$store.state.activeTrip.polyline.length; i++) {
+    //       for (let j = 0; j < this.$store.state.activeTrip.polyline[i].length; j++) {
+    //         if (this.$store.state.activeTrip.polyline[i][j][0] < lowestLat) {
+    //           lowestLat = this.$store.state.activeTrip.polyline[i][j][0]
+    //         }
+    //         if (this.$store.state.activeTrip.polyline[i][j][0] > highestLat) {
+    //           highestLat = this.$store.state.activeTrip.polyline[i][j][0]
+    //         }
+    //         if (this.$store.state.activeTrip.polyline[i][j][1] < lowestLon) {
+    //           lowestLon = this.$store.state.activeTrip.polyline[i][j][1]
+    //         }
+    //         if (this.$store.state.activeTrip.polyline[i][j][1] > highestLon) {
+    //           highestLon = this.$store.state.activeTrip.polyline[i][j][1]
+    //         }
+    //       }
+    //     }
+    //   }
+
+    //   var centerLat = (highestLat - lowestLat) / 2 + lowestLat
+    //   var centerLon = (highestLon - lowestLon) / 2 + lowestLon
+    //   var diffLat = (highestLat - lowestLat) * 1.1
+    //   var diffLon = (highestLon - lowestLon) * 1.1
+    //   this.$store.commit("setNewMapRegion", {
+    //     centerLat: centerLat,
+    //     centerLon: centerLon,
+    //     diffLat: diffLat,
+    //     diffLon: diffLon,
+    //   })
+    // },
     downloadCalendar(route_id) {
       let route_idx = -1
       for (let i = 0; i < this.$store.state.routes.length; i++) {

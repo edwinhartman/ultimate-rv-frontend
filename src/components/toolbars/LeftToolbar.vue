@@ -1,7 +1,14 @@
 <template>
-  <div class="secondary-color left-toolbar shadow-right">
-    <LocationSearch />
+  <div class="secondary-color left-toolbar shadow-right" id="left_toolbar">
     <div class="toolbar-buttons">
+      <div>
+        <Popper :interactive="false" :hover="true">
+          <button @click="openExistingTrip">Open Trip</button>
+          <template #content>
+            <div class="tooltip-popup">This will show existing trips to open</div>
+          </template>
+        </Popper>
+      </div>
       <div>
         <Popper :interactive="false" :hover="true">
           <button @click="addNewTrip">Add New Trip</button>
@@ -24,7 +31,6 @@
   </div>
 </template>
 <script>
-import LocationSearch from "../search/LocationSearch.vue"
 import TripListing from "../trip/TripListing.vue"
 // import TripSummary from "../route/TripSummary.vue";
 import Popper from "vue3-popper"
@@ -32,7 +38,6 @@ import Popper from "vue3-popper"
 export default {
   name: "LeftToolbar",
   components: {
-    LocationSearch,
     TripListing,
     // TripSummary,
     Popper,
@@ -65,6 +70,9 @@ export default {
     },
     copyToReverse() {
       this.$store.dispatch("copyActiveTripToReverse")
+    },
+    openExistingTrip() {
+      this.$store.commit("setShowOpenExistingTrip", true)
     },
   },
   created() {
@@ -108,7 +116,7 @@ div.left-toolbar {
   position: relative;
 }
 div.toolbar-buttons {
-  width: 15vw;
+  width: 100%;
   display: flex;
   flex-direction: row;
   justify-content: space-around;
@@ -122,6 +130,8 @@ div.toolbar-buttons {
 div.toolbar-buttons button {
   font-size: 0.6rem;
   margin-right: 0.1rem;
+  margin-left: 0.1rem;
   cursor: pointer;
+  /* max-width: 5rem; */
 }
 </style>

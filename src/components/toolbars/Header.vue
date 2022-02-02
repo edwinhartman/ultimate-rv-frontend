@@ -8,17 +8,25 @@
         <a href="/admin">Admin</a>
       </li>
     </ul>
+    <div class="location-search">
+      <LocationSearch />
+    </div>
     <div class="reset-button" @click="xClicked()">X</div>
   </div>
 </template>
 
 <script>
+import LocationSearch from "../search/LocationSearch.vue"
+
 export default {
   name: "Header",
   data() {
     return {
       x_clicked_cnt: 0,
     }
+  },
+  components: {
+    LocationSearch,
   },
   methods: {
     xClicked() {
@@ -82,5 +90,9 @@ a {
   color: rgb(221, 221, 221);
 
   z-index: 99999;
+}
+div.location-search {
+  position: absolute;
+  right: 0.75rem;
 }
 </style>

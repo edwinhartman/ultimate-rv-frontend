@@ -4,15 +4,18 @@
 
 <script>
 export default {
-  name: 'App',
-  mounted(){
-    this.$store.commit('clearSharedSearchMarkers')
-    navigator.geolocation.getCurrentPosition(pos => {
-      this.$store.commit('setCurrentLocation',pos)
-    }, err => {
-      console.log(err.message)
-    })
-  }
+  name: "App",
+  mounted() {
+    this.$store.commit("clearSharedSearchMarkers")
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        this.$store.commit("setCurrentLocation", pos)
+      },
+      (err) => {
+        console.log(err.message)
+      }
+    )
+  },
 }
 </script>
 

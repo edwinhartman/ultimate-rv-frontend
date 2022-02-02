@@ -29,7 +29,6 @@ export default {
       this.$store.commit("clearAlternativeStopData")
     },
     saveAlternatives() {
-      console.log("saveAlternatives")
       this.$store.dispatch("addStopAlternative", this.selectedStops)
     },
     addRemoveStop(id) {

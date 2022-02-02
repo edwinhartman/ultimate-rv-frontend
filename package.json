@@ -14,6 +14,7 @@
     "cache-loader": "^4.1.0",
     "core-js": "^3.6.5",
     "dotenv": "^10.0.0",
+    "html2canvas": "^1.4.1",
     "uuid": "^8.3.2",
     "vue": "^3.0.0",
     "vue-plugin-load-script": "^2.1.0",

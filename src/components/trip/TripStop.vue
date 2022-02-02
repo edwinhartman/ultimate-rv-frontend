@@ -43,7 +43,11 @@
       </Popper>
       <Popper :interactive="false" :hover="true" v-if="route.active">
         <img
-          v-if="stop._id != route.stops[0]._id && stop._id != route.stops[route.stops.length - 1]._id"
+          v-if="
+            stop._id != route.stops[0]._id &&
+            stop._id != route.stops[route.stops.length - 1]._id &&
+            (stop.alt_stop == null || stop.alt_stop.length == 0)
+          "
           @click="updateDaytrip({ route }, { stop })"
           class="icon clickable"
           src="/static/daytrip-icon.png"
@@ -81,7 +85,19 @@
       </Popper>
     </div>
     <div v-if="hasAltStop" class="alternative-stop route-stop">
-      <img src="/static/alt-stop-icon.png" class="icon" alt="Alt" />Alt: {{ stop.alt_stop.name }}
+      <div v-for="alt_stop in stop.alt_stop" :key="alt_stop._id">
+        <img src="/static/alt-stop-icon.png" class="icon" alt="Alt" />Alt: {{ shortenStopName(alt_stop.name) }}
+        <Popper :interactive="false" :hover="true" v-if="route.active">
+          <div @click="makePrimaryStop(alt_stop)">
+            <img class="icon" src="/static/make-primary-icon.png" alt="Make Primary" />
+          </div>
+          <template #content>
+            <div class="tooltip-popup">
+              This will swap this alternate location with the stop it is the alternate for
+            </div>
+          </template>
+        </Popper>
+      </div>
     </div>
   </div>
 </template>
@@ -111,12 +127,7 @@ export default {
   },
   computed: {
     hasAltStop() {
-      if (this.stop.alt_stop != null) {
-        console.log("has alt stop")
-        return true
-      }
-      console.log("does not have alt stop")
-      return false
+      return this.stop.alt_stop != null && this.stop.alt_stop.length > 0
     },
     stopName() {
       if (this.route.active) {
@@ -186,6 +197,15 @@ export default {
         stop: this.stop,
       })
     },
+    makePrimaryStop(alt_stop) {
+      this.$store.dispatch("makePrimaryStop", { stop_id: this.stop._id, alt_stop_id: alt_stop._id })
+    },
+    shortenStopName(name) {
+      if (name.length > 24) {
+        return name.substr(0, 24) + "..."
+      }
+      return name
+    },
   },
 }
 </script>
@@ -237,5 +257,10 @@ div.daytrip {
 }
 div.alternative-stop {
   margin-left: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+.icon {
+  cursor: pointer;
 }
 </style>

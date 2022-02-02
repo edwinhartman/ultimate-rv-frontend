@@ -1,6 +1,13 @@
 <template>
   <div class="main_div">
     <ModalPopup
+      v-if="$store.state.showOpenExistingTrip"
+      :rightTopCloseOption="true"
+      @close="$store.commit('setShowOpenExistingTrip', !$store.state.showOpenExistingTrip)"
+    >
+      <TripOpenDialog />
+    </ModalPopup>
+    <ModalPopup
       v-if="$store.state.showTripDirections"
       :rightTopCloseOption="true"
       @close="$store.commit('setShowTripDirections', !$store.state.showTripDirections)"
@@ -62,6 +69,7 @@ import TripTolls from "../components/trip/TripTolls.vue"
 import AccountMain from "../components/account/AccountMain.vue"
 import EditTripStopDate from "../components/trip/EditTripStopDate.vue"
 import AddAlternativeToStop from "../components/trip/AddAlternativeToStop.vue"
+import TripOpenDialog from "../components/trip/TripOpenDialog"
 
 export default {
   name: "MainView",
@@ -77,6 +85,7 @@ export default {
     AccountMain,
     EditTripStopDate,
     AddAlternativeToStop,
+    TripOpenDialog,
   },
   data() {
     return {

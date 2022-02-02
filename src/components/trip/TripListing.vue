@@ -1,8 +1,8 @@
 <template>
-  <div class="text-left pl-2">
+  <div class="text-left pl-2" v-if="renderComponent">
     <TripOverview v-for="route in activeTrips" :key="route._id" :route_prop="route" />
 
-    <div v-if="archivedTrips.length > 0 && $store.state.settings.showArchivedTrips" class="archived-routes-div">
+    <!-- <div v-if="archivedTrips.length > 0 && $store.state.settings.showArchivedTrips" class="archived-routes-div">
       <div class="font-bold relative">
         Archived Trips
         <img
@@ -20,8 +20,8 @@
       <div v-if="showArchivedTrips">
         <ArchivedTrips v-for="route in archivedTrips" :key="route._id" :route_prop="route" />
       </div>
-    </div>
-    <div
+    </div> -->
+    <!-- <div
       v-if="adminToken != null && $store.state.settings.showSystemTrips && !$store.state.settings.hideAdminFunctions"
       class="system-routes-div"
     >
@@ -42,18 +42,18 @@
       <div v-if="showSystemTrips">
         <TripOverview v-for="route in systemTrips" :key="route._id" :route_prop="route" />
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 <script>
 import TripOverview from "./TripOverview.vue"
-import ArchivedTrips from "./ArchivedTrips.vue"
+// import ArchivedTrips from "./ArchivedTrips.vue"
 
 export default {
   name: "TripListing",
   components: {
     TripOverview,
-    ArchivedTrips,
+    // ArchivedTrips,
   },
   data() {
     return {
@@ -61,20 +61,22 @@ export default {
       showArchivedTrips: false,
       showSystemTrips: false,
       adminToken: this.$store.state.adminToken,
+      activeTrips: [],
+      renderComponent: true,
     }
   },
   computed: {
-    activeTrips() {
-      return this.routes
-        .filter((r) => (r.archived == null || !r.archived) && !r.system)
-        .sort((a, b) => {
-          if (a.active == b.active) {
-            return a.name < b.name ? 1 : -1
-          }
-          return a.active - b.active
-        })
-        .reverse()
-    },
+    // activeTrips() {
+    //   return this.routes
+    //     .filter((r) => r.active && (r.archived == null || !r.archived) && !r.system)
+    //     .sort((a, b) => {
+    //       if (a.active == b.active) {
+    //         return a.name < b.name ? 1 : -1
+    //       }
+    //       return a.active - b.active
+    //     })
+    //     .reverse()
+    // },
     archivedTrips() {
       return this.routes
         .filter((r) => r.archived != null && r.archived && !r.system)
@@ -107,7 +109,20 @@ export default {
   },
   watch: {
     "$store.state.routes": function () {
+      this.renderComponent = false
       this.routes = this.$store.state.routes
+      this.activeTrips = this.routes
+        .filter((r) => r.active && (r.archived == null || !r.archived) && !r.system)
+        .sort((a, b) => {
+          if (a.active == b.active) {
+            return a.name < b.name ? 1 : -1
+          }
+          return a.active - b.active
+        })
+        .reverse()
+      this.$nextTick(() => {
+        this.renderComponent = true
+      })
     },
   },
   methods: {
