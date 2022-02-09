@@ -1,7 +1,11 @@
 <template>
   <div class="text-left pl-2" v-if="renderComponent">
-    <TripOverview v-for="route in activeTrips" :key="route._id" :route_prop="route" />
-
+    <div v-if="activeTrips.length > 0">
+      <TripOverview v-for="route in activeTrips" :key="route._id" :route_prop="route" />
+    </div>
+    <div v-else class="formatted-text">
+      No Trip Selected. Please use the "Open Trip" or "Add New Trip" button above.
+    </div>
     <!-- <div v-if="archivedTrips.length > 0 && $store.state.settings.showArchivedTrips" class="archived-routes-div">
       <div class="font-bold relative">
         Archived Trips
@@ -146,5 +150,9 @@ export default {
   padding-left: 0.1rem;
   box-shadow: 0.1em 0.1em rgba(110, 110, 110, 0.5);
   padding-bottom: 0.1rem;
+}
+.formatted-text {
+  font-size: 0.75rem;
+  font-style: italic;
 }
 </style>

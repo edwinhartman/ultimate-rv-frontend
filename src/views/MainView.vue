@@ -1,63 +1,84 @@
 <template>
   <div class="main_div">
-    <ModalPopup
-      v-if="$store.state.showOpenExistingTrip"
-      :rightTopCloseOption="true"
-      @close="$store.commit('setShowOpenExistingTrip', !$store.state.showOpenExistingTrip)"
-    >
-      <TripOpenDialog />
-    </ModalPopup>
-    <ModalPopup
-      v-if="$store.state.showTripDirections"
-      :rightTopCloseOption="true"
-      @close="$store.commit('setShowTripDirections', !$store.state.showTripDirections)"
-      dialogTitle=""
-    >
-      <TripDirections />
-    </ModalPopup>
-    <ModalPopup
-      v-if="$store.state.showAbout"
-      :rightTopCloseOption="true"
-      @close="$store.commit('setShowAbout', !$store.state.showAbout)"
-    >
-      <AboutPage />
-    </ModalPopup>
-    <ModalPopup
-      v-if="$store.state.showTripTolls"
-      :rightTopCloseOption="true"
-      @close="$store.commit('setShowTripTolls', !$store.state.showTripTolls)"
-    >
-      <TripTolls />
-    </ModalPopup>
-    <ModalPopup v-if="$store.state.routeCalculateInProcess">
-      <div>Trip Calculation In Process. Please Wait</div>
-    </ModalPopup>
-    <ModalPopup
-      v-if="$store.state.showPicture != null"
-      :rightTopCloseOption="true"
-      @close="$store.commit('clearShowPicture')"
-    >
-      <div>{{ $store.state.showPicture.title }}</div>
-      <img :src="$store.state.showPicture.url" />
-    </ModalPopup>
-    <ModalPopup v-if="$store.state.accountMaintenanceActive">
-      <AccountMain />
-    </ModalPopup>
-    <ModalPopup v-if="$store.state.editStopDateActive">
-      <EditTripStopDate />
-    </ModalPopup>
-    <ModalPopup v-if="$store.state.presentAlternativeData != null">
-      <AddAlternativeToStop />
-    </ModalPopup>
-    <ModalPopup
-      v-if="$store.state.showTripCalendar"
-      :rightTopCloseOption="true"
-      :centerTitle="true"
-      dialogTitle="Trip Calendar"
-      @close="$store.commit('setShowTripCalendar', !$store.state.showTripCalendar)"
-    >
-      <CalendarView />
-    </ModalPopup>
+    <transition name="fade">
+      <ModalPopup
+        v-if="$store.state.showOpenExistingTrip"
+        :rightTopCloseOption="true"
+        @close="$store.commit('setShowOpenExistingTrip', !$store.state.showOpenExistingTrip)"
+      >
+        <TripOpenDialog />
+      </ModalPopup>
+    </transition>
+    <transition name="fade">
+      <ModalPopup
+        v-if="$store.state.showTripDirections"
+        :rightTopCloseOption="true"
+        @close="$store.commit('setShowTripDirections', !$store.state.showTripDirections)"
+        dialogTitle=""
+      >
+        <TripDirections />
+      </ModalPopup>
+    </transition>
+    <transition name="fade">
+      <ModalPopup
+        v-if="$store.state.showAbout"
+        :rightTopCloseOption="true"
+        @close="$store.commit('setShowAbout', !$store.state.showAbout)"
+      >
+        <AboutPage />
+      </ModalPopup>
+    </transition>
+    <transition name="fade">
+      <ModalPopup
+        v-if="$store.state.showTripTolls"
+        :rightTopCloseOption="true"
+        @close="$store.commit('setShowTripTolls', !$store.state.showTripTolls)"
+      >
+        <TripTolls />
+      </ModalPopup>
+    </transition>
+    <transition name="fade">
+      <ModalPopup v-if="$store.state.routeCalculateInProcess">
+        <div>Trip Calculation In Process. Please Wait</div>
+      </ModalPopup>
+    </transition>
+    <transition name="fade">
+      <ModalPopup
+        v-if="$store.state.showPicture != null"
+        :rightTopCloseOption="true"
+        @close="$store.commit('clearShowPicture')"
+      >
+        <div>{{ $store.state.showPicture.title }}</div>
+        <img :src="$store.state.showPicture.url" />
+      </ModalPopup>
+    </transition>
+    <transition name="fade">
+      <ModalPopup v-if="$store.state.accountMaintenanceActive">
+        <AccountMain />
+      </ModalPopup>
+    </transition>
+    <transition name="fade">
+      <ModalPopup v-if="$store.state.editStopDateActive">
+        <EditTripStopDate />
+      </ModalPopup>
+    </transition>
+    <transition name="fade">
+      <ModalPopup v-if="$store.state.presentAlternativeData != null">
+        <AddAlternativeToStop />
+      </ModalPopup>
+    </transition>
+    <transition name="fade">
+      <ModalPopup
+        v-if="$store.state.showTripCalendar"
+        :rightTopCloseOption="true"
+        :centerTitle="true"
+        dialogTitle="Trip Calendar"
+        @close="$store.commit('setShowTripCalendar', !$store.state.showTripCalendar)"
+      >
+        <CalendarView />
+      </ModalPopup>
+    </transition>
+
     <Header />
     <div class="main_window">
       <LeftToolbar />

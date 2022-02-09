@@ -24,6 +24,7 @@ import { getCOEParks } from "../../business_logic/COEParks"
 import { getCampgrounds } from "../../business_logic/Campgrounds"
 import { getOvernightParking } from "../../business_logic/OvernightParking"
 import { getMapRestrictions } from "../../business_logic/MapRestrictions"
+import { getRestAreas } from "../../business_logic/RestAreas"
 
 import ModalPopup from "../templates/ModalPopup.vue"
 // import TripSummary2 from "../trip/TripSummary2.vue"
@@ -351,6 +352,9 @@ export default {
               }
               if (this.$store.state.searchPredefined == "overnightparking") {
                 this.getOvernightParking()
+              }
+              if (this.$store.state.searchPredefined == "restareas") {
+                this.getRestAreas()
               }
             }
           }
@@ -860,6 +864,15 @@ export default {
     },
     getOvernightParking() {
       getOvernightParking(this.map.region, (annotations, markers) => {
+        for (let i = 0; i < annotations.length; i++) {
+          this.predefinedSearchMarkers.push(annotations[i].coordinate)
+          this.map.addAnnotation(annotations[i])
+        }
+        this.$store.dispatch("setSharedSearchMarkers", markers)
+      })
+    },
+    getRestAreas() {
+      getRestAreas(this.map.region, (annotations, markers) => {
         for (let i = 0; i < annotations.length; i++) {
           this.predefinedSearchMarkers.push(annotations[i].coordinate)
           this.map.addAnnotation(annotations[i])

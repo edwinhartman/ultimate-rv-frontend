@@ -62,16 +62,18 @@ export default {
         )
       } else {
         if (this.$store.state.editStopDateStop.route.route.dates.length > 0) {
-          console.log(
-            this.$store.state.editStopDateStop.route.route.dates[
-              this.$store.state.editStopDateStop.route.route.dates.length - 1
-            ]
-          )
-          this.stop_date = new Date(
-            this.$store.state.editStopDateStop.route.route.dates[
-              this.$store.state.editStopDateStop.route.route.dates.length - 1
-            ]
-          )
+          let idx = this.$store.state.editStopDateStop.stop_idx - 1
+          let prevDate = this.$store.state.editStopDateStop.route.route.dates[idx]
+          idx--
+          while (prevDate == null && idx > -1) {
+            prevDate = this.$store.state.editStopDateStop.route.route.dates[idx]
+            idx--
+          }
+          if (prevDate == null) {
+            this.stop_date = new Date()
+          } else {
+            this.stop_date = new Date(prevDate)
+          }
         } else {
           this.stop_date = new Date()
         }

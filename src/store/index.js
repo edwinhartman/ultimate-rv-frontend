@@ -325,6 +325,7 @@ export default createStore({
         })
     },
     updateStopList({ commit }, value) {
+      console.log(value)
       commit("clearPolyline")
       commit("clearSummaries")
       commit("clearActions")
@@ -333,7 +334,9 @@ export default createStore({
         method: "post",
         url: process.env.VUE_APP_BACKEND_CONNECTION_URI + "/updateTrip",
         data: {
-          route: value,
+          route: value.route,
+          oldIndex: value.oldIndex,
+          newIndex: value.newIndex,
         },
       })
         .then((res) => {
@@ -637,12 +640,15 @@ export default createStore({
       })
     },
     archiveTrip({ commit }, id) {
-      axios({
-        method: "post",
-        url: process.env.VUE_APP_BACKEND_CONNECTION_URI + "/archiveTrip",
-        data: { route_id: id },
-      }).then((res) => {
-        commit("loadTrips", res.data.routes)
+      return new Promise((resolve, reject) => {
+        axios({
+          method: "post",
+          url: process.env.VUE_APP_BACKEND_CONNECTION_URI + "/archiveTrip",
+          data: { route_id: id },
+        }).then((res) => {
+          commit("loadTrips", res.data.routes)
+          resolve()
+        })
       })
     },
     restoreTrip({ commit }, id) {

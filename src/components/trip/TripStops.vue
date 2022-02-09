@@ -1,21 +1,15 @@
 <template>
   <div>
-    <draggable
-      v-model="route.stops"
-      item-key="_id"
-      @change="updateStopList(route)"
-    >
+    <draggable v-model="route.stops" item-key="_id" @change="updateStopList">
       <template #item="{ element }">
         <TripStop :stop_prop="element" :route_prop="route" />
       </template>
     </draggable>
-   
   </div>
 </template>
 <script>
-
-import draggable from "vuedraggable";
-import TripStop from "./TripStop.vue";
+import draggable from "vuedraggable"
+import TripStop from "./TripStop.vue"
 
 export default {
   name: "TripStops",
@@ -29,20 +23,25 @@ export default {
       required: true,
     },
   },
-  data(){
-      return {
-          route:this.route_prop
-      }
-  },
-  watch:{
-    route_prop:function(){
-      this.route = this.route_prop
+  data() {
+    return {
+      route: this.route_prop,
     }
   },
-  methods: {
-    updateStopList(route) {
-      this.$store.dispatch("updateStopList", route);
+  watch: {
+    route_prop: function () {
+      this.route = this.route_prop
     },
   },
-};
+  methods: {
+    updateStopList(evt) {
+      console.log(evt)
+      this.$store.dispatch("updateStopList", {
+        route: this.route,
+        oldIndex: evt.moved.oldIndex,
+        newIndex: evt.moved.newIndex,
+      })
+    },
+  },
+}
 </script>

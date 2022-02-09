@@ -139,5 +139,6 @@ div.toolbar-buttons button {
   margin-left: 0.1rem;
   cursor: pointer;
   /* max-width: 5rem; */
+  box-shadow: 0.15rem 0.15rem 0.5rem rgba(80, 80, 80, 0.5);
 }
 </style>

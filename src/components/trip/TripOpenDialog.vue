@@ -3,7 +3,7 @@
     <Tabs v-model="active">
       <Tab :title="active_title">
         <div class="trip-grid">
-          <OpenTripCard v-for="trip in activeTrips" :key="trip._id" :trip="trip" />
+          <OpenTripCard v-for="trip in activeTrips" :key="trip._id" :trip="trip" @doRefresh="refreshData" />
         </div>
       </Tab>
       <Tab :title="archived_title">
@@ -61,15 +61,20 @@ export default {
     },
   },
   mounted() {
-    axios({
-      url: process.env.VUE_APP_BACKEND_CONNECTION_URI + "/getTripSnapshots",
-      method: "get",
-    }).then((res) => {
-      this.snapshots = res.data.snapshots
-      this.active_title = "Active [" + this.activeTrips.length + "]"
-      this.archived_title = "Archived [" + this.archivedTrips.length + "]"
-      this.system_title = "System [" + this.systemTrips.length + "]"
-    })
+    this.refreshData()
+  },
+  methods: {
+    refreshData() {
+      axios({
+        url: process.env.VUE_APP_BACKEND_CONNECTION_URI + "/getTripSnapshots",
+        method: "get",
+      }).then((res) => {
+        this.snapshots = res.data.snapshots
+        this.active_title = "Active [" + this.activeTrips.length + "]"
+        this.archived_title = "Archived [" + this.archivedTrips.length + "]"
+        this.system_title = "System [" + this.systemTrips.length + "]"
+      })
+    },
   },
 }
 </script>

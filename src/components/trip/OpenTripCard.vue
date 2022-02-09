@@ -5,6 +5,20 @@
     <div>
       <div class="trip-card-name">{{ trip.name }}</div>
     </div>
+    <img
+      v-if="!trip.archived"
+      src="/static/archive-icon.png"
+      alt="Archive Trip"
+      class="archive"
+      @click.stop="archiveTrip()"
+    />
+    <img
+      v-if="trip.archived"
+      src="/static/trash-icon.png"
+      alt="Remove Trip"
+      class="remove"
+      @click.stop="removeTrip()"
+    />
   </div>
 </template>
 <script>
@@ -32,6 +46,16 @@ export default {
         this.$store.commit("setShowOpenExistingTrip", false)
       })
     },
+    archiveTrip() {
+      this.$store.dispatch("archiveTrip", this.trip._id).then(() => {
+        this.$emit("doRefresh", true)
+      })
+    },
+    removeTrip() {
+      this.$store.dispatch("removeTrip", this.trip._id).then(() => {
+        this.$emit("doRefresh", true)
+      })
+    },
   },
   mounted() {
     if (this.trip.snapshot != null && this.trip.snapshot.length > 0) {
@@ -49,6 +73,7 @@ div.trip-card-container {
   padding: 0.2rem;
   aspect-ratio: 1 / 1.25;
   cursor: pointer;
+  position: relative;
 }
 .stacked {
   display: grid;
@@ -77,5 +102,15 @@ div.trip-card-name {
   border-radius: 0.2rem;
   font-size: 1.2rem;
   line-height: 1.1;
+}
+img.archive,
+img.remove {
+  position: absolute;
+  top: 0.15rem;
+  right: 0.15rem;
+  aspect-ratio: 1 / 1;
+  width: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0.25rem 0.25rem 0.5rem rgba(80, 80, 80, 0.2);
 }
 </style>

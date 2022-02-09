@@ -164,3 +164,12 @@ div.tripinstructions_section {
   margin-bottom: 0.7rem;
   font-size: 0.8rem;
 }
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 1s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
