@@ -45,10 +45,14 @@ export default createStore({
     presentAlternativeData: null,
     alongRoutePolyline: [],
     showOpenExistingTrip: false,
+    showTripCalendar: false,
   },
   mutations: {
     setShowOpenExistingTrip(state, val) {
       state.showOpenExistingTrip = val
+    },
+    setShowTripCalendar(state, val) {
+      state.showTripCalendar = val
     },
     resetAllHungupValues(state) {
       state.routeCalculateInProcess = false

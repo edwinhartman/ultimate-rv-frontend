@@ -6,17 +6,21 @@
       $store.state.activeTrip.polyline.length > 0
     "
   >
-    <div
-      class="search-along-route-banner secondary-color-70"
-      :class="{
-        'shift-right': routeSummaryShown,
-        'shift-left': !routeSummaryShown,
-      }"
-    >
+    <div class="search-along-route-banner secondary-color-70">
       <div @click="expanded = !expanded">Search Along Trip</div>
-      <img v-if="!expanded" @click="expanded = true" src="/static/arrow-down-icon.png" class="icon clickable" />
+      <img
+        v-if="!expanded"
+        @click="expanded = true"
+        src="/static/arrow-down-icon.png"
+        class="dropdown-icon icon clickable"
+      />
 
-      <img v-if="expanded" @click="expanded = false" src="/static/arrow-up-icon.png" class="icon clickable" />
+      <img
+        v-if="expanded"
+        @click="expanded = false"
+        src="/static/arrow-up-icon.png"
+        class="dropdown-icon icon clickable"
+      />
       <div v-if="expanded">
         <select name="" id="" v-model="searchTerm">
           <option v-for="opt in predefinedSearchTypes" :key="opt.value" :value="opt.value">
@@ -238,11 +242,11 @@ button {
   margin-bottom: 0.1rem;
 }
 .search-along-route-banner {
-  z-index: 450;
+  /* z-index: 450; */
   font-size: 0.6rem;
-  position: absolute;
-
-  top: 2rem;
+  /* position: absolute; */
+  position: relative;
+  /* top: 2rem; */
   display: flex;
   margin-left: 0.2rem;
   padding-left: 0.5rem;
@@ -253,6 +257,14 @@ button {
   margin-bottom: 0.1rem;
   margin-right: 0.1rem;
   margin-left: 0.1rem;
+}
+.search-along-route-banner > div:nth-child(1) {
+  font-weight: bolder;
+}
+.dropdown-icon {
+  position: absolute;
+  top: 0rem;
+  right: 0.2rem;
 }
 .shift-left {
   left: 15.5rem;

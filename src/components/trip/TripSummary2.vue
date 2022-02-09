@@ -7,7 +7,7 @@
       summaries != null &&
       summaries.length > 0
     "
-    class="route-summary2 secondary-color-70"
+    class="route-summary2"
   >
     <div class="font-bold">
       <div class="clickable" @click="$store.commit('setShowTripSummary', !$store.state.showTripSummary)">
@@ -84,18 +84,20 @@ export default {
 <style scoped>
 .route-summary2 {
   /* bottom:1.25rem; */
-  top: 2rem;
-  left: 15.5rem;
+  /* top: 2rem; */
+  /* left: 15.5rem; */
   font-size: 0.6rem;
-  width: 16rem;
-  z-index: 450;
-  position: absolute;
+  /* width: 16rem; */
+  /* z-index: 450; */
+  /* position: absolute; */
+  position: relative;
   border: solid rgb(80, 80, 80) 1px;
   border-radius: 0.25rem;
   margin-top: 0.1rem;
   margin-bottom: 0.1rem;
   margin-right: 0.1rem;
   margin-left: 0.1rem;
+  background-color: rgb(156 156 156 / 0.4);
 }
 img.show-detailed-route-summary {
   position: absolute;

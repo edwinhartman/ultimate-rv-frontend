@@ -2,8 +2,10 @@
   <div class="modal-popup">
     <div>
       <div v-if="rightTopCloseOption" class="relative w-full">
-        <div v-if="dialogTitle" class="float-left">{{ dialogTitle }}</div>
-        <button @click="$emit('close')" class="float-right">Close</button>
+        <div v-if="dialogTitle" :class="centerTitle ? '' : 'float-left'">{{ dialogTitle }}</div>
+        <button @click="$emit('close')" class="close-button" :class="centerTitle ? 'right-top' : 'float-right'">
+          Close
+        </button>
       </div>
       <slot />
       <div v-if="yesNoOption" class="text-center pt-2">
@@ -32,6 +34,11 @@ export default {
       required: false,
       default: "",
     },
+    centerTitle: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
 }
 </script>
@@ -45,7 +52,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 500;
+  z-index: 999999;
   background-color: rgba(0, 0, 0, 0.45);
   /* fixed left-0 top-0 right-0 bottom-0 popup flex justify-center z-50 */
 }
@@ -64,5 +71,13 @@ export default {
 button {
   font-size: 0.65rem;
   cursor: pointer;
+}
+button.close-button {
+  z-index: 99999;
+}
+button.right-top {
+  position: absolute;
+  right: 0.2rem;
+  top: 0.2rem;
 }
 </style>

@@ -8,8 +8,8 @@
     >
       <div>You are about to remove an avoid area. Are you sure?</div>
     </ModalPopup>
-    <TripSummary2 />
-    <SearchAlongTrip />
+    <!-- <TripSummary2 /> -->
+    <!-- <SearchAlongTrip /> -->
     <div id="map" v-bind:style="{ width: map_width + 'px', height: map_height + 'px' }" class="z-0"></div>
   </div>
 </template>
@@ -26,8 +26,8 @@ import { getOvernightParking } from "../../business_logic/OvernightParking"
 import { getMapRestrictions } from "../../business_logic/MapRestrictions"
 
 import ModalPopup from "../templates/ModalPopup.vue"
-import TripSummary2 from "../trip/TripSummary2.vue"
-import SearchAlongTrip from "../trip/SearchAlongTrip.vue"
+// import TripSummary2 from "../trip/TripSummary2.vue"
+// import SearchAlongTrip from "../trip/SearchAlongTrip.vue"
 import { toRad, toDeg } from "../../business_logic/HelperLogic"
 
 import { determineDistanceBetweenTwoPoints } from "../../business_logic/HelperLogic"
@@ -46,8 +46,8 @@ export default {
   },
   components: {
     ModalPopup,
-    TripSummary2,
-    SearchAlongTrip,
+    // TripSummary2,
+    // SearchAlongTrip,
   },
   data() {
     return {

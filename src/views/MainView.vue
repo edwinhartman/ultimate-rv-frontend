@@ -49,6 +49,15 @@
     <ModalPopup v-if="$store.state.presentAlternativeData != null">
       <AddAlternativeToStop />
     </ModalPopup>
+    <ModalPopup
+      v-if="$store.state.showTripCalendar"
+      :rightTopCloseOption="true"
+      :centerTitle="true"
+      dialogTitle="Trip Calendar"
+      @close="$store.commit('setShowTripCalendar', !$store.state.showTripCalendar)"
+    >
+      <CalendarView />
+    </ModalPopup>
     <Header />
     <div class="main_window">
       <LeftToolbar />
@@ -70,6 +79,7 @@ import AccountMain from "../components/account/AccountMain.vue"
 import EditTripStopDate from "../components/trip/EditTripStopDate.vue"
 import AddAlternativeToStop from "../components/trip/AddAlternativeToStop.vue"
 import TripOpenDialog from "../components/trip/TripOpenDialog"
+import CalendarView from "./CalendarView.vue"
 
 export default {
   name: "MainView",
@@ -86,6 +96,7 @@ export default {
     EditTripStopDate,
     AddAlternativeToStop,
     TripOpenDialog,
+    CalendarView,
   },
   data() {
     return {

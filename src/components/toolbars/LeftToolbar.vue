@@ -28,18 +28,22 @@
     </div>
     <TripListing />
     <!-- <TripSummary /> -->
+    <TripSummary2 />
+    <SearchAlongTrip />
   </div>
 </template>
 <script>
 import TripListing from "../trip/TripListing.vue"
-// import TripSummary from "../route/TripSummary.vue";
+import TripSummary2 from "../trip/TripSummary2.vue"
+import SearchAlongTrip from "../trip/SearchAlongTrip.vue"
 import Popper from "vue3-popper"
 
 export default {
   name: "LeftToolbar",
   components: {
     TripListing,
-    // TripSummary,
+    TripSummary2,
+    SearchAlongTrip,
     Popper,
   },
 
@@ -106,6 +110,7 @@ export default {
 div.left-toolbar {
   min-width: 12rem;
   max-width: 16rem;
+  padding-top: 0.5rem;
   padding-left: 0.1rem;
   padding-right: 0.1rem;
   z-index: 80;
@@ -114,6 +119,7 @@ div.left-toolbar {
   display: flex;
   flex-direction: column;
   position: relative;
+  background-color: var(--main-bg-color);
 }
 div.toolbar-buttons {
   width: 100%;
