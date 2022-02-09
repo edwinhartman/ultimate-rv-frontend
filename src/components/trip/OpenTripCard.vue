@@ -48,12 +48,12 @@ export default {
     },
     archiveTrip() {
       this.$store.dispatch("archiveTrip", this.trip._id).then(() => {
-        this.$emit("doRefresh", true)
+        this.$emit("doRefresh", Math.random() * 999999.0)
       })
     },
     removeTrip() {
       this.$store.dispatch("removeTrip", this.trip._id).then(() => {
-        this.$emit("doRefresh", true)
+        this.$emit("doRefresh", Math.random() * 999999.0)
       })
     },
   },

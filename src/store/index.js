@@ -631,12 +631,15 @@ export default createStore({
       })
     },
     removeTrip({ commit }, id) {
-      axios({
-        method: "post",
-        url: process.env.VUE_APP_BACKEND_CONNECTION_URI + "/removeTrip",
-        data: { route_id: id },
-      }).then((res) => {
-        commit("loadTrips", res.data.routes)
+      return new Promise((resolve, reject) => {
+        axios({
+          method: "post",
+          url: process.env.VUE_APP_BACKEND_CONNECTION_URI + "/removeTrip",
+          data: { route_id: id },
+        }).then((res) => {
+          commit("loadTrips", res.data.routes)
+          resolve()
+        })
       })
     },
     archiveTrip({ commit }, id) {

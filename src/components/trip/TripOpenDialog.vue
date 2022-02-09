@@ -7,7 +7,9 @@
         </div>
       </Tab>
       <Tab :title="archived_title">
-        <div class="trip-grid"><OpenTripCard v-for="trip in archivedTrips" :key="trip._id" :trip="trip" /></div>
+        <div class="trip-grid">
+          <OpenTripCard v-for="trip in archivedTrips" :key="trip._id" :trip="trip" @doRefresh="refreshData" />
+        </div>
       </Tab>
       <Tab
         :title="system_title"
@@ -33,8 +35,9 @@ export default {
   name: "TripOpenDialog",
   setup() {
     const active = ref(0)
+    const refresh_var = true
 
-    return { active }
+    return { active, refresh_var }
   },
   components: {
     Tabs,
