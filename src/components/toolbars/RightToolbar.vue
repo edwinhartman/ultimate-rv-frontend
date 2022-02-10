@@ -57,8 +57,9 @@ export default {
 </script>
 <style scoped>
 div.right-toolbar {
-  max-width: 16rem;
-  min-width: 12.5rem;
+  /* max-width: 16rem;
+  min-width: 12.5rem; */
+  width: var(--side-toolbar-width);
   z-index: 80;
   height: var(--main-height);
   overflow: hidden;

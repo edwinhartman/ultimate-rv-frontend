@@ -129,25 +129,7 @@ export default {
     }
   },
   mounted() {
-    var w = window.innerWidth
-    var h = window.innerHeight
-    var sideToolbarWidth = this.convertRemToPixels(
-      getComputedStyle(document.documentElement).getPropertyValue("--side-toolbar-width")
-    )
-    if (this.isPhone()) {
-      this.map_width = w
-    } else if (this.isTablet()) {
-      this.map_width = w - sideToolbarWidth
-    } else {
-      this.map_width = w - 2 * sideToolbarWidth
-    }
-    this.map_height = document.documentElement.clientHeight * 0.94 // h - 55
-
-    document.getElementById("main_map_view_123").style.width = this.map_width + "px"
-    // document.getElementById("main_map_view_123").style.height = h + "px"
-    document.getElementById("main_map_view_123").style.height = getComputedStyle(
-      document.documentElement
-    ).getPropertyValue("--main-height")
+    this.setMapDimensions()
   },
   created() {
     window.addEventListener("resize", this.handleResize)
@@ -156,23 +138,30 @@ export default {
     window.removeEventListener("resize", this.handleResize)
   },
   methods: {
-    handleResize(e) {
+    setMapDimensions() {
       var w = window.innerWidth
       var h = window.innerHeight
       var sideToolbarWidth = this.convertRemToPixels(
         getComputedStyle(document.documentElement).getPropertyValue("--side-toolbar-width")
       )
+
       if (this.isPhone()) {
-        this.map_width = w
+        this.map_width = w - this.convertRemToPixels("0.1rem")
       } else if (this.isTablet()) {
         this.map_width = w - sideToolbarWidth
       } else {
         this.map_width = w - 2 * sideToolbarWidth
       }
-      // this.map_height = h - 33
-      this.map_height = document.documentElement.clientHeight * 0.94
-      document.getElementById("main_map_view_123").style.width = this.map_width + "px"
+      this.map_height = document.documentElement.clientHeight * 0.94 // h - 55
+
+      document.getElementById("main_map_view_123").style.width = this.map_width
       // document.getElementById("main_map_view_123").style.height = h + "px"
+      document.getElementById("main_map_view_123").style.height = getComputedStyle(
+        document.documentElement
+      ).getPropertyValue("--main-height")
+    },
+    handleResize(e) {
+      this.setMapDimensions()
     },
   },
 }
