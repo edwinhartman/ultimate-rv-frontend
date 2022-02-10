@@ -60,9 +60,8 @@ div.right-toolbar {
   max-width: 16rem;
   min-width: 12.5rem;
   z-index: 80;
-  max-height: 97vh;
+  height: var(--main-height);
   overflow: hidden;
   background-color: var(--main-bg-color);
-  padding-top: 0.5rem;
 }
 </style>

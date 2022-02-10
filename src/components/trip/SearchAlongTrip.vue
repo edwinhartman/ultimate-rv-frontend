@@ -122,7 +122,7 @@ export default {
       this.searchDistance = 0
       this.searchStop = null
       this.searchBeforeAfterAround = ""
-      this.$store.commit("setSearchPredefined", "None")
+      this.$store.commit("predefined_search/setSearchPredefined", "None")
     },
     searchAlongTrip() {
       if (this.searchBeforeAfterAround == "after" || this.searchBeforeAfterAround == "before") {
@@ -181,10 +181,10 @@ export default {
             diffLat: span,
             diffLon: span,
           })
-          this.$store.commit("setSearchPredefined", "None")
+          this.$store.commit("predefined_search/setSearchPredefined", "None")
           setTimeout(() => {
             window.mymapview.searchAlongTripActive = true
-            this.$store.commit("setSearchPredefined", this.searchTerm)
+            this.$store.commit("predefined_search/setSearchPredefined", this.searchTerm)
           }, 1000)
         } else {
           console.log("no location found")
@@ -199,9 +199,9 @@ export default {
           diffLat: span1,
           diffLon: span1,
         })
-        this.$store.commit("setSearchPredefined", "None")
+        this.$store.commit("predefined_search/setSearchPredefined", "None")
         setTimeout(() => {
-          this.$store.commit("setSearchPredefined", this.searchTerm)
+          this.$store.commit("predefined_search/setSearchPredefined", this.searchTerm)
         }, 1000)
       }
     },

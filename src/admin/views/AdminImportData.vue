@@ -1,7 +1,7 @@
 <template>
   <div class="main">
     <div v-for="func in availableFunctions" :key="func.id" class="row">
-      <div>{{ func }}</div>
+      <div>[{{ func.handler }}] {{ func.function }}</div>
       <button @click="runImportJob(func)">Run</button>
     </div>
   </div>
@@ -22,7 +22,7 @@ export default {
       method: "get",
     }).then((res) => {
       //   console.log(res)
-      this.availableFunctions = res.data.handlers[0]
+      this.availableFunctions = res.data.handlers
     })
   },
   methods: {
@@ -57,5 +57,6 @@ div.row div {
 }
 div.row button {
   margin-left: 1rem;
+  cursor: pointer;
 }
 </style>

@@ -16,7 +16,11 @@
     </Tabs>
     <div class="buttons">
       <button @click="logoutUser">Logout</button>
-      <button @click="$store.commit('setShowAccountMaintenance', !$store.state.accountMaintenanceActive)">Close</button>
+      <button
+        @click="$store.commit('dialogs/setShowAccountMaintenance', !$store.state.dialogs.accountMaintenanceActive)"
+      >
+        Close
+      </button>
     </div>
   </div>
 </template>

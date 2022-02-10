@@ -1,7 +1,10 @@
 <template>
   <div v-if="summaries != null && summaries.length > 0" class="route-summary">
     <div class="font-bold">
-      <div class="clickable" @click="$store.commit('setShowTripSummary', !$store.state.showTripSummary)">
+      <div
+        class="clickable"
+        @click="$store.commit('dialogs/setShowTripSummary', !$store.state.dialogs.showTripSummary)"
+      >
         Trip Summary
       </div>
       <img
@@ -10,7 +13,7 @@
         @click="showTripDirections()"
       />
     </div>
-    <div v-if="$store.state.settings.alwaysShowTripSummary || $store.state.showTripSummary">
+    <div v-if="$store.state.settings.alwaysShowTripSummary || $store.state.dialogs.showTripSummary">
       <div>
         {{ $store.state.activeTrip.name }}
       </div>
@@ -59,10 +62,10 @@ export default {
       return hrs + ":" + minutes_rounded
     },
     showTripDirections() {
-      this.$store.commit("setShowTripDirections", !this.$store.state.showTripDirections)
+      this.$store.commit("dialogs/setShowTripDirections", !this.$store.state.dialogs.showTripDirections)
     },
     showTolls() {
-      this.$store.commit("setShowTripTolls", !this.$store.state.showTripTolls)
+      this.$store.commit("dialogs/setShowTripTolls", !this.$store.state.dialogs.showTripTolls)
     },
   },
 }

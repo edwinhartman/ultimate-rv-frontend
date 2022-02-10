@@ -4,6 +4,9 @@
   --tab-bg-color: white;
   --tab-bg-color-hover: rgb(251, 255, 231);
   --tab-fg-color-hover: rgb(0, 0, 82);
+  --header-height: 4.5vh;
+  --footer-height: 1.5vh;
+  --main-height: 94vh;
 }
 html,
 body {
@@ -171,5 +174,13 @@ div.tripinstructions_section {
 }
 .fade-enter-from,
 .fade-leave-to {
+  opacity: 0;
+}
+.fade-fast-enter-active,
+.fade-fast-leave-active {
+  transition: opacity 0.5s ease;
+}
+.fade-fast-enter-from,
+.fade-fast-leave-to {
   opacity: 0;
 }

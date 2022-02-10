@@ -1,63 +1,24 @@
 <template>
   <div class="text-left pl-2" v-if="renderComponent">
-    <div v-if="activeTrips.length > 0">
-      <TripOverview v-for="route in activeTrips" :key="route._id" :route_prop="route" />
-    </div>
-    <div v-else class="formatted-text">
+    <transition name="fade">
+      <!-- <div v-if="activeTrips.length > 0"> -->
+      <div v-if="$store.state.activeTrip">
+        <TripOverview v-for="route in activeTrips" :key="route._id" :route_prop="route" />
+      </div>
+    </transition>
+
+    <div v-if="!$store.state.activeTrip" class="formatted-text">
       No Trip Selected. Please use the "Open Trip" or "Add New Trip" button above.
     </div>
-    <!-- <div v-if="archivedTrips.length > 0 && $store.state.settings.showArchivedTrips" class="archived-routes-div">
-      <div class="font-bold relative">
-        Archived Trips
-        <img
-          v-if="!showArchivedTrips"
-          src="/static/arrow-down-icon.png"
-          class="icon min-max-button2 clickable"
-          @click="toggleShowArchivedTrips()"
-        /><img
-          v-if="showArchivedTrips"
-          src="/static/arrow-up-icon.png"
-          class="icon min-max-button2 clickable"
-          @click="toggleShowArchivedTrips()"
-        />
-      </div>
-      <div v-if="showArchivedTrips">
-        <ArchivedTrips v-for="route in archivedTrips" :key="route._id" :route_prop="route" />
-      </div>
-    </div> -->
-    <!-- <div
-      v-if="adminToken != null && $store.state.settings.showSystemTrips && !$store.state.settings.hideAdminFunctions"
-      class="system-routes-div"
-    >
-      <div class="font-bold relative">
-        System Trips
-        <img
-          v-if="!showSystemTrips"
-          src="/static/arrow-down-icon.png"
-          class="icon min-max-button2 clickable"
-          @click="toggleShowSystemTrips()"
-        /><img
-          v-if="showSystemTrips"
-          src="/static/arrow-up-icon.png"
-          class="icon min-max-button2 clickable"
-          @click="toggleShowSystemTrips()"
-        />
-      </div>
-      <div v-if="showSystemTrips">
-        <TripOverview v-for="route in systemTrips" :key="route._id" :route_prop="route" />
-      </div>
-    </div> -->
   </div>
 </template>
 <script>
 import TripOverview from "./TripOverview.vue"
-// import ArchivedTrips from "./ArchivedTrips.vue"
 
 export default {
   name: "TripListing",
   components: {
     TripOverview,
-    // ArchivedTrips,
   },
   data() {
     return {
@@ -70,17 +31,6 @@ export default {
     }
   },
   computed: {
-    // activeTrips() {
-    //   return this.routes
-    //     .filter((r) => r.active && (r.archived == null || !r.archived) && !r.system)
-    //     .sort((a, b) => {
-    //       if (a.active == b.active) {
-    //         return a.name < b.name ? 1 : -1
-    //       }
-    //       return a.active - b.active
-    //     })
-    //     .reverse()
-    // },
     archivedTrips() {
       return this.routes
         .filter((r) => r.archived != null && r.archived && !r.system)

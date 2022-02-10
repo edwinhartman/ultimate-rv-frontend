@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="new_stop_name">{{ $store.state.presentAlternativeData.new_stop.name }}</div>
+    <div class="new_stop_name">{{ $store.state.dialogs.presentAlternativeData.new_stop.name }}</div>
     would be an alternative for which stops?
-    <div v-for="stop in $store.state.presentAlternativeData.nearby" :key="stop.stop._id" class="row">
+    <div v-for="stop in $store.state.dialogs.presentAlternativeData.nearby" :key="stop.stop._id" class="row">
       <input type="checkbox" name="" id="" v-model="selectedStops" :value="stop.stop._id" />
       <div class="old_stop" @click="addRemoveStop(stop.stop._id)">
         <div class="old_stop_name">
@@ -26,7 +26,7 @@ export default {
   },
   methods: {
     cancel() {
-      this.$store.commit("clearAlternativeStopData")
+      this.$store.commit("dialogs/clearAlternativeStopData")
     },
     saveAlternatives() {
       this.$store.dispatch("addStopAlternative", this.selectedStops)

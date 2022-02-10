@@ -76,7 +76,7 @@ export default {
       this.$store.dispatch("copyActiveTripToReverse")
     },
     openExistingTrip() {
-      this.$store.commit("setShowOpenExistingTrip", true)
+      this.$store.commit("dialogs/setShowOpenExistingTrip", true)
     },
   },
   created() {
@@ -110,11 +110,11 @@ export default {
 div.left-toolbar {
   min-width: 12rem;
   max-width: 16rem;
-  padding-top: 0.5rem;
+  /* padding-top: 0.5rem; */
   padding-left: 0.1rem;
   padding-right: 0.1rem;
   z-index: 80;
-  max-height: 97vh;
+  height: var(--main-height);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -127,18 +127,16 @@ div.toolbar-buttons {
   flex-direction: row;
   justify-content: space-around;
   margin-left: 0.1rem;
-  /* position: absolute; */
-  /* bottom: 0.2rem; */
   min-width: 12rem;
   max-width: 15rem;
   margin-bottom: 0.2rem;
+  margin-top: 0.5rem;
 }
 div.toolbar-buttons button {
   font-size: 0.6rem;
   margin-right: 0.1rem;
   margin-left: 0.1rem;
   cursor: pointer;
-  /* max-width: 5rem; */
   box-shadow: 0.15rem 0.15rem 0.5rem rgba(80, 80, 80, 0.5);
 }
 </style>

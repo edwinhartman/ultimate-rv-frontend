@@ -49,11 +49,11 @@ export default {
     activateAccountMaintenance(event) {
       console.log("activateAccountMaintenance")
       event.preventDefault()
-      this.$store.commit("setShowAccountMaintenance", !this.$store.state.accountMaintenanceActive)
+      this.$store.commit("dialogs/setShowAccountMaintenance", !this.$store.state.accountMaintenanceActive)
     },
     showAbout(event) {
       event.preventDefault()
-      this.$store.commit("setShowAbout", !this.$store.state.showAbout)
+      this.$store.commit("dialogs/setShowAbout", !this.$store.state.dialogs.showAbout)
     },
   },
 }
@@ -65,8 +65,9 @@ export default {
   display: flex;
   flex-direction: row;
   /* background-color: var(--main-bg-color); */
-  min-height: 2rem;
-  max-height: 2.5rem;
+  /* min-height: 2rem;
+  max-height: 2.5rem; */
+  height: var(--header-height);
   padding: 0;
   position: relative;
   z-index: 10000;
@@ -125,7 +126,7 @@ a {
   width: 2rem;
   height: 2rem;
   color: var(--main-bg-color);
-
+  user-select: none;
   z-index: 99999;
 }
 div.location-search {
@@ -136,14 +137,18 @@ input#main_menu {
   display: none;
 }
 ul.menu_items {
-  /* display: none; */
   opacity: 0;
-  transition: opacity ease 2s;
+  /* transition: opacity ease 2s; */
+  position: absolute;
+  left: -250px;
+  transition: left 2s ease-in-out, opacity 1s ease-in-out;
 }
 
 #main_menu:checked ~ .menu_items {
   opacity: 100;
+  left: 2rem;
 }
+
 .icon {
   background: var(--main-bg-color);
   cursor: pointer;

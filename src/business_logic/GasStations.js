@@ -35,12 +35,10 @@ export function searchGasStations(
     },
   })
     .then((res) => {
-      // console.log(res)
       for (let i = 0; i < res.data.data.length; i++) {
         for (let j = 1; j < res.data.data[i].length; j++) {
           var calloutDelegate = {
             calloutElementForAnnotation: function (annotation) {
-              //console.log(annotation);
               var element = document.createElement("div")
               element.className = "tooltip-popup"
               var title = element.appendChild(document.createElement("div"))

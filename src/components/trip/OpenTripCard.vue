@@ -43,7 +43,7 @@ export default {
     setActive() {
       this.$store.dispatch("activateTrip", this.trip._id).then(() => {
         this.zoomToTrip(this.$store.state.activeTrip, this.$store)
-        this.$store.commit("setShowOpenExistingTrip", false)
+        this.$store.commit("dialogs/setShowOpenExistingTrip", false)
       })
     },
     archiveTrip() {

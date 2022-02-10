@@ -143,7 +143,7 @@ export default {
 
   computed: {
     keywords() {
-      return this.$store.state.searchKeywords
+      return this.$store.state.freetext_search.searchKeywords
     },
     polyline() {
       if (this.$store.state.activeTrip != null && this.$store.state.activeTrip.polyline != null) {
@@ -288,9 +288,7 @@ export default {
       )
       this.map.setRegionAnimated(region, true)
     },
-    "$store.state.searchPredefined": function () {
-      // console.log("searchPredefined changed")
-      // console.log(this.$store.state.searchPredefined)
+    "$store.state.predefined_search.searchPredefined": function () {
       this.removeAnnotationFromList(this.predefinedSearchMarkers)
       this.$store.commit("clearSharedSearchMarkers")
       this.predefinedSearchMarkers = []
@@ -300,14 +298,13 @@ export default {
 
         var geocoder = new mapkit.Geocoder()
         geocoder.reverseLookup(new mapkit.Coordinate(latitude, longitude), (err, data) => {
-          //console.log(data)
           if (err == null) {
             if (data != null && data.results.length > 0) {
               var city = data.results[0].locality
               var state = data.results[0].administrativeAreaCode
               var zip = data.results[0].postCode
               var country = data.results[0].countryCode
-              if (this.$store.state.searchPredefined == "gasstations") {
+              if (this.$store.state.predefined_search.searchPredefined == "gasstations") {
                 searchGasStations(
                   this.map.region,
                   this.$store,
@@ -335,25 +332,25 @@ export default {
                   }
                 )
               }
-              if (this.$store.state.searchPredefined == "dumpstations") {
+              if (this.$store.state.predefined_search.searchPredefined == "dumpstations") {
                 this.getDumpStations(zip)
               }
-              if (this.$store.state.searchPredefined == "nationalparks") {
+              if (this.$store.state.predefined_search.searchPredefined == "nationalparks") {
                 this.getNationalParks()
               }
-              if (this.$store.state.searchPredefined == "stateparks") {
+              if (this.$store.state.predefined_search.searchPredefined == "stateparks") {
                 this.getStateParks()
               }
-              if (this.$store.state.searchPredefined == "coe_parks") {
+              if (this.$store.state.predefined_search.searchPredefined == "coe_parks") {
                 this.getCOEParks()
               }
-              if (this.$store.state.searchPredefined == "campgrounds") {
+              if (this.$store.state.predefined_search.searchPredefined == "campgrounds") {
                 this.getCampgrounds()
               }
-              if (this.$store.state.searchPredefined == "overnightparking") {
+              if (this.$store.state.predefined_search.searchPredefined == "overnightparking") {
                 this.getOvernightParking()
               }
-              if (this.$store.state.searchPredefined == "restareas") {
+              if (this.$store.state.predefined_search.searchPredefined == "restareas") {
                 this.getRestAreas()
               }
             }
@@ -368,6 +365,8 @@ export default {
         this.$store.commit("freetext_search/clearSearchResult")
         return
       }
+      this.$store.commit("clearSessionStatus")
+      this.$store.commit("setSessionStatus", "Searching for " + searchVal)
       // this.removeAnnotationFromList(this.stopMarkers)
       this.stopMarkers = []
       var search = new mapkit.Search({
@@ -382,71 +381,11 @@ export default {
       if (this.search_id != null) {
         search.cancel(this.search_id)
         this.search_id = null
+        this.$store.commit("clearSessionStatus")
       }
       this.search_id = search.search(searchVal, (error, data) => {
         this.$store.commit("freetext_search/setSearch", searchVal)
         this.search_id = null
-        // let annotations = []
-        // for (let i = 0; i < data.places.length; i++) {
-        //   var calloutDelegate = {
-        //     calloutElementForAnnotation: function (annotation) {
-        //       var element = document.createElement("div")
-        //       element.className = "annotation-detail"
-        //       var title = element.appendChild(document.createElement("h3"))
-        //       title.textContent = annotation.title
-
-        //       if (data.places[i].urls.length > 0) {
-        //         var link = element.appendChild(document.createElement("a"))
-        //         link.className = "text-tiny"
-        //         link.target = "_blank"
-        //         link.href = data.places[i].urls[0]
-        //         link.textContent = "Open Website"
-        //         element.appendChild(document.createElement("br"))
-        //       }
-
-        //       var btn = element.appendChild(document.createElement("button"))
-        //       btn.className = "annotation-callout-button"
-        //       btn.textContent = "Add To Trip"
-        //       btn.onclick = function () {
-        //         window.mymapview.addToTrip(data.places[i])
-        //         //this.parentNode.style.display = 'none';
-        //       }
-        //       var btn2 = element.appendChild(document.createElement("button"))
-        //       btn2.className = "annotation-callout-button"
-        //       btn2.textContent = "Add As Alternative"
-        //       btn2.onclick = function () {
-        //         window.mymapview.addToTrip(data.places[i], true)
-        //         //this.parentNode.style.display = 'none';
-        //       }
-
-        //       return element
-        //     },
-        //   }
-        //   const annotation = new mapkit.MarkerAnnotation(data.places[i].coordinate, {
-        //     title: data.places[i].name,
-        //     subtitle: data.places[i].formattedAddress,
-        //     glyphText: "",
-        //     color: "#8e8e93",
-        //     displayPriority: 1000,
-        //     //callout:data.places[i].urls.length > 0 ? calloutDelegate:null
-        //     callout: calloutDelegate,
-        //   })
-        //   // this.map.addAnnotation(annotation)
-        //   // this.$store.commit("freetext_search/addSearchResult", annotation)
-        //   const marker = {
-        //     title: data.places[i].name,
-        //     address: data.places[i].formattedAddress,
-        //     coordinate: {
-        //       latitude: data.places[i].coordinate.latitude,
-        //       longitude: data.places[i].coordinate.longitude,
-        //     },
-        //     contents: "",
-        //     distance: -1,
-        //     annotation: annotation,
-        //   }
-        // }
-        // this.$store.commit("clearSharedSearchMarkers")
-        // this.$store.commit("setSharedSearchMarkers", annotations)
 
         for (let i = 0; i < this.map.annotations.length; i++) {
           let ann = []
@@ -457,8 +396,10 @@ export default {
         }
         if (data != null && data.places != null) {
           this.$store.commit("freetext_search/addSearchResult", data.places)
+          this.$store.commit("clearSessionStatus")
         } else {
           this.$store.commit("freetext_search/clearSearchResult")
+          this.$store.commit("clearSessionStatus")
         }
         //console.log(data)
       })
@@ -704,10 +645,10 @@ export default {
         return
       }
       if (
-        this.$store.state.searchPredefined != "none" &&
-        this.$store.state.searchPredefined != "nationalparks" &&
-        this.$store.state.searchPredefined != "stateparks" &&
-        this.$store.state.searchPredefined != "overnightparking"
+        this.$store.state.predefined_search.searchPredefined != "none" &&
+        this.$store.state.predefined_search.searchPredefined != "nationalparks" &&
+        this.$store.state.predefined_search.searchPredefined != "stateparks" &&
+        this.$store.state.predefined_search.searchPredefined != "overnightparking"
       ) {
         if (
           this.center != null &&
@@ -717,27 +658,32 @@ export default {
           //console.log("resetting predefined search");
           this.removeAnnotationFromList(this.predefinedSearchMarkers)
           this.predefinedSearchMarkers = []
-          let prevSearchPredefined = this.$store.state.searchPredefined
-          this.$store.commit("setSearchPredefined", "none")
+          let prevSearchPredefined = this.$store.state.predefined_search.searchPredefined
+          this.$store.commit("predefined_search/setSearchPredefined", "none")
           setTimeout(() => {
-            this.$store.commit("setSearchPredefined", prevSearchPredefined)
+            this.$store.commit("predefined_search/setSearchPredefined", prevSearchPredefined)
           }, 200)
         }
       }
-      if (this.$store.state.searchPredefined == "stateparks") {
+      if (this.$store.state.predefined_search.searchPredefined == "stateparks") {
         this.removeAnnotationFromList(this.predefinedSearchMarkers)
         this.predefinedSearchMarkers = []
         this.getStateParks()
       }
-      if (this.$store.state.searchPredefined == "coe_parks") {
+      if (this.$store.state.predefined_search.searchPredefined == "coe_parks") {
         this.removeAnnotationFromList(this.predefinedSearchMarkers)
         this.predefinedSearchMarkers = []
         this.getCOEParks()
       }
-      if (this.$store.state.searchPredefined == "campgrounds") {
+      if (this.$store.state.predefined_search.searchPredefined == "campgrounds") {
         this.removeAnnotationFromList(this.predefinedSearchMarkers)
         this.predefinedSearchMarkers = []
         this.getCampgrounds()
+      }
+      if (this.$store.state.predefined_search.searchPredefined == "restareas") {
+        this.removeAnnotationFromList(this.predefinedSearchMarkers)
+        this.predefinedSearchMarkers = []
+        this.getRestAreas()
       }
       this.getMapRestrictions()
     },

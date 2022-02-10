@@ -40,8 +40,8 @@
     <Popper :interactive="false" :hover="true">
       <button
         v-bind:class="{
-          'bg-gray-700  text-gray-500 cursor-not-allowed': $store.state.routeCalculateInProcess,
-          'bg-yellow-500 text-blue-900 clickable': !$store.state.routeCalculateInProcess,
+          'bg-gray-700  text-gray-500 cursor-not-allowed': $store.state.dialogs.routeCalculateInProcess,
+          'bg-yellow-500 text-blue-900 clickable': !$store.state.dialogs.routeCalculateInProcess,
         }"
         v-if="
           ((route.stops.length > 0 && !route.firstStopIsDeparture) ||
@@ -49,7 +49,7 @@
           route.active
         "
         @click="calculateTrip(route)"
-        :disabled="$store.state.routeCalculateInProcess"
+        :disabled="$store.state.dialogs.routeCalculateInProcess"
       >
         {{ calculateButtonName }}
       </button>
@@ -87,7 +87,9 @@
     </Popper>
     <Popper :interactive="false" :hover="true" v-if="calendarDatesSet">
       <!-- <button @click="downloadCalendar(route._id)" class="bg-blue fg-white clickable">Calendar</button> -->
-      <button @click="$store.commit('setShowTripCalendar', true)" class="bg-blue fg-white clickable">Calendar</button>
+      <button @click="$store.commit('dialogs/setShowTripCalendar', true)" class="bg-blue fg-white clickable">
+        Calendar
+      </button>
       <template #content>
         <div class="tooltip-popup">This will download the calendar file for this route</div>
       </template>
@@ -158,8 +160,8 @@ export default {
   },
   methods: {
     takePicture() {
-      var h = this.$parent.$parent.$parent.$parent.map_height
-      var w = this.$parent.$parent.$parent.$parent.map_width
+      var h = this.$parent.$parent.$parent.$parent.$parent.map_height
+      var w = this.$parent.$parent.$parent.$parent.$parent.map_width
       html2canvas(document.querySelector("#map"), { userCORS: true, allowTaint: false, logging: false }).then(
         (canvas) => {
           const context = canvas.getContext("2d")

@@ -2,18 +2,18 @@
   <div class="main_div">
     <transition name="fade">
       <ModalPopup
-        v-if="$store.state.showOpenExistingTrip"
+        v-if="$store.state.dialogs.showOpenExistingTrip"
         :rightTopCloseOption="true"
-        @close="$store.commit('setShowOpenExistingTrip', !$store.state.showOpenExistingTrip)"
+        @close="$store.commit('dialogs/setShowOpenExistingTrip', !$store.state.dialogs.showOpenExistingTrip)"
       >
         <TripOpenDialog />
       </ModalPopup>
     </transition>
     <transition name="fade">
       <ModalPopup
-        v-if="$store.state.showTripDirections"
+        v-if="$store.state.dialogs.showTripDirections"
         :rightTopCloseOption="true"
-        @close="$store.commit('setShowTripDirections', !$store.state.showTripDirections)"
+        @close="$store.commit('dialogs/setShowTripDirections', !$store.state.dialogs.showTripDirections)"
         dialogTitle=""
       >
         <TripDirections />
@@ -21,39 +21,39 @@
     </transition>
     <transition name="fade">
       <ModalPopup
-        v-if="$store.state.showAbout"
+        v-if="$store.state.dialogs.showAbout"
         :rightTopCloseOption="true"
-        @close="$store.commit('setShowAbout', !$store.state.showAbout)"
+        @close="$store.commit('dialogs/setShowAbout', !$store.state.dialogs.showAbout)"
       >
         <AboutPage />
       </ModalPopup>
     </transition>
     <transition name="fade">
       <ModalPopup
-        v-if="$store.state.showTripTolls"
+        v-if="$store.state.settings.showTripTolls"
         :rightTopCloseOption="true"
-        @close="$store.commit('setShowTripTolls', !$store.state.showTripTolls)"
+        @close="$store.commit('dialogs/setShowTripTolls', !$store.state.dialogs.showTripTolls)"
       >
         <TripTolls />
       </ModalPopup>
     </transition>
     <transition name="fade">
-      <ModalPopup v-if="$store.state.routeCalculateInProcess">
+      <ModalPopup v-if="$store.state.dialogs.routeCalculateInProcess">
         <div>Trip Calculation In Process. Please Wait</div>
       </ModalPopup>
     </transition>
     <transition name="fade">
       <ModalPopup
-        v-if="$store.state.showPicture != null"
+        v-if="$store.state.dialogs.showPicture != null"
         :rightTopCloseOption="true"
-        @close="$store.commit('clearShowPicture')"
+        @close="$store.commit('dialogs/clearShowPicture')"
       >
-        <div>{{ $store.state.showPicture.title }}</div>
-        <img :src="$store.state.showPicture.url" />
+        <div>{{ $store.state.dialogs.showPicture.title }}</div>
+        <img :src="$store.state.dialogs.showPicture.url" />
       </ModalPopup>
     </transition>
     <transition name="fade">
-      <ModalPopup v-if="$store.state.accountMaintenanceActive">
+      <ModalPopup v-if="$store.state.dialogs.accountMaintenanceActive">
         <AccountMain />
       </ModalPopup>
     </transition>
@@ -63,17 +63,17 @@
       </ModalPopup>
     </transition>
     <transition name="fade">
-      <ModalPopup v-if="$store.state.presentAlternativeData != null">
+      <ModalPopup v-if="$store.state.dialogs.presentAlternativeData != null">
         <AddAlternativeToStop />
       </ModalPopup>
     </transition>
     <transition name="fade">
       <ModalPopup
-        v-if="$store.state.showTripCalendar"
+        v-if="$store.state.dialogs.showTripCalendar"
         :rightTopCloseOption="true"
         :centerTitle="true"
         dialogTitle="Trip Calendar"
-        @close="$store.commit('setShowTripCalendar', !$store.state.showTripCalendar)"
+        @close="$store.commit('dialogs/setShowTripCalendar', !$store.state.dialogs.showTripCalendar)"
       >
         <CalendarView />
       </ModalPopup>
@@ -85,10 +85,12 @@
       <MapView class="z-0" id="main_map_view_123" :map_width="map_width" :map_height="map_height" />
       <RightToolbar />
     </div>
+    <Footer />
   </div>
 </template>
 <script>
 import Header from "../components/toolbars/Header.vue"
+import Footer from "../components/toolbars/Footer.vue"
 import LeftToolbar from "../components/toolbars/LeftToolbar.vue"
 import MapView from "../components/map/MapView.vue"
 import RightToolbar from "../components/toolbars/RightToolbar.vue"
@@ -118,6 +120,7 @@ export default {
     AddAlternativeToStop,
     TripOpenDialog,
     CalendarView,
+    Footer,
   },
   data() {
     return {
@@ -129,9 +132,14 @@ export default {
     var w = window.innerWidth
     var h = window.innerHeight
     this.map_width = w - 435
-    this.map_height = h - 33
+    this.map_height = document.documentElement.clientHeight * 0.94 // h - 55
+
+    // console.log(getComputedStyle(document.documentElement).getPropertyValue("--main-height"))
     document.getElementById("main_map_view_123").style.width = w - 435 + "px"
-    document.getElementById("main_map_view_123").style.height = h + "px"
+    // document.getElementById("main_map_view_123").style.height = h + "px"
+    document.getElementById("main_map_view_123").style.height = getComputedStyle(
+      document.documentElement
+    ).getPropertyValue("--main-height")
   },
   created() {
     window.addEventListener("resize", this.handleResize)
@@ -144,9 +152,10 @@ export default {
       var w = window.innerWidth
       var h = window.innerHeight
       this.map_width = w - 445
-      this.map_height = h - 33
+      // this.map_height = h - 33
+      this.map_height = document.documentElement.clientHeight * 0.94
       document.getElementById("main_map_view_123").style.width = w - 445 + "px"
-      document.getElementById("main_map_view_123").style.height = h + "px"
+      // document.getElementById("main_map_view_123").style.height = h + "px"
     },
   },
 }

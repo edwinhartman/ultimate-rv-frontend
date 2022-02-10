@@ -9,12 +9,14 @@
         <!-- <span>Search</span> -->
       </button>
     </form>
-    <div class="results" v-show="searchResults.length > 0">
-      <div v-for="result in searchResults" :key="result.id" class="search-result" @click="addAnnotationToMap(result)">
-        <div class="result-name">{{ result.name }}</div>
-        <div class="result-address">{{ result.formattedAddress }}</div>
+    <transition name="fade">
+      <div class="results" v-show="searchResults.length > 0">
+        <div v-for="result in searchResults" :key="result.id" class="search-result" @click="addAnnotationToMap(result)">
+          <div class="result-name">{{ result.name }}</div>
+          <div class="result-address">{{ result.formattedAddress }}</div>
+        </div>
       </div>
-    </div>
+    </transition>
   </div>
 </template>
 <script>
@@ -51,6 +53,7 @@ export default {
     },
     addAnnotationToMap(result) {
       window.mymapview.addAnnotationToMap(result)
+      document.activeElement.blur()
     },
   },
 }

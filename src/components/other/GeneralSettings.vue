@@ -7,62 +7,66 @@
       </div>
     </div>
 
-    <div v-if="expanded" @click="expanded = false" class="min-max-button">
-      <img v-if="expanded" src="/static/arrow-up-icon.png" class="icon" />
-    </div>
-    <div v-if="expanded" class="text-left w-full">
-      <ul class="list-none mb-1">
-        <li>
-          <input type="checkbox" id="PreventToll" value="true" v-model="preventTollroads" />
-          <label for="PreventToll">Prevent Tollroads</label>
-        </li>
-        <li>
-          <input type="checkbox" id="AlwaysShowTripSummary" value="true" v-model="alwaysShowTripSummary" />
-          <label for="AlwaysShowTripSummary">Always Show Trip Summary</label>
-        </li>
-        <li>
-          <input type="checkbox" id="ShowYelpDetails" value="true" v-model="showYelpDetails" />
-          <label for="ShowYelpDetails">Show Yelp Details</label>
-        </li>
-        <li>
-          <input type="checkbox" id="ShowRVSettings" value="true" v-model="showRVSettings" />
-          <label for="ShowRVSettings">Show RV Settings Section</label>
-        </li>
-        <li>
-          <Popper :interactive="false" :hover="true">
-            <div>
-              <input type="checkbox" id="AutoPreventBigCities" value="true" v-model="autoPreventBigCities" />
-              <label for="AutoPreventBigCities">Automatically Prevent Big Cities</label>
-            </div>
-            <template #content>
-              <div class="tooltip-popup2">
-                This will automatically bring in areas to avoid surrounding major cities when creating a new route
+    <transition name="fade">
+      <div v-if="expanded" @click="expanded = false" class="min-max-button">
+        <img v-if="expanded" src="/static/arrow-up-icon.png" class="icon" />
+      </div>
+    </transition>
+    <transition name="fade-fast">
+      <div v-if="expanded" class="text-left w-full">
+        <ul class="list-none mb-1">
+          <li>
+            <input type="checkbox" id="PreventToll" value="true" v-model="preventTollroads" />
+            <label for="PreventToll">Prevent Tollroads</label>
+          </li>
+          <li>
+            <input type="checkbox" id="AlwaysShowTripSummary" value="true" v-model="alwaysShowTripSummary" />
+            <label for="AlwaysShowTripSummary">Always Show Trip Summary</label>
+          </li>
+          <li>
+            <input type="checkbox" id="ShowYelpDetails" value="true" v-model="showYelpDetails" />
+            <label for="ShowYelpDetails">Show Yelp Details</label>
+          </li>
+          <li>
+            <input type="checkbox" id="ShowRVSettings" value="true" v-model="showRVSettings" />
+            <label for="ShowRVSettings">Show RV Settings Section</label>
+          </li>
+          <li>
+            <Popper :interactive="false" :hover="true">
+              <div>
+                <input type="checkbox" id="AutoPreventBigCities" value="true" v-model="autoPreventBigCities" />
+                <label for="AutoPreventBigCities">Automatically Prevent Big Cities</label>
               </div>
-            </template>
-          </Popper>
-        </li>
-        <li>
-          <input type="checkbox" id="ShowArchivedTrips" value="true" v-model="showArchivedTrips" />
-          <label for="ShowArchivedTrips">Show Archived Trips section</label>
-        </li>
-        <li v-if="$store.state.adminToken != null">
-          <input type="checkbox" id="HideAdminFunctions" value="true" v-model="hideAdminFunctions" />
-          <label for="HideAdminFunctions">Hide Admin Functions</label>
-        </li>
-        <li v-if="$store.state.adminToken != null && !$store.state.settings.hideAdminFunctions">
-          <input type="checkbox" id="ShowSystemTrips" value="true" v-model="showSystemTrips" />
-          <label for="ShowSystemTrips">Show System Trips section</label>
-        </li>
-        <li>
-          Default Origin:
-          <select name="" id="" v-model="defaultOriginType">
-            <option value="current">Current Location</option>
-            <option value="home">Home Location</option>
-          </select>
-        </li>
-        <li v-if="defaultOriginType == 'home'">Home Address: <input type="text" /></li>
-      </ul>
-    </div>
+              <template #content>
+                <div class="tooltip-popup2">
+                  This will automatically bring in areas to avoid surrounding major cities when creating a new route
+                </div>
+              </template>
+            </Popper>
+          </li>
+          <li>
+            <input type="checkbox" id="ShowArchivedTrips" value="true" v-model="showArchivedTrips" />
+            <label for="ShowArchivedTrips">Show Archived Trips section</label>
+          </li>
+          <li v-if="$store.state.adminToken != null">
+            <input type="checkbox" id="HideAdminFunctions" value="true" v-model="hideAdminFunctions" />
+            <label for="HideAdminFunctions">Hide Admin Functions</label>
+          </li>
+          <li v-if="$store.state.adminToken != null && !$store.state.settings.hideAdminFunctions">
+            <input type="checkbox" id="ShowSystemTrips" value="true" v-model="showSystemTrips" />
+            <label for="ShowSystemTrips">Show System Trips section</label>
+          </li>
+          <li>
+            Default Origin:
+            <select name="" id="" v-model="defaultOriginType">
+              <option value="current">Current Location</option>
+              <option value="home">Home Location</option>
+            </select>
+          </li>
+          <li v-if="defaultOriginType == 'home'">Home Address: <input type="text" /></li>
+        </ul>
+      </div>
+    </transition>
   </div>
 </template>
 <script>

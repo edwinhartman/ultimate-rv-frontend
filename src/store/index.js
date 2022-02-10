@@ -6,6 +6,9 @@ import { calculateTripHERE, calculateDayTripsHERE } from "../business_logic/Rout
 import router from "../router/index"
 import settings from "./modules/settings"
 import freetext_search from "./modules/freetext_search"
+import trip from "./modules/trip"
+import predefined_search from "./modules/predefined_search"
+import dialogs from "./modules/dialogs"
 
 import { determineDistanceBetweenTwoPoints } from "../business_logic/HelperLogic"
 
@@ -16,7 +19,6 @@ const vuexLocal = new VuexPersistence({
 
 export default createStore({
   state: {
-    searchKeywords: "",
     routes: [],
     activeTrip: null,
     currentLocation: null,
@@ -25,43 +27,36 @@ export default createStore({
     rvs: [],
     activeRV: null,
     summaries: [],
-    searchPredefined: "none",
+
     mapRegion: null,
-    showTripDirections: false,
-    showAbout: false,
 
-    showTripTolls: false,
-    routeCalculateInProcess: false,
-
-    showTripSummary: false,
     sharedSearchMarkers: [],
-    showPicture: null,
 
-    accountMaintenanceActive: false,
     showAnnotationDetails: null,
     showAnnotationDetailsAvailable: 0,
     editStopDateActive: false,
     editStopDateStop: null,
-    presentAlternativeData: null,
+
     alongRoutePolyline: [],
-    showOpenExistingTrip: false,
-    showTripCalendar: false,
+
+    sessionStatus: "",
   },
   mutations: {
-    setShowOpenExistingTrip(state, val) {
-      state.showOpenExistingTrip = val
+    setSessionStatus(state, val) {
+      state.sessionStatus = val
     },
-    setShowTripCalendar(state, val) {
-      state.showTripCalendar = val
+    clearSessionStatus(state) {
+      state.sessionStatus = ""
     },
+
     resetAllHungupValues(state) {
-      state.routeCalculateInProcess = false
-      state.accountMaintenanceActive = false
+      state.sessionStatus = "Resetting..."
+      state.dialogs.routeCalculateInProcess = false
+      state.dialogs.accountMaintenanceActive = false
       state.editStopDateActive = false
+      state.sessionStatus = ""
     },
-    setShowAccountMaintenance(state, val) {
-      state.accountMaintenanceActive = val
-    },
+
     setShowAnnotationDetails(state, val) {
       // console.log("store: " + val.title)
       state.showAnnotationDetailsAvailable = 0
@@ -79,11 +74,9 @@ export default createStore({
         state.showAnnotationDetailsAvailable = Math.random() * 1000
       }
     },
-    setShowTripSummary(state, val) {
-      state.showTripSummary = val
-    },
+
     resetValues(state) {
-      state.searchKeywords = ""
+      state.freetext_search.searchKeywords = ""
       state.activeTrip = null
       state.summaries = []
     },
@@ -91,15 +84,7 @@ export default createStore({
       state.summaries = []
       state.activeTrip.polyline = []
     },
-    resetSearchPredefined(state) {
-      state.searchPredefined = "none"
-    },
-    setSearchPredefined(state, val) {
-      state.searchPredefined = val
-    },
-    updateKeywords(state, value) {
-      state.searchKeywords = value
-    },
+
     setAlongRoutePolyline(state, value) {
       state.alongRoutePolyline = value
     },
@@ -151,12 +136,7 @@ export default createStore({
     clearTolls(state) {
       state.activeTrip.tolls = []
     },
-    clearShowPicture(state) {
-      state.showPicture = null
-    },
-    setShowPicture(state, value) {
-      state.showPicture = value
-    },
+
     addPolyline(state, value) {
       state.activeTrip.polyline.push(value)
     },
@@ -228,18 +208,7 @@ export default createStore({
     setMapType(state, val) {
       state.mapType = val
     },
-    setShowTripDirections(state, show) {
-      state.showTripDirections = show
-    },
-    setShowAbout(state, show) {
-      state.showAbout = show
-    },
-    setShowTripTolls(state, show) {
-      state.showTripTolls = show
-    },
-    setTripCalculateInProcess(state, active) {
-      state.routeCalculateInProcess = active
-    },
+
     clearSharedSearchMarkers(state) {
       state.sharedSearchMarkers = []
     },
@@ -258,38 +227,35 @@ export default createStore({
       state.token = ""
       state.adminToken = null
 
-      state.searchKeywords = ""
+      state.freetext_search.searchKeywords = ""
       state.routes = []
       state.activeTrip = null
       state.currentLocation = null
       state.rvs = []
       state.activeRV = null
       state.summaries = []
-      state.searchPredefined = "none"
+      state.predefined_search.searchPredefined = "none"
       state.mapRegion = null
-      state.showTripDirections = false
-      state.showAbout = false
+
       state.settings.preventTollroads = false
-      state.showTripTolls = false
-      state.routeCalculateInProcess = false
       state.settings.alwaysShowTripSummary = false
-      state.showTripSummary = false
+      state.settings.defaultOriginType = "current"
+      state.settings.autoPreventBigCities = false
+
+      state.dialogs.showTripTolls = false
+      state.dialogs.showTripDirections = false
+      state.dialogs.showTripSummary = false
+      state.dialogs.showAbout = false
+      state.dialogs.routeCalculateInProcess = false
+      state.dialogs.accountMaintenanceActive = false
+      state.dialogs.showPicture = null
+
       state.sharedSearchMarkers = []
-      state.showPicture = null
       state.settings.showYelpDetails = false
-      state.accountMaintenanceActive = false
       state.showAnnotationDetails = null
       state.showAnnotationDetailsAvailable = 0
       state.editStopDateActive = false
       state.editStopDateStop = null
-      state.settings.defaultOriginType = "current"
-      state.settings.autoPreventBigCities = false
-    },
-    clearAlternativeStopData(state) {
-      state.presentAlternativeData = null
-    },
-    setAlternativeStopData(state, data) {
-      state.presentAlternativeData = data
     },
   },
   actions: {
@@ -360,7 +326,7 @@ export default createStore({
         },
       })
         .then((res) => {
-          commit("setSearchPredefined", "None")
+          commit("predefined_search/setSearchPredefined", "None")
           commit("loadTrips", res.data.routes)
         })
         .catch((err) => {
@@ -413,6 +379,7 @@ export default createStore({
         })
     },
     calculateTrip({ commit }, route) {
+      commit("setSessionStatus", "Calculating Route")
       return new Promise((resolve, reject) => {
         if (this.state.currentLocation != null) {
           commit("setTripCalculateInProcess", true)
@@ -442,6 +409,7 @@ export default createStore({
                   }
                   commit("addTolls", tolls)
                   commit("setTripCalculateInProcess", false)
+                  commit("clearSessionStatus")
                   resolve()
                 }
               }
@@ -757,7 +725,7 @@ export default createStore({
       })
     },
     showNearbyStopsForAlternative({ commit }, data) {
-      commit("clearAlternativeStopData")
+      commit("dialogs/clearAlternativeStopData")
       let nearbyStops = []
       if (this.state.activeTrip != null && this.state.activeTrip.stops.length > 0) {
         for (let i = 0; i < this.state.activeTrip.stops.length; i++) {
@@ -773,8 +741,7 @@ export default createStore({
         }
       }
       if (nearbyStops.length > 0) {
-        // console.log(nearbyStops)
-        commit("setAlternativeStopData", { new_stop: data, nearby: nearbyStops })
+        commit("dialogs/setAlternativeStopData", { new_stop: data, nearby: nearbyStops })
       }
     },
     addStopAlternative({ commit }, selectedValues) {
@@ -786,7 +753,7 @@ export default createStore({
           alternative_to: selectedValues,
         },
       }).then((res) => {
-        commit("clearAlternativeStopData")
+        commit("dialogs/clearAlternativeStopData")
         commit("loadTrips", res.data.routes)
       })
     },
@@ -813,6 +780,9 @@ export default createStore({
   modules: {
     settings,
     freetext_search,
+    trip,
+    predefined_search,
+    dialogs,
   },
   getters: {
     isAuthenticated: (state) => {

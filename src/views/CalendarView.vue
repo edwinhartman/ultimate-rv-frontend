@@ -206,6 +206,7 @@ export default {
   flex-direction: row;
   justify-content: center;
   width: 100%;
+  user-select:none;
 }
 .month-header > div {
   margin-left: 0.5rem;
