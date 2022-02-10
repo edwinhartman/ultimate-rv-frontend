@@ -160,6 +160,12 @@ ul.menu_items {
   padding: 10px;
   width: 20px;
 }
+@media (min-device-width: 375px) and (max-device-width: 812px) {
+  .icon {
+    height: 18px;
+    width: 18px;
+  }
+}
 .icon .menu,
 .icon .menu::before,
 .icon .menu::after {
