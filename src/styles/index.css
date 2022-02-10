@@ -7,7 +7,7 @@
   --header-height: 4.5vh;
   --footer-height: 1.5vh;
   --main-height: 94vh;
-  --side-toolbar-width: 14rem;
+  --side-toolbar-width: 15rem;
 }
 html,
 body {
@@ -185,4 +185,8 @@ div.tripinstructions_section {
 .fade-fast-enter-from,
 .fade-fast-leave-to {
   opacity: 0;
+}
+
+#main_map_view_123 {
+  transition: width 0.5s ease-in-out;
 }

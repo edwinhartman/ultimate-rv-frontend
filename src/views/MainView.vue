@@ -137,6 +137,12 @@ export default {
   unmounted() {
     window.removeEventListener("resize", this.handleResize)
   },
+  watch: {
+    "$store.state.toolbars.showRightToolbar": function (newValue, oldValue) {
+      console.log("showRightToolbar changed")
+      this.setMapDimensions()
+    },
+  },
   methods: {
     setMapDimensions() {
       var w = window.innerWidth
@@ -150,7 +156,7 @@ export default {
       } else if (this.isTablet()) {
         this.map_width = w - sideToolbarWidth
       } else {
-        this.map_width = w - 2 * sideToolbarWidth
+        this.map_width = w - (this.$store.state.toolbars.showRightToolbar ? 2 : 1) * sideToolbarWidth
       }
       this.map_height = document.documentElement.clientHeight * 0.94 // h - 55
 
