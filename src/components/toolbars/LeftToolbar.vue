@@ -1,5 +1,9 @@
 <template>
-  <div class="secondary-color left-toolbar shadow-right" id="left_toolbar">
+  <div
+    class="secondary-color left-toolbar shadow-right"
+    id="left_toolbar"
+    :class="!this.isPhone() || $store.state.toolbars.showLeftToolbar ? 'active' : ''"
+  >
     <div class="toolbar-buttons">
       <div>
         <Popper :interactive="false" :hover="true">
@@ -30,6 +34,17 @@
     <!-- <TripSummary /> -->
     <TripSummary2 />
     <SearchAlongTrip />
+    <div v-if="this.isPhone() || this.isTablet()">
+      <SearchPredefined />
+      <GeneralSettings />
+      <RVListing
+        v-if="$store.state.rvs.length > 0 && $store.state.settings.showRVSettings"
+        @add_new="openRVEditPanel"
+        @edit_active_rv="editActiveRV"
+        :edit_active="addNewRV || editRV != null"
+      />
+      <RVSettings v-if="$store.state.rvs.length == 0 || addNewRV" @close_panel="closeRVEditPanel" :edit_rv="editRV" />
+    </div>
   </div>
 </template>
 <script>
@@ -37,6 +52,10 @@ import TripListing from "../trip/TripListing.vue"
 import TripSummary2 from "../trip/TripSummary2.vue"
 import SearchAlongTrip from "../trip/SearchAlongTrip.vue"
 import Popper from "vue3-popper"
+import RVSettings from "../rv/RVSettings.vue"
+import RVListing from "../rv/RVListing.vue"
+import SearchPredefined from "../search/SearchPredefined.vue"
+import GeneralSettings from "../other/GeneralSettings.vue"
 
 export default {
   name: "LeftToolbar",
@@ -45,6 +64,16 @@ export default {
     TripSummary2,
     SearchAlongTrip,
     Popper,
+    RVSettings,
+    RVListing,
+    SearchPredefined,
+    GeneralSettings,
+  },
+  data() {
+    return {
+      addNewRV: false,
+      editRV: null,
+    }
   },
 
   computed: {
@@ -78,6 +107,17 @@ export default {
     openExistingTrip() {
       this.$store.commit("dialogs/setShowOpenExistingTrip", true)
     },
+    editActiveRV() {
+      this.addNewRV = true
+      this.editRV = this.$store.state.activeRV
+    },
+    closeRVEditPanel() {
+      this.addNewRV = false
+      this.editRV = null
+    },
+    openRVEditPanel() {
+      this.addNewRV = true
+    },
   },
   created() {
     this.$axios
@@ -103,13 +143,17 @@ export default {
         }
       })
       .catch((error) => console.log(error))
+    if (this.isPhone() || this.isTablet()) {
+      this.$store.dispatch("loadRVs")
+    }
   },
 }
 </script>
 <style scoped>
 div.left-toolbar {
-  min-width: 12rem;
-  max-width: 16rem;
+  /* min-width: 12rem;
+  max-width: 16rem; */
+  width: var(--side-toolbar-width);
   /* padding-top: 0.5rem; */
   padding-left: 0.1rem;
   padding-right: 0.1rem;
@@ -120,6 +164,23 @@ div.left-toolbar {
   flex-direction: column;
   position: relative;
   background-color: var(--main-bg-color);
+}
+/* Phone - Portrait */
+@media (min-device-width: 375px) and (max-device-width: 812px) and (orientation: portrait) {
+  div.left-toolbar {
+    min-width: 0.01rem;
+    max-width: 0.01rem;
+    transition: min-width 0.5s ease-in-out;
+  }
+  div.left-toolbar * {
+    display: none;
+  }
+  div.left-toolbar.active {
+    min-width: 20rem;
+  }
+  div.left-toolbar.active * {
+    display: inline-block;
+  }
 }
 div.toolbar-buttons {
   width: 100%;

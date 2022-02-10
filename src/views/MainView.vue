@@ -83,7 +83,7 @@
     <div class="main_window">
       <LeftToolbar />
       <MapView class="z-0" id="main_map_view_123" :map_width="map_width" :map_height="map_height" />
-      <RightToolbar />
+      <RightToolbar v-if="!this.isPhone() && !this.isTablet()" />
     </div>
     <Footer />
   </div>
@@ -131,11 +131,19 @@ export default {
   mounted() {
     var w = window.innerWidth
     var h = window.innerHeight
-    this.map_width = w - 435
+    var sideToolbarWidth = this.convertRemToPixels(
+      getComputedStyle(document.documentElement).getPropertyValue("--side-toolbar-width")
+    )
+    if (this.isPhone()) {
+      this.map_width = w
+    } else if (this.isTablet()) {
+      this.map_width = w - sideToolbarWidth
+    } else {
+      this.map_width = w - 2 * sideToolbarWidth
+    }
     this.map_height = document.documentElement.clientHeight * 0.94 // h - 55
 
-    // console.log(getComputedStyle(document.documentElement).getPropertyValue("--main-height"))
-    document.getElementById("main_map_view_123").style.width = w - 435 + "px"
+    document.getElementById("main_map_view_123").style.width = this.map_width + "px"
     // document.getElementById("main_map_view_123").style.height = h + "px"
     document.getElementById("main_map_view_123").style.height = getComputedStyle(
       document.documentElement
@@ -151,10 +159,19 @@ export default {
     handleResize(e) {
       var w = window.innerWidth
       var h = window.innerHeight
-      this.map_width = w - 445
+      var sideToolbarWidth = this.convertRemToPixels(
+        getComputedStyle(document.documentElement).getPropertyValue("--side-toolbar-width")
+      )
+      if (this.isPhone()) {
+        this.map_width = w
+      } else if (this.isTablet()) {
+        this.map_width = w - sideToolbarWidth
+      } else {
+        this.map_width = w - 2 * sideToolbarWidth
+      }
       // this.map_height = h - 33
       this.map_height = document.documentElement.clientHeight * 0.94
-      document.getElementById("main_map_view_123").style.width = w - 445 + "px"
+      document.getElementById("main_map_view_123").style.width = this.map_width + "px"
       // document.getElementById("main_map_view_123").style.height = h + "px"
     },
   },

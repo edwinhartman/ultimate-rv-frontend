@@ -9,8 +9,10 @@ import freetext_search from "./modules/freetext_search"
 import trip from "./modules/trip"
 import predefined_search from "./modules/predefined_search"
 import dialogs from "./modules/dialogs"
+import toolbars from "./modules/toolbars"
 
 import { determineDistanceBetweenTwoPoints } from "../business_logic/HelperLogic"
+import { isPhone } from "../helpers/device_detection"
 
 const vuexLocal = new VuexPersistence({
   storage: window.localStorage,
@@ -193,6 +195,12 @@ export default createStore({
       state.activeRV = rv
     },
     setNewMapRegion(state, payload) {
+      state.toolbars.showLeftToolbar = false
+
+      if (isPhone()) {
+        let main_menu = document.getElementById("main_menu")
+        main_menu.checked = false
+      }
       // console.log("setNewMapRegion: Lat: " + payload.centerLat + " Lon: " + payload.centerLon)
       state.mapRegion = {
         center: {
@@ -783,6 +791,7 @@ export default createStore({
     trip,
     predefined_search,
     dialogs,
+    toolbars,
   },
   getters: {
     isAuthenticated: (state) => {

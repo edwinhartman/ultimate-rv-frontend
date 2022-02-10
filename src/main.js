@@ -6,7 +6,9 @@ import App from "./App.vue"
 import store from "./store"
 import router from "./router/index"
 import axios from "axios"
-import "./index.css"
+import "./styles/index.css"
+import "./styles/phone.css"
+import "./styles/tablet.css"
 import VueHtmlToPaper from "./components/other/VueHtmlToPaper"
 import LoadScript from "vue-plugin-load-script"
 
@@ -184,6 +186,15 @@ app.config.globalProperties.zoomToTrip = (trip, store) => {
 }
 app.config.globalProperties.$axios = axios
 
+import { isPhone, isTablet } from "./helpers/device_detection"
+app.config.globalProperties.isPhone = isPhone
+app.config.globalProperties.isTablet = isTablet
+
+app.config.globalProperties.convertRemToPixels = (rem) => {
+  let rem2 = parseInt(rem)
+
+  return rem2 * parseFloat(getComputedStyle(document.documentElement).fontSize)
+}
 // const htp_options = {
 //   name: "_blank",
 //   specs: ["fullscreen=yes", "titlebar=no", "scrollbars=yes"],

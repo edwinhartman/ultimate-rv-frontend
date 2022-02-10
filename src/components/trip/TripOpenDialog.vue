@@ -93,6 +93,14 @@ div.trip-grid {
   overflow-y: auto;
   /* border: 1px solid black; */
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: repeat(4, 1fr);
+}
+@media (min-device-width: 375px) and (max-device-width: 812px) {
+  div.main {
+    width: 20rem;
+  }
+  div.trip-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 </style>

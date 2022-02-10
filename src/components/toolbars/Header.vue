@@ -7,7 +7,7 @@
         <a href="/admin">Admin</a>
       </li>
     </ul> -->
-    <input type="checkbox" id="main_menu" />
+    <input type="checkbox" id="main_menu" @change="setShowHideToolbar" />
     <label for="main_menu" class="icon">
       <div class="menu"></div>
     </label>
@@ -54,6 +54,9 @@ export default {
     showAbout(event) {
       event.preventDefault()
       this.$store.commit("dialogs/setShowAbout", !this.$store.state.dialogs.showAbout)
+    },
+    setShowHideToolbar(evt) {
+      this.$store.commit("toolbars/setShowLeftToolbar", evt.target.checked)
     },
   },
 }
